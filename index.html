@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>What can I do between classes? · AI Campus Companion</title>
+<title>What can I do between classes? · AI Campus Companion v2.0</title>
 <style>
   :root {
     --bg-page: #f8fafc;
-    --bg-card: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.92);
     --bg-subtle: #f1f5f9;
     --text-main: #0f172a;
     --text-muted: #64748b;
     --primary: #0d9488;
     --primary-hover: #0f766e;
     --primary-light: #ccfbf1;
-    --primary-glow: rgba(13, 148, 136, 0.2);
+    --primary-glow: rgba(13, 148, 136, 0.25);
     --accent: #f59e0b;
     --coral: #f43f5e;
     --indigo: #6366f1;
@@ -23,13 +23,14 @@
     --radius-md: 14px;
     --radius-lg: 20px;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-    --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+    --shadow-md: 0 6px 18px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 30px -5px rgba(0,0,0,0.12);
+    --sky-gradient: linear-gradient(180deg, #e0f2fe 0%, #f8fafc 100%);
   }
 
   [data-theme="dark"] {
     --bg-page: #090d16;
-    --bg-card: #131b2e;
+    --bg-card: rgba(19, 27, 46, 0.92);
     --bg-subtle: #1e293b;
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
@@ -38,21 +39,81 @@
     --primary-light: rgba(20, 184, 166, 0.18);
     --primary-glow: rgba(20, 184, 166, 0.35);
     --border: #26334d;
-    --shadow-md: 0 4px 14px rgba(0,0,0,0.35);
-    --shadow-lg: 0 12px 28px rgba(0,0,0,0.5);
+    --shadow-md: 0 6px 20px rgba(0,0,0,0.4);
+    --shadow-lg: 0 16px 36px rgba(0,0,0,0.6);
+    --sky-gradient: linear-gradient(180deg, #050811 0%, #090d16 100%);
   }
 
-  * { box-sizing: border-box; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+  /* Sky Atmosphere Variations */
+  body.sky-dawn { --sky-gradient: linear-gradient(180deg, #fed7aa 0%, #f8fafc 100%); }
+  body.sky-dusk { --sky-gradient: linear-gradient(180deg, #fbcfe8 0%, #fed7aa 50%, #f8fafc 100%); }
+  body.sky-night { --sky-gradient: linear-gradient(180deg, #020617 0%, #0b0f19 60%, #1e1b4b 100%); }
+
+  * { box-sizing: border-box; transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
   body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
-    background: var(--bg-page);
+    background: var(--sky-gradient);
+    background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.5;
     padding-bottom: 60px;
+    position: relative;
+    overflow-x: hidden;
+    min-height: 100vh;
   }
 
-  .container { max-width: 840px; margin: 0 auto; padding: 20px 16px; }
+  /* Celestial Canvas (Sun & Moon Arc + Stars) */
+  .celestial-stage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 380px;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .celestial-body {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: left 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s ease;
+    will-change: transform, left, top;
+  }
+
+  .sun-body {
+    background: radial-gradient(circle, #fde047 30%, #f59e0b 80%);
+    box-shadow: 0 0 45px rgba(245, 158, 11, 0.7), 0 0 90px rgba(253, 224, 71, 0.4);
+  }
+
+  .moon-body {
+    background: radial-gradient(circle at 35% 35%, #ffffff 40%, #cbd5e1 90%);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.6), 0 0 60px rgba(147, 197, 253, 0.25);
+  }
+
+  .star-field {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  body.sky-night .star-field { opacity: 0.9; }
+  .star {
+    position: absolute;
+    background: #ffffff;
+    border-radius: 50%;
+    animation: twinkle 3s infinite ease-in-out;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.3); }
+  }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 20px 16px; position: relative; z-index: 1; }
 
   /* Header Bar */
   header {
@@ -61,21 +122,23 @@
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(8px);
   }
 
   .brand-group { display: flex; align-items: center; gap: 12px; }
   .brand-icon {
     font-size: 2rem;
-    width: 48px;
-    height: 48px;
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--primary-light);
     border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
   }
 
   h1 { font-size: 1.45rem; font-weight: 800; margin: 0; letter-spacing: -0.02em; }
@@ -98,6 +161,7 @@
     justify-content: center;
     gap: 6px;
     user-select: none;
+    backdrop-filter: blur(8px);
   }
   button:hover { border-color: var(--primary); }
   button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
@@ -106,14 +170,14 @@
     background: var(--primary);
     border-color: var(--primary);
     color: #ffffff;
-    box-shadow: 0 4px 12px var(--primary-glow);
+    box-shadow: 0 4px 14px var(--primary-glow);
   }
   button.primary:hover { background: var(--primary-hover); }
 
   button.subtle { background: transparent; border-color: transparent; color: var(--text-muted); }
   button.subtle:hover { background: var(--bg-subtle); color: var(--text-main); }
 
-  /* Hero & AI Context Banner */
+  /* AI Context & Celestial HUD */
   .ai-context-bar {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -132,7 +196,7 @@
     align-items: center;
     gap: 6px;
     font-size: 0.8rem;
-    padding: 4px 10px;
+    padding: 5px 12px;
     border-radius: 999px;
     background: var(--bg-subtle);
     color: var(--text-muted);
@@ -140,14 +204,23 @@
   }
   .context-pill.highlight { background: var(--primary-light); color: var(--primary); }
 
-  /* Filter Panel */
+  /* Quick Soundscape Control */
+  .soundscape-pill {
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .soundscape-pill:hover { border-color: var(--primary); }
+  .soundscape-pill.playing { background: #dcfce7; color: #15803d; }
+
+  /* Panel Card */
   .panel-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 20px;
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 20px;
+    padding: 22px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 24px;
+    backdrop-filter: blur(12px);
   }
 
   .filter-section { margin-bottom: 18px; }
@@ -180,7 +253,7 @@
     border-color: var(--primary);
     color: #ffffff;
     font-weight: 700;
-    box-shadow: 0 2px 8px var(--primary-glow);
+    box-shadow: 0 3px 10px var(--primary-glow);
   }
 
   .action-row {
@@ -188,12 +261,12 @@
     gap: 10px;
     flex-wrap: wrap;
     align-items: center;
-    margin-top: 20px;
-    padding-top: 16px;
+    margin-top: 22px;
+    padding-top: 18px;
     border-top: 1px dashed var(--border);
   }
   .action-row button.large {
-    padding: 12px 24px;
+    padding: 13px 26px;
     font-size: 1rem;
     border-radius: var(--radius-md);
     flex-grow: 1;
@@ -205,28 +278,29 @@
     background: var(--bg-card);
     border: 2px solid var(--primary);
     border-radius: var(--radius-lg);
-    padding: 24px;
+    padding: 26px;
     box-shadow: var(--shadow-lg);
     position: relative;
     overflow: hidden;
-    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(14px);
+    animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .result-card.empty-state {
     border: 1px dashed var(--border);
     box-shadow: none;
     text-align: center;
-    padding: 36px 20px;
+    padding: 38px 20px;
     color: var(--text-muted);
   }
   .result-card.none-found {
     border-color: var(--coral);
-    background: rgba(244, 63, 94, 0.04);
+    background: rgba(244, 63, 94, 0.05);
     text-align: center;
-    padding: 30px;
+    padding: 32px;
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
@@ -250,34 +324,33 @@
   .badge.energy-low { background: #dcfce7; color: #15803d; }
   .badge.energy-med { background: #fef3c7; color: #b45309; }
 
-  .activity-title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-  .activity-emoji { font-size: 2.2rem; line-height: 1; }
-  .activity-title { font-size: 1.4rem; font-weight: 800; margin: 0; }
+  .activity-title-row { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .activity-emoji { font-size: 2.4rem; line-height: 1; }
+  .activity-title { font-size: 1.45rem; font-weight: 800; margin: 0; }
 
   .activity-steps {
     background: var(--bg-subtle);
     border-radius: var(--radius-md);
-    padding: 12px 16px;
+    padding: 13px 16px;
     font-size: 0.925rem;
     margin-bottom: 16px;
     border-left: 4px solid var(--primary);
   }
-  .activity-steps b { color: var(--text-main); }
 
-  /* AI Explanation Box */
+  /* Explainable AI Reasoning Box */
   .ai-reasoning {
     background: rgba(99, 102, 241, 0.08);
     border: 1px solid rgba(99, 102, 241, 0.25);
     border-radius: var(--radius-md);
-    padding: 10px 14px;
+    padding: 11px 15px;
     font-size: 0.85rem;
     color: var(--indigo);
-    margin-bottom: 16px;
+    margin-bottom: 18px;
     display: flex;
     align-items: flex-start;
     gap: 8px;
   }
-  [data-theme="dark"] .ai-reasoning { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
+  [data-theme="dark"] .ai-reasoning { background: rgba(99, 102, 241, 0.16); color: #a5b4fc; }
 
   .card-footer-actions {
     display: flex;
@@ -285,7 +358,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 10px;
-    padding-top: 14px;
+    padding-top: 16px;
     border-top: 1px solid var(--border);
   }
 
@@ -294,16 +367,33 @@
   /* Break Countdown Timer */
   .timer-banner {
     display: none;
-    margin-top: 18px;
-    padding: 16px;
+    margin-top: 20px;
+    padding: 18px;
     background: var(--bg-subtle);
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
     text-align: center;
   }
   .timer-banner.active { display: block; animation: fadeIn 0.25s ease; }
-  .timer-display { font-size: 2.4rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primary); }
-  .timer-controls { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+  .timer-display { font-size: 2.6rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primary); }
+  .timer-controls { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+
+  /* Break Analytics Quick Overview */
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .stat-val { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
+  .stat-label { font-size: 0.775rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
 
   /* Section Titles & History / Catalog */
   .section-header {
@@ -334,13 +424,13 @@
   .history-item .left { display: flex; align-items: center; gap: 8px; }
   .history-item .time-tag { color: var(--text-muted); font-size: 0.75rem; }
 
-  /* Modal / Catalog Drawer */
+  /* Modal Windows */
   .modal-backdrop {
     display: none;
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(5px);
     z-index: 100;
     align-items: center;
     justify-content: center;
@@ -352,7 +442,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     width: 100%;
-    max-width: 720px;
+    max-width: 680px;
     max-height: 85vh;
     display: flex;
     flex-direction: column;
@@ -368,6 +458,17 @@
   }
   .modal-head h3 { margin: 0; font-size: 1.2rem; }
   .modal-body { padding: 20px; overflow-y: auto; }
+
+  /* Settings Controls Inside Modal */
+  .settings-row {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .settings-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .settings-title { font-weight: 700; margin-bottom: 6px; font-size: 0.95rem; }
+  .settings-desc { font-size: 0.825rem; color: var(--text-muted); margin-bottom: 10px; }
+
   .search-input {
     width: 100%;
     padding: 10px 14px;
@@ -410,6 +511,14 @@
 </style>
 </head>
 <body>
+
+<!-- Dynamic Celestial Stage (Sun & Moon Arc + Stars) -->
+<div class="celestial-stage" aria-hidden="true">
+  <div class="star-field" id="stars-box"></div>
+  <div class="celestial-body sun-body" id="sun-orb" style="opacity:0;"></div>
+  <div class="celestial-body moon-body" id="moon-orb" style="opacity:0;"></div>
+</div>
+
 <div class="container">
   <!-- Top Navigation -->
   <header>
@@ -417,26 +526,42 @@
       <div class="brand-icon">⚡</div>
       <div>
         <h1 id="t-title">What can I do between classes?</h1>
-        <p class="subtitle" id="t-subtitle">AI-assisted campus break optimizer · Intro to AI Project</p>
+        <p class="subtitle" id="t-subtitle">AI Campus Companion · Circadian & Multi-Attribute Utility v2.0</p>
       </div>
     </div>
     <div class="header-actions">
-      <button type="button" id="theme-toggle" aria-label="Toggle theme">🌙</button>
       <button type="button" id="catalog-btn">📚 <span id="t-browse">Catalog</span></button>
+      <button type="button" id="settings-btn" aria-label="Settings">⚙️ <span id="t-settings">Settings</span></button>
       <button type="button" id="lang-btn">中文</button>
     </div>
   </header>
 
-  <!-- Real-time AI Context Banner -->
+  <!-- Real-time AI Context & Celestial HUD -->
   <div class="ai-context-bar">
     <div class="context-pill highlight" id="ai-time-pill">
       🕒 <span id="t-time-context">Time: Evaluating...</span>
     </div>
     <div class="context-pill" id="ai-engine-pill">
-      🤖 <span id="t-engine-name">Utility Decision Engine v1.0</span>
+      🤖 <span id="t-engine-name">4-Phase Circadian Utility Engine</span>
     </div>
-    <div class="context-pill" id="ai-lib-pill">
-      ⚡ <span id="t-catalog-count">20 Activities Ready</span>
+    <div class="context-pill soundscape-pill" id="quick-sound-btn" title="Toggle Ambient Audio">
+      🎵 <span id="t-sound-status">Soundscape: Off</span>
+    </div>
+  </div>
+
+  <!-- Student Break Analytics Overview -->
+  <div class="analytics-grid">
+    <div class="stat-card">
+      <div class="stat-val" id="stat-minutes">0</div>
+      <div class="stat-label" id="t-stat-mins">Minutes Recharged</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-count">0</div>
+      <div class="stat-label" id="t-stat-activities">Breaks Completed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-favorite">🌿</div>
+      <div class="stat-label" id="t-stat-top">Favorite Category</div>
     </div>
   </div>
 
@@ -506,7 +631,7 @@
     </div>
   </div>
 
-  <!-- Break History & Favorites Section -->
+  <!-- Break History Section -->
   <div class="section-header">
     <h2 id="t-history-title">Recent Activity Log (Saved)</h2>
     <button type="button" class="subtle" id="clear-history-btn">🗑️ <span id="t-clear">Clear Log</span></button>
@@ -521,6 +646,64 @@
   <footer>
     <p id="t-footer-note">Fictional teaching activities for Introduction to Artificial Intelligence midterm demonstration. All preferences persisted locally.</p>
   </footer>
+</div>
+
+<!-- Settings Modal / Drawer -->
+<div class="modal-backdrop" id="settings-modal">
+  <div class="modal-window">
+    <div class="modal-head">
+      <h3 id="t-settings-title">⚙️ App Settings & AI Simulator</h3>
+      <button type="button" class="subtle" id="close-settings-btn">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- 1. Theme Mode (3 Options) -->
+      <div class="settings-row">
+        <div class="settings-title" id="t-theme-mode">Theme Mode</div>
+        <div class="settings-desc" id="t-theme-desc">Choose manual appearance, OS sync, or real-time daylight sync.</div>
+        <div class="chip-group" id="theme-chip-group">
+          <button type="button" class="chip-btn" data-theme-val="circadian">🕒 <span data-t="themeCircadian">Real-Time Sync</span></button>
+          <button type="button" class="chip-btn" data-theme-val="system">💻 <span data-t="themeSystem">System OS</span></button>
+          <button type="button" class="chip-btn" data-theme-val="light">☀️ <span data-t="themeLight">Light</span></button>
+          <button type="button" class="chip-btn" data-theme-val="dark">🌙 <span data-t="themeDark">Dark</span></button>
+        </div>
+      </div>
+
+      <!-- 2. AI Time Simulator (Presentation Mode) -->
+      <div class="settings-row">
+        <div class="settings-title" id="t-sim-title">AI Time of Day Simulator (Presentation Mode)</div>
+        <div class="settings-desc" id="t-sim-desc">Preview how the AI shifts recommendations and sun/moon positions across the 4 circadian cycles.</div>
+        <div class="chip-group" id="sim-chip-group">
+          <button type="button" class="chip-btn active" data-sim-hour="real">⚡ Live Clock</button>
+          <button type="button" class="chip-btn" data-sim-hour="9">🌅 Morning (09:00)</button>
+          <button type="button" class="chip-btn" data-sim-hour="13">☀️ Noon (13:00)</button>
+          <button type="button" class="chip-btn" data-sim-hour="17.5">🌇 Sunset (17:30)</button>
+          <button type="button" class="chip-btn" data-sim-hour="0.5">🌙 Midnight (00:30)</button>
+        </div>
+      </div>
+
+      <!-- 3. Ambient Soundscape Generator -->
+      <div class="settings-row">
+        <div class="settings-title" id="t-sound-title">Ambient Campus Soundscape (Synthesized Audio)</div>
+        <div class="settings-desc" id="t-sound-desc">Plays calming background audio synthesized client-side via Web Audio API during break countdowns.</div>
+        <div class="chip-group" id="sound-chip-group">
+          <button type="button" class="chip-btn active" data-sound-val="none">Mute</button>
+          <button type="button" class="chip-btn" data-sound-val="rain">🌧️ Gentle Rain</button>
+          <button type="button" class="chip-btn" data-sound-val="lofi">🧘 Lo-Fi Binaural Hum</button>
+          <button type="button" class="chip-btn" data-sound-val="white">💨 Focus White Noise</button>
+        </div>
+      </div>
+
+      <!-- 4. Data Storage & Reset -->
+      <div class="settings-row">
+        <div class="settings-title" id="t-data-title">AI Memory & Preferences</div>
+        <div class="settings-desc" id="t-data-desc">Manage locally learned reinforcement weights and completed break analytics.</div>
+        <div style="display:flex; gap:8px;">
+          <button type="button" id="reset-weights-btn">🧠 <span id="t-reset-weights">Reset AI Weights</span></button>
+          <button type="button" id="clear-all-data-btn" style="color:var(--coral);">⚠️ <span id="t-reset-all">Reset All Stats</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Catalog Modal / Drawer -->
@@ -543,8 +726,8 @@
   var ACTIVITIES = [
     { id: "A01", name_zh: "整理書包與桌面", name_en: "Organize your bag & desk", category: "productivity", location_type: "indoor", minutes: 10, energy: "low", icon: "🎒", best_time: "morning", steps_zh: "清空不需要的紙屑收據、把文具與筆記本分層歸位、擦拭桌面恢復清爽。", steps_en: "Discard receipts/wrappers, sort pens and notebooks, and wipe your desk clean." },
     { id: "A02", name_zh: "畫一張靈感小卡", name_en: "Draw a small inspiration card", category: "creative", location_type: "indoor", minutes: 15, energy: "low", icon: "🎨", best_time: "afternoon", steps_zh: "拿出一張便條紙或小卡，隨筆塗鴉剛才上課聽到的關鍵詞或心情插畫。", steps_en: "Take a note card and doodle a lecture concept, motivational quote, or mood sketch." },
-    { id: "A03", name_zh: "寫三句重點讀書筆記", name_en: "Write three key study notes", category: "productivity", location_type: "indoor", minutes: 10, energy: "low", icon: "✍️", best_time: "any", steps_zh: "回顧上一堂課，用自己的話總結三個核心知識點，加深長期記憶。", steps_en: "Summarize the 3 most crucial takeaways from the last class in your own words." },
-    { id: "A04", name_zh: "安靜讀兩頁課外書", name_en: "Read two pages quietly", category: "wellness", location_type: "indoor", minutes: 15, energy: "low", icon: "📖", best_time: "afternoon", steps_zh: "暫時放下手機螢幕，享受幾分鐘純粹的文字閱讀時光。", steps_en: "Put away phone notifications and immerse yourself in 2 pages of a favorite book." },
+    { id: "A03", name_zh: "寫三句重點讀書筆記", name_en: "Write three key study notes", category: "productivity", location_type: "indoor", minutes: 10, energy: "low", icon: "✍️", best_time: "morning", steps_zh: "回顧上一堂課，用自己的話總結三個核心知識點，加深長期記憶。", steps_en: "Summarize the 3 most crucial takeaways from the last class in your own words." },
+    { id: "A04", name_zh: "安靜讀兩頁課外書", name_en: "Read two pages quietly", category: "wellness", location_type: "indoor", minutes: 15, energy: "low", icon: "📖", best_time: "evening", steps_zh: "暫時放下手機螢幕，享受幾分鐘純粹的文字閱讀時光。", steps_en: "Put away phone notifications and immerse yourself in 2 pages of a favorite book." },
     { id: "A05", name_zh: "排好明日待辦與行事曆", name_en: "Plan tomorrow’s tasks & calendar", category: "productivity", location_type: "indoor", minutes: 20, energy: "low", icon: "📋", best_time: "evening", steps_zh: "列出明天的作業期限與上課教室，標記最重要的三件優先事項。", steps_en: "Review upcoming assignment deadlines and classrooms; flag top 3 priorities." },
     { id: "A06", name_zh: "整理本機練習檔與下載區", name_en: "Organize practice files & downloads", category: "productivity", location_type: "indoor", minutes: 30, energy: "medium", icon: "💻", best_time: "afternoon", steps_zh: "將桌面與 Downloads 資料夾的教材檔案分類歸入專案資料夾。", steps_en: "Sort downloaded course slides and code exercises into dedicated project directories." },
     { id: "A07", name_zh: "在校園合適走廊或中庭慢走", name_en: "Take a gentle walk in courtyard", category: "movement", location_type: "outdoor", minutes: 15, energy: "low", icon: "🚶", best_time: "morning", steps_zh: "暫離座位走到走廊或花園中庭，維持輕鬆步伐放鬆久坐的雙腿。", steps_en: "Step outside to the courtyard or hall, stretch your legs at a comfortable walking pace." },
@@ -554,21 +737,21 @@
     { id: "A11", name_zh: "探索並記錄校園自然色彩", name_en: "Record colors in campus nature", category: "creative", location_type: "outdoor", minutes: 45, energy: "low", icon: "🌿", best_time: "afternoon", steps_zh: "在校園草坪或林蔭步道尋找 3 種植物或花朵，拍下或記錄自然的色彩漸層。", steps_en: "Stroll near campus greenery, spotting 3 distinct botanical colors or leaf textures." },
     { id: "A12", name_zh: "構思下一次社團活動主題", name_en: "Brainstorm a future club activity", category: "creative", location_type: "indoor", minutes: 60, energy: "medium", icon: "💡", best_time: "evening", steps_zh: "用便利貼進行腦力激盪，擬出社團迎新、聚會或工作坊的亮點提案。", steps_en: "Mind-map creative ideas, interactive icebreakers, and themes for upcoming club events." },
     { id: "A13", name_zh: "課桌椅肩頸深層伸展", name_en: "Desk shoulder & neck stretch", category: "movement", location_type: "indoor", minutes: 10, energy: "low", icon: "🧘", best_time: "any", steps_zh: "雙手抱頭向下緩慢拉伸頸後肌群，左右側彎拉伸斜方肌，各維持15秒鐘。", steps_en: "Gently tilt head side-to-side, roll shoulders backward, and stretch tight neck muscles." },
-    { id: "A14", name_zh: "4-7-8 腹式呼吸減壓調息", name_en: "4-7-8 Mindful breathing reset", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "🌬️", best_time: "any", steps_zh: "用鼻子吸氣4秒、屏息7秒、用嘴緩慢呼氣8秒，連續進行4個循環穩定自律神經。", steps_en: "Inhale 4s, hold breath 7s, exhale slowly for 8s. Repeat 4 cycles to lower stress hormones." },
-    { id: "A15", name_zh: "補水與遠眺綠色護眼", name_en: "Hydration & eye rest break", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "💧", best_time: "any", steps_zh: "喝滿一杯溫水，走到窗邊注視6公尺外的遠景綠樹，讓睫狀肌徹底放鬆。", steps_en: "Drink a full glass of water, then gaze at distance trees beyond 20 feet to relieve eye strain." },
+    { id: "A14", name_zh: "4-7-8 腹式呼吸減壓調息", name_en: "4-7-8 Mindful breathing reset", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "🌬️", best_time: "night", steps_zh: "用鼻子吸氣4秒、屏息7秒、用嘴緩慢呼氣8秒，連續進行4個循環穩定自律神經。", steps_en: "Inhale 4s, hold breath 7s, exhale slowly for 8s. Repeat 4 cycles to lower stress hormones." },
+    { id: "A15", name_zh: "補水與遠眺綠色護眼", name_en: "Hydration & eye rest break", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "💧", best_time: "night", steps_zh: "喝滿一杯溫水，走到窗邊注視6公尺外的遠景綠樹，讓睫狀肌徹底放鬆。", steps_en: "Drink a full glass of water, then gaze at distance trees beyond 20 feet to relieve eye strain." },
     { id: "A16", name_zh: "教學大樓爬樓梯微運動提神", name_en: "Stair climb energy recharge", category: "movement", location_type: "indoor", minutes: 15, energy: "medium", icon: "🪜", best_time: "afternoon", steps_zh: "不搭電梯改爬2至3層樓梯，維持穩定呼吸，迅速喚醒下肢肌肉與大腦思緒。", steps_en: "Skip the elevator and climb 2-3 flights of stairs at steady pace to boost circulation." },
     { id: "A17", name_zh: "尋找校園未曾去過的秘密角落", name_en: "Explore a campus hidden corner", category: "creative", location_type: "outdoor", minutes: 25, energy: "medium", icon: "🗺️", best_time: "afternoon", steps_zh: "走平常沒走過的學院步道或圖書館背側小徑，發現校園新視角與安靜據點。", steps_en: "Take an unfamiliar pathway behind another department building to discover peaceful spots." },
     { id: "A18", name_zh: "閃卡抽考上課核心要點", name_en: "Quick lecture flashcard drill", category: "productivity", location_type: "indoor", minutes: 15, energy: "medium", icon: "⚡", best_time: "morning", steps_zh: "打開筆記或閃卡，進行 10 個核心概念的主動回憶（Active Recall）。", steps_en: "Run through 10 digital flashcards to test recall on key terminology from lectures." },
-    { id: "A19", name_zh: "戴耳機享受沉浸放鬆音樂", name_en: "Lo-Fi / ambient music chillout", category: "wellness", location_type: "indoor", minutes: 15, energy: "low", icon: "🎵", best_time: "afternoon", steps_zh: "戴上降噪耳機，閉上雙眼聆聽三首無人聲 Lo-Fi 或大自然白噪音放鬆大腦。", steps_en: "Put on headphones and close eyes for 3 ambient or Lo-Fi tracks to reset sensory overload." },
+    { id: "A19", name_zh: "戴耳機享受沉浸放鬆音樂", name_en: "Lo-Fi / ambient music chillout", category: "wellness", location_type: "indoor", minutes: 15, energy: "low", icon: "🎵", best_time: "night", steps_zh: "戴上降噪耳機，閉上雙眼聆聽三首無人聲 Lo-Fi 或大自然白噪音放鬆大腦。", steps_en: "Put on headphones and close eyes for 3 ambient or Lo-Fi tracks to reset sensory overload." },
     { id: "A20", name_zh: "傳訊息給同學互相關心加油", name_en: "Send an encouraging text to a friend", category: "wellness", location_type: "indoor", minutes: 5, energy: "low", icon: "💬", best_time: "any", steps_zh: "發一則溫暖的訊息給同系好友或室友，問問對方今天課堂順利與否。", steps_en: "Drop a cheerful greeting or funny meme to a classmate or friend to stay connected." }
   ];
 
   var TEXT = {
     en: {
       title: "What can I do between classes?",
-      subtitle: "AI-assisted campus break optimizer · Intro to AI Project",
-      browse: "Catalog",
-      engineName: "Utility Decision Engine v1.0",
+      subtitle: "AI Campus Companion · Circadian & Multi-Attribute Utility v2.0",
+      browse: "Catalog", settings: "Settings",
+      engineName: "4-Phase Circadian Utility Engine",
       lblTime: "Available Break Time",
       lblLocation: "Location Preference",
       lblEnergy: "Energy Level",
@@ -597,13 +780,26 @@
       footerNote: "Fictional teaching activities for Introduction to Artificial Intelligence midterm demonstration. All preferences persisted locally.",
       upvoteTip: "Boost in AI ranking",
       downvoteTip: "Reduce in AI ranking",
-      morning: "Morning Focus", afternoon: "Afternoon Boost", evening: "Evening Wind-down"
+      morning: "Morning Focus", afternoon: "Afternoon Boost", evening: "Evening Review", night: "Late Night Reset",
+      statMins: "Minutes Recharged", statActs: "Breaks Completed", statTop: "Favorite Category",
+      settingsTitle: "⚙️ App Settings & AI Simulator",
+      themeMode: "Theme Mode",
+      themeDesc: "Choose manual appearance, OS sync, or real-time daylight sync.",
+      themeCircadian: "Real-Time Sync", themeSystem: "System OS", themeLight: "Light", themeDark: "Dark",
+      simTitle: "AI Time of Day Simulator (Presentation Mode)",
+      simDesc: "Preview how the AI shifts recommendations and sun/moon positions across the 4 circadian cycles.",
+      soundTitle: "Ambient Campus Soundscape (Synthesized Audio)",
+      soundDesc: "Plays calming background audio synthesized client-side via Web Audio API during break countdowns.",
+      dataTitle: "AI Memory & Preferences",
+      dataDesc: "Manage locally learned reinforcement weights and completed break analytics.",
+      resetWeights: "Reset AI Weights", resetAll: "Reset All Stats",
+      soundOff: "Soundscape: Off", soundOn: "Soundscape: Playing"
     },
     zh: {
       title: "課間我想做什麼？",
-      subtitle: "AI 智慧課間決策優化器 · 人工智慧導論期中專案",
-      browse: "活動庫",
-      engineName: "多屬性效用推薦引擎 v1.0",
+      subtitle: "AI 智慧課間決策優化器 · 生物節律與多屬性效用 v2.0",
+      browse: "活動庫", settings: "設定與模擬",
+      engineName: "4階段生物節律推薦引擎",
       lblTime: "下堂課前可用時間",
       lblLocation: "活動地點偏好",
       lblEnergy: "目前體力狀況",
@@ -632,136 +828,274 @@
       footerNote: "本專案為人工智慧導論期中實作範例。所有活動與偏好紀錄均保存在本機瀏覽器。",
       upvoteTip: "提高 AI 推薦權重",
       downvoteTip: "降低 AI 推薦權重",
-      morning: "早晨專注期", afternoon: "午後提神期", evening: "黃昏放鬆期"
+      morning: "晨間啟動期", afternoon: "午後提神期", evening: "黃昏整理期", night: "深夜修復期",
+      statMins: "累積充能分鐘", statActs: "完成課間次數", statTop: "最常選類別",
+      settingsTitle: "⚙️ 系統設定與 AI 模擬器",
+      themeMode: "外觀佈景模式",
+      themeDesc: "可選擇手動亮暗、隨作業系統切換，或依現實日照生理時鐘自動切換。",
+      themeCircadian: "日照時鐘同步", themeSystem: "系統預設", themeLight: "淺色模式", themeDark: "深色模式",
+      simTitle: "AI 日夜時間模擬器（期中報告展示用）",
+      simDesc: "即時模擬一天 4 個不同時段，觀察太陽月亮軌跡、天色與 AI 推薦邏輯之變化。",
+      soundTitle: "課間環境白噪音（Web Audio 純音合成）",
+      soundDesc: "免下載任何音檔，透過瀏覽器內建合成器播放助眠放鬆背景音效。",
+      dataTitle: "AI 偏好記憶與數據管理",
+      dataDesc: "管理已學習的強化學習權重與課間累積數據。",
+      resetWeights: "重設 AI 學習權重", resetAll: "重設所有統計數據",
+      soundOff: "背景音效：關閉", soundOn: "背景音效：播放中"
     }
   };
 
   // State Management
   var state = {
     lang: "en",
-    filters: {
-      time: 15,
-      location: "all",
-      energy: "all",
-      goal: "any"
-    },
+    filters: { time: 15, location: "all", energy: "all", goal: "any" },
+    themeMode: "circadian", // "circadian", "system", "light", "dark"
+    simHour: "real",        // "real" or numeric (e.g. 9, 13, 17.5, 0.5)
+    soundMode: "none",      // "none", "rain", "lofi", "white"
     currentRecommendation: null,
     history: [],
-    weights: {}, // Learns from upvotes/downvotes
-    timer: {
-      interval: null,
-      remaining: 0,
-      total: 0,
-      running: false
-    }
+    weights: {},
+    stats: { totalMinutes: 0, completedCount: 0, categories: {} },
+    timer: { interval: null, remaining: 0, total: 0, running: false }
   };
 
-  // Sound Synth via Web Audio API (No external assets required)
+  // ==========================================
+  // Web Audio Synthesizer (Zero external files!)
+  // ==========================================
+  var audioCtx = null;
+  var soundNodes = null;
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
   function playChime() {
     try {
-      var ctx = new (window.AudioContext || window.webkitAudioContext)();
-      var osc = ctx.createOscillator();
-      var gain = ctx.createGain();
+      initAudio();
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
       osc.type = "sine";
-      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3); // A5
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.2);
+      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3); // A5
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.2);
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(audioCtx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 1.2);
+      osc.stop(audioCtx.currentTime + 1.2);
     } catch(e) {}
   }
 
-  // Load Saved Data from LocalStorage
-  function loadPersistedState() {
+  function stopSoundscape() {
+    if (soundNodes) {
+      try {
+        if (soundNodes.src) soundNodes.src.stop();
+        if (soundNodes.osc1) soundNodes.osc1.stop();
+        if (soundNodes.osc2) soundNodes.osc2.stop();
+      } catch(e) {}
+      soundNodes = null;
+    }
+    updateSoundscapePill();
+  }
+
+  function startSoundscape(type) {
+    stopSoundscape();
+    if (type === "none") return;
     try {
-      var savedHist = localStorage.getItem("picker_history");
-      if (savedHist) state.history = JSON.parse(savedHist);
-      var savedWeights = localStorage.getItem("picker_weights");
-      if (savedWeights) state.weights = JSON.parse(savedWeights);
-      var savedTheme = localStorage.getItem("picker_theme");
-      if (savedTheme) applyTheme(savedTheme);
-      else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        applyTheme("dark");
+      initAudio();
+      var bufferSize = audioCtx.sampleRate * 2;
+      var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      var data = buffer.getChannelData(0);
+
+      if (type === "rain" || type === "white") {
+        for (var i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1; // White noise baseline
+        }
+        var noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true;
+
+        var filter = audioCtx.createBiquadFilter();
+        filter.type = type === "rain" ? "lowpass" : "bandpass";
+        filter.frequency.value = type === "rain" ? 800 : 1200;
+
+        var gain = audioCtx.createGain();
+        gain.gain.value = type === "rain" ? 0.08 : 0.05;
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start();
+        soundNodes = { src: noise, gain: gain };
+      } else if (type === "lofi") {
+        // Binaural theta beat (210Hz + 216Hz = 6Hz calm wave)
+        var osc1 = audioCtx.createOscillator();
+        var osc2 = audioCtx.createOscillator();
+        var gainLofi = audioCtx.createGain();
+        osc1.type = "sine";
+        osc2.type = "sine";
+        osc1.frequency.value = 210;
+        osc2.frequency.value = 216;
+        gainLofi.gain.value = 0.08;
+
+        osc1.connect(gainLofi);
+        osc2.connect(gainLofi);
+        gainLofi.connect(audioCtx.destination);
+        osc1.start();
+        osc2.start();
+        soundNodes = { osc1: osc1, osc2: osc2, gain: gainLofi };
       }
     } catch(e) {}
+    updateSoundscapePill();
   }
 
-  function persistData() {
-    try {
-      localStorage.setItem("picker_history", JSON.stringify(state.history.slice(0, 8)));
-      localStorage.setItem("picker_weights", JSON.stringify(state.weights));
-    } catch(e) {}
-  }
-
-  function applyTheme(theme) {
-    if (theme === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
-      document.getElementById("theme-toggle").textContent = "☀️";
+  function updateSoundscapePill() {
+    var pill = document.getElementById("quick-sound-btn");
+    var txt = document.getElementById("t-sound-status");
+    if (soundNodes) {
+      pill.classList.add("playing");
+      txt.textContent = TEXT[state.lang].soundOn;
     } else {
-      document.documentElement.removeAttribute("data-theme");
-      document.getElementById("theme-toggle").textContent = "🌙";
+      pill.classList.remove("playing");
+      txt.textContent = TEXT[state.lang].soundOff;
     }
-    localStorage.setItem("picker_theme", theme);
   }
 
   // ==========================================
-  // Artificial Intelligence Recommendation Engine
-  // Multi-Attribute Utility Theory (MAUT) & Contextual Ranking
+  // Celestial Trajectory Physics (Sun & Moon Arc)
+  // ==========================================
+  function generateStars() {
+    var box = document.getElementById("stars-box");
+    box.innerHTML = "";
+    for (var i = 0; i < 30; i++) {
+      var s = document.createElement("div");
+      s.className = "star";
+      s.style.left = (Math.random() * 100) + "%";
+      s.style.top = (Math.random() * 70) + "%";
+      s.style.width = (Math.random() * 2 + 1.5) + "px";
+      s.style.height = s.style.width;
+      s.style.animationDelay = (Math.random() * 3) + "s";
+      box.appendChild(s);
+    }
+  }
+
+  function updateCelestialPosition() {
+    var currentHour = getEffectiveHour();
+    var sun = document.getElementById("sun-orb");
+    var moon = document.getElementById("moon-orb");
+
+    // Sky Atmosphere Color Shift
+    document.body.classList.remove("sky-dawn", "sky-dusk", "sky-night");
+    if (currentHour >= 5.5 && currentHour < 8) {
+      document.body.classList.add("sky-dawn");
+    } else if (currentHour >= 16.5 && currentHour < 18.5) {
+      document.body.classList.add("sky-dusk");
+    } else if (currentHour >= 18.5 || currentHour < 5.5) {
+      document.body.classList.add("sky-night");
+    }
+
+    // Daytime Sun Arc: 06:00 (left) -> 12:00 (zenith) -> 18:00 (right)
+    if (currentHour >= 6 && currentHour <= 18) {
+      var sunProgress = (currentHour - 6) / 12; // 0 to 1
+      var sunX = 8 + sunProgress * 84; // 8% to 92%
+      var sunY = 40 + (1 - Math.sin(sunProgress * Math.PI)) * 140; // Parabolic arc
+      sun.style.left = sunX + "%";
+      sun.style.top = sunY + "px";
+      sun.style.opacity = "1";
+
+      moon.style.opacity = "0";
+    } else {
+      // Nighttime Moon Arc: 18:00 (left) -> 00:00 (zenith) -> 06:00 (right)
+      var moonHour = currentHour >= 18 ? currentHour - 18 : currentHour + 6;
+      var moonProgress = moonHour / 12; // 0 to 1
+      var moonX = 8 + moonProgress * 84;
+      var moonY = 40 + (1 - Math.sin(moonProgress * Math.PI)) * 140;
+      moon.style.left = moonX + "%";
+      moon.style.top = moonY + "px";
+      moon.style.opacity = "1";
+
+      sun.style.opacity = "0";
+    }
+
+    // Apply auto-theme if mode is circadian
+    if (state.themeMode === "circadian") {
+      var isDaylight = currentHour >= 6 && currentHour < 18;
+      applyThemeDirect(isDaylight ? "light" : "dark");
+    }
+  }
+
+  function getEffectiveHour() {
+    if (state.simHour !== "real") {
+      return Number(state.simHour);
+    }
+    var now = new Date();
+    return now.getHours() + (now.getMinutes() / 60);
+  }
+
+  // ==========================================
+  // 4-Phase Circadian Utility AI Engine
   // ==========================================
   function evaluateUtility(act) {
     var f = state.filters;
     var score = 100;
     var reasons = [];
 
-    // 1. Hard Filter Checks
+    // 1. Hard Filter Constraints
     if (f.location !== "all" && act.location_type !== f.location) return { score: -1 };
     if (act.minutes > f.time) return { score: -1 };
     if (f.energy !== "all" && act.energy !== f.energy) return { score: -1 };
 
-    // 2. Duration Fit Factor: Maximize productive use of the break without rushing
+    // 2. Duration Fit Utility
     var timeDiff = f.time - act.minutes;
     if (timeDiff === 0) {
       score += 25;
       reasons.push(state.lang === "zh" ? "完美利用 " + f.time + " 分鐘" : "Exact match for your " + f.time + "m break");
     } else if (timeDiff <= 5) {
       score += 15;
-      reasons.push(state.lang === "zh" ? "時間充裕（預留緩衝回教室）" : "Optimal duration with class transition buffer");
+      reasons.push(state.lang === "zh" ? "預留回教室緩衝時間" : "Optimal duration with class transition buffer");
     } else {
       score -= (timeDiff * 0.8);
     }
 
-    // 3. Circadian / Time of Day Alignment
-    var hour = new Date().getHours();
-    var currentSlot = (hour >= 6 && hour < 12) ? "morning" : (hour >= 12 && hour < 17) ? "afternoon" : "evening";
-    if (act.best_time === currentSlot || act.best_time === "any") {
-      score += 20;
-      var slotLabel = TEXT[state.lang][currentSlot];
-      reasons.push(state.lang === "zh" ? "符合當前" + slotLabel + "生理節奏" : "Fits current " + slotLabel + " circadian rhythm");
+    // 3. 4-Phase Circadian Synchronization
+    var hour = getEffectiveHour();
+    var phase = (hour >= 6 && hour < 12) ? "morning" :
+                (hour >= 12 && hour < 18) ? "afternoon" :
+                (hour >= 18 && hour < 22) ? "evening" : "night";
+
+    if (act.best_time === phase || act.best_time === "any") {
+      score += 25;
+      var phaseLabel = TEXT[state.lang][phase];
+      reasons.push(state.lang === "zh" ? "符合「" + phaseLabel + "」生理節奏" : "Fits current " + phaseLabel + " circadian rhythm");
+    } else {
+      score -= 10;
     }
 
     // 4. Goal Mode Utility Weighting
     if (f.goal !== "any") {
       if (act.category === f.goal) {
         score += 35;
-        reasons.push(state.lang === "zh" ? "符合你設定的目標偏好" : "Strong alignment with selected goal preference");
+        reasons.push(state.lang === "zh" ? "符合設定目標偏好" : "Strong alignment with selected goal preference");
       } else {
         score -= 20;
       }
     }
 
-    // 5. Anti-Fatigue / Novelty Penalty (Discourage immediately repeating the same pick)
+    // 5. Anti-Fatigue / Novelty Penalty
     if (state.history.length > 0 && state.history[0].id === act.id) {
-      score -= 40;
+      score -= 45;
     }
 
-    // 6. Learned Reinforcement Weights (Bandit Feedback)
+    // 6. Learned Reinforcement Weights (Multi-Armed Bandit)
     var userMod = state.weights[act.id] || 0;
     if (userMod !== 0) {
       score += userMod * 15;
-      if (userMod > 0) reasons.push(state.lang === "zh" ? "已學習你的正面喜好" : "Learned from your positive ratings");
+      if (userMod > 0) reasons.push(state.lang === "zh" ? "已學習你的正面偏好" : "Learned from your positive ratings");
     }
 
     return {
@@ -774,9 +1108,7 @@
     var candidates = [];
     ACTIVITIES.forEach(function(a) {
       var u = evaluateUtility(a);
-      if (u.score > 0) {
-        candidates.push({ activity: a, utility: u });
-      }
+      if (u.score > 0) candidates.push({ activity: a, utility: u });
     });
 
     if (candidates.length === 0) {
@@ -793,12 +1125,10 @@
         candidates.sort(function(a, b) { return b.utility.score - a.utility.score; });
         chosen = candidates[0];
       } else {
-        // Weighted random from top 3 candidates
         var topPool = candidates.sort(function(a, b) { return b.utility.score - a.utility.score; }).slice(0, 3);
         chosen = topPool[Math.floor(Math.random() * topPool.length)];
       }
     } else {
-      // Random / Surprise Me mode: Uniform sample without immediate repeat
       var filtered = candidates.filter(function(c) {
         return state.history.length === 0 || c.activity.id !== state.history[0].id;
       });
@@ -807,7 +1137,6 @@
 
     state.currentRecommendation = chosen;
 
-    // Log to history
     state.history.unshift({
       id: chosen.activity.id,
       name_en: chosen.activity.name_en,
@@ -824,13 +1153,64 @@
   }
 
   // ==========================================
+  // Persistence & State Management
+  // ==========================================
+  function loadPersistedState() {
+    try {
+      var savedHist = localStorage.getItem("picker_history");
+      if (savedHist) state.history = JSON.parse(savedHist);
+      var savedWeights = localStorage.getItem("picker_weights");
+      if (savedWeights) state.weights = JSON.parse(savedWeights);
+      var savedThemeMode = localStorage.getItem("picker_theme_mode");
+      if (savedThemeMode) state.themeMode = savedThemeMode;
+      var savedStats = localStorage.getItem("picker_stats");
+      if (savedStats) state.stats = JSON.parse(savedStats);
+      applyThemeMode(state.themeMode);
+    } catch(e) {}
+  }
+
+  function persistData() {
+    try {
+      localStorage.setItem("picker_history", JSON.stringify(state.history.slice(0, 8)));
+      localStorage.setItem("picker_weights", JSON.stringify(state.weights));
+      localStorage.setItem("picker_theme_mode", state.themeMode);
+      localStorage.setItem("picker_stats", JSON.stringify(state.stats));
+    } catch(e) {}
+  }
+
+  function applyThemeMode(mode) {
+    state.themeMode = mode;
+    document.querySelectorAll("#theme-chip-group .chip-btn").forEach(function(b) {
+      b.classList.toggle("active", b.getAttribute("data-theme-val") === mode);
+    });
+
+    if (mode === "light") applyThemeDirect("light");
+    else if (mode === "dark") applyThemeDirect("dark");
+    else if (mode === "system") {
+      var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyThemeDirect(isDark ? "dark" : "light");
+    } else {
+      // circadian
+      updateCelestialPosition();
+    }
+    persistData();
+  }
+
+  function applyThemeDirect(theme) {
+    if (theme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  }
+
+  // ==========================================
   // UI Rendering & Event Handling
   // ==========================================
   function renderResult(item, status) {
     var box = document.getElementById("result-box");
     var t = TEXT[state.lang];
 
-    // Reset any running timer
     stopTimer();
 
     if (status === "none") {
@@ -898,9 +1278,8 @@
         '</div>' +
       '</div>';
 
-    // Hook up dynamically created elements
     document.getElementById("start-timer-btn").addEventListener("click", function() {
-      startTimer(act.minutes * 60);
+      startTimer(act.minutes * 60, act);
     });
     document.getElementById("upvote-btn").addEventListener("click", function() {
       state.weights[act.id] = (state.weights[act.id] || 0) + 1;
@@ -922,9 +1301,9 @@
   }
 
   // ==========================================
-  // Timer Management
+  // Timer Management & Soundscape Auto-Play
   // ==========================================
-  function startTimer(seconds) {
+  function startTimer(seconds, act) {
     var banner = document.getElementById("timer-banner");
     if (!banner) return;
     banner.classList.add("active");
@@ -934,6 +1313,10 @@
     state.timer.running = true;
     updateTimerDisplay();
 
+    if (state.soundMode !== "none") {
+      startSoundscape(state.soundMode);
+    }
+
     state.timer.interval = setInterval(function() {
       if (!state.timer.running) return;
       state.timer.remaining--;
@@ -941,7 +1324,18 @@
       if (state.timer.remaining <= 0) {
         clearInterval(state.timer.interval);
         playChime();
+        stopSoundscape();
         alert(TEXT[state.lang].timerDone);
+
+        // Update stats
+        if (act) {
+          state.stats.totalMinutes += act.minutes;
+          state.stats.completedCount += 1;
+          state.stats.categories[act.category] = (state.stats.categories[act.category] || 0) + 1;
+          persistData();
+          renderStats();
+        }
+
         stopTimer();
       }
     }, 1000);
@@ -966,11 +1360,23 @@
     state.timer.running = false;
     var banner = document.getElementById("timer-banner");
     if (banner) banner.classList.remove("active");
+    stopSoundscape();
   }
 
-  // ==========================================
-  // History Rendering
-  // ==========================================
+  function renderStats() {
+    document.getElementById("stat-minutes").textContent = state.stats.totalMinutes;
+    document.getElementById("stat-count").textContent = state.stats.completedCount;
+    var topCat = "🌿";
+    var maxVal = 0;
+    for (var k in state.stats.categories) {
+      if (state.stats.categories[k] > maxVal) {
+        maxVal = state.stats.categories[k];
+        topCat = k === "productivity" ? "💻" : k === "movement" ? "🏃" : k === "creative" ? "🎨" : "🌿";
+      }
+    }
+    document.getElementById("stat-favorite").textContent = topCat;
+  }
+
   function renderHistory() {
     var list = document.getElementById("history-items");
     list.innerHTML = "";
@@ -993,9 +1399,6 @@
     });
   }
 
-  // ==========================================
-  // Catalog Modal
-  // ==========================================
   function renderCatalog(filterText) {
     var container = document.getElementById("catalog-container");
     container.innerHTML = "";
@@ -1026,9 +1429,6 @@
     });
   }
 
-  // ==========================================
-  // Language & UI Update
-  // ==========================================
   function applyLanguage() {
     var t = TEXT[state.lang];
     document.documentElement.lang = state.lang === "zh" ? "zh-Hant-TW" : "en";
@@ -1036,6 +1436,7 @@
     document.getElementById("t-title").textContent = t.title;
     document.getElementById("t-subtitle").textContent = t.subtitle;
     document.getElementById("t-browse").textContent = t.browse;
+    document.getElementById("t-settings").textContent = t.settings;
     document.getElementById("lang-btn").textContent = state.lang === "zh" ? "English" : "繁體中文";
     document.getElementById("t-engine-name").textContent = t.engineName;
     document.getElementById("t-lbl-time").textContent = t.lblTime;
@@ -1051,35 +1452,58 @@
     document.getElementById("catalog-search").placeholder = t.searchPlaceholder;
     document.getElementById("t-footer-note").textContent = t.footerNote;
 
-    // Update dynamic data-t tags
+    // Stats Labels
+    document.getElementById("t-stat-mins").textContent = t.statMins;
+    document.getElementById("t-stat-activities").textContent = t.statActs;
+    document.getElementById("t-stat-top").textContent = t.statTop;
+
+    // Settings Modal Labels
+    document.getElementById("t-settings-title").textContent = t.settingsTitle;
+    document.getElementById("t-theme-mode").textContent = t.themeMode;
+    document.getElementById("t-theme-desc").textContent = t.themeDesc;
+    document.getElementById("t-sim-title").textContent = t.simTitle;
+    document.getElementById("t-sim-desc").textContent = t.simDesc;
+    document.getElementById("t-sound-title").textContent = t.soundTitle;
+    document.getElementById("t-sound-desc").textContent = t.soundDesc;
+    document.getElementById("t-data-title").textContent = t.dataTitle;
+    document.getElementById("t-data-desc").textContent = t.dataDesc;
+    document.getElementById("t-reset-weights").textContent = t.resetWeights;
+    document.getElementById("t-reset-all").textContent = t.resetAll;
+
     document.querySelectorAll("[data-t]").forEach(function(el) {
       var key = el.getAttribute("data-t");
       if (t[key]) el.textContent = t[key];
     });
 
     // Time Context Pill
-    var hour = new Date().getHours();
-    var slotName = (hour >= 6 && hour < 12) ? t.morning : (hour >= 12 && hour < 17) ? t.afternoon : t.evening;
-    document.getElementById("t-time-context").textContent = (hour < 10 ? "0" + hour : hour) + ":00 · " + slotName;
+    var hour = getEffectiveHour();
+    var phase = (hour >= 6 && hour < 12) ? "morning" :
+                (hour >= 12 && hour < 18) ? "afternoon" :
+                (hour >= 18 && hour < 22) ? "evening" : "night";
+    var floorHour = Math.floor(hour);
+    var hourStr = (floorHour < 10 ? "0" + floorHour : floorHour) + ":" + (hour % 1 > 0 ? "30" : "00");
+    document.getElementById("t-time-context").textContent = hourStr + " · " + t[phase];
 
-    // Re-render
     if (state.currentRecommendation) {
       renderResult(state.currentRecommendation, "picked");
     } else {
       renderResult(null, "empty");
     }
     renderHistory();
-    renderCatalog(document.getElementById("catalog-search").value);
+    renderStats();
+    updateCelestialPosition();
+    updateSoundscapePill();
   }
 
   // ==========================================
   // Initialization & Event Binding
   // ==========================================
   function init() {
+    generateStars();
     loadPersistedState();
 
-    // Chip Filter Event Listeners
-    document.querySelectorAll(".chip-group").forEach(function(group) {
+    // Chip Filters
+    document.querySelectorAll(".chip-group[data-filter]").forEach(function(group) {
       var filterKey = group.getAttribute("data-filter");
       group.querySelectorAll(".chip-btn").forEach(function(btn) {
         btn.addEventListener("click", function() {
@@ -1095,7 +1519,6 @@
     document.getElementById("ai-pick-btn").addEventListener("click", function() { pickActivity("smart"); });
     document.getElementById("random-btn").addEventListener("click", function() { pickActivity("random"); });
     document.getElementById("reset-btn").addEventListener("click", function() {
-      // Reset chips to defaults
       document.querySelector('[data-filter="time"] [data-val="15"]').click();
       document.querySelector('[data-filter="location"] [data-val="all"]').click();
       document.querySelector('[data-filter="energy"] [data-val="all"]').click();
@@ -1116,13 +1539,7 @@
       applyLanguage();
     });
 
-    // Theme toggle
-    document.getElementById("theme-toggle").addEventListener("click", function() {
-      var isDark = document.documentElement.getAttribute("data-theme") === "dark";
-      applyTheme(isDark ? "light" : "dark");
-    });
-
-    // Catalog modal toggle
+    // Modals
     document.getElementById("catalog-btn").addEventListener("click", function() {
       document.getElementById("catalog-modal").classList.add("open");
       renderCatalog("");
@@ -1137,7 +1554,73 @@
       renderCatalog(e.target.value);
     });
 
-    // Initial language & render
+    document.getElementById("settings-btn").addEventListener("click", function() {
+      document.getElementById("settings-modal").classList.add("open");
+    });
+    document.getElementById("close-settings-btn").addEventListener("click", function() {
+      document.getElementById("settings-modal").classList.remove("open");
+    });
+    document.getElementById("settings-modal").addEventListener("click", function(e) {
+      if (e.target === this) this.classList.remove("open");
+    });
+
+    // Theme Mode Switcher Inside Settings
+    document.querySelectorAll("#theme-chip-group .chip-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        applyThemeMode(btn.getAttribute("data-theme-val"));
+      });
+    });
+
+    // AI Time Simulator Inside Settings
+    document.querySelectorAll("#sim-chip-group .chip-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        document.querySelectorAll("#sim-chip-group .chip-btn").forEach(function(b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        state.simHour = btn.getAttribute("data-sim-hour");
+        applyLanguage();
+      });
+    });
+
+    // Soundscape Selector Inside Settings
+    document.querySelectorAll("#sound-chip-group .chip-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        document.querySelectorAll("#sound-chip-group .chip-btn").forEach(function(b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        state.soundMode = btn.getAttribute("data-sound-val");
+        startSoundscape(state.soundMode);
+      });
+    });
+
+    // Quick Soundscape Pill in HUD
+    document.getElementById("quick-sound-btn").addEventListener("click", function() {
+      if (soundNodes) {
+        stopSoundscape();
+      } else {
+        state.soundMode = state.soundMode === "none" ? "rain" : state.soundMode;
+        startSoundscape(state.soundMode);
+      }
+    });
+
+    // Data Resets
+    document.getElementById("reset-weights-btn").addEventListener("click", function() {
+      state.weights = {};
+      persistData();
+      alert("AI reinforcement learning weights have been reset to neutral.");
+    });
+    document.getElementById("clear-all-data-btn").addEventListener("click", function() {
+      if (confirm("Reset all break minutes, activity counts, and logs?")) {
+        state.stats = { totalMinutes: 0, completedCount: 0, categories: {} };
+        state.history = [];
+        state.weights = {};
+        persistData();
+        renderStats();
+        renderHistory();
+      }
+    });
+
+    // Interval to refresh celestial position every minute
+    setInterval(updateCelestialPosition, 60000);
+
     applyLanguage();
   }
 
