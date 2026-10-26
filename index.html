@@ -3,77 +3,145 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>What can I do between classes? · AI Campus Companion v2.0</title>
+<title>What can I do between classes? · Smart Campus Companion</title>
 <style>
   :root {
     --bg-page: #f8fafc;
-    --bg-card: rgba(255, 255, 255, 0.92);
+    --bg-card: rgba(255, 255, 255, 0.88);
+    --bg-subtle: rgba(241, 245, 249, 0.75);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --primary: #0d9488;
+    --primary-hover: #0f766e;
+    --primary-light: rgba(13, 148, 136, 0.15);
+    --primary-glow: rgba(13, 148, 136, 0.3);
+    --accent: #f59e0b;
+    --coral: #f43f5e;
+    --indigo: #6366f1;
+    --border: rgba(226, 232, 240, 0.8);
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+    --shadow-lg: 0 16px 36px rgba(0,0,0,0.09);
+    --sky-bg: linear-gradient(180deg, #e0f2fe 0%, #f8fafc 100%);
+  }
+
+  /* Static Dark Theme */
+  [data-static-theme="dark"] {
+    --bg-page: #090d16;
+    --bg-card: #131b2e;
+    --bg-subtle: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --primary: #14b8a6;
+    --primary-hover: #2dd4bf;
+    --primary-light: rgba(20, 184, 166, 0.2);
+    --primary-glow: rgba(20, 184, 166, 0.35);
+    --border: #26334d;
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+    --shadow-lg: 0 18px 40px rgba(0,0,0,0.6);
+    --sky-bg: #090d16;
+  }
+
+  /* Static Light Theme */
+  [data-static-theme="light"] {
+    --bg-page: #f8fafc;
+    --bg-card: #ffffff;
     --bg-subtle: #f1f5f9;
     --text-main: #0f172a;
     --text-muted: #64748b;
     --primary: #0d9488;
     --primary-hover: #0f766e;
     --primary-light: #ccfbf1;
-    --primary-glow: rgba(13, 148, 136, 0.25);
-    --accent: #f59e0b;
-    --coral: #f43f5e;
-    --indigo: #6366f1;
     --border: #e2e8f0;
-    --radius-sm: 8px;
-    --radius-md: 14px;
-    --radius-lg: 20px;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-    --shadow-md: 0 6px 18px rgba(0,0,0,0.08);
-    --shadow-lg: 0 12px 30px -5px rgba(0,0,0,0.12);
-    --sky-gradient: linear-gradient(180deg, #e0f2fe 0%, #f8fafc 100%);
+    --sky-bg: #f8fafc;
   }
 
-  [data-theme="dark"] {
-    --bg-page: #090d16;
-    --bg-card: rgba(19, 27, 46, 0.92);
-    --bg-subtle: #1e293b;
+  /* Dynamic Theme: 4 Atmospheric Circadian Vibes */
+  body.theme-dynamic.vibe-morning {
+    --sky-bg: linear-gradient(180deg, #fef3c7 0%, #e0f2fe 45%, #f0fdf4 100%);
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-subtle: rgba(240, 253, 250, 0.75);
+    --text-main: #0f2922;
+    --text-muted: #47665f;
+    --border: rgba(187, 247, 208, 0.7);
+    --primary: #059669;
+    --primary-hover: #047857;
+    --primary-light: rgba(5, 150, 105, 0.16);
+    --primary-glow: rgba(5, 150, 105, 0.3);
+  }
+
+  body.theme-dynamic.vibe-afternoon {
+    --sky-bg: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 40%, #f8fafc 100%);
+    --bg-card: rgba(255, 255, 255, 0.92);
+    --bg-subtle: rgba(241, 245, 249, 0.85);
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --border: rgba(203, 213, 225, 0.75);
+    --primary: #0284c7;
+    --primary-hover: #0369a1;
+    --primary-light: rgba(2, 132, 199, 0.16);
+    --primary-glow: rgba(2, 132, 199, 0.3);
+  }
+
+  body.theme-dynamic.vibe-evening {
+    --sky-bg: linear-gradient(180deg, #fdba74 0%, #fb7185 35%, #4338ca 85%, #1e1b4b 100%);
+    --bg-card: rgba(30, 27, 75, 0.86);
+    --bg-subtle: rgba(49, 46, 129, 0.65);
+    --text-main: #fdf4ff;
+    --text-muted: #cbd5e1;
+    --border: rgba(244, 114, 182, 0.4);
+    --primary: #f59e0b;
+    --primary-hover: #fbbf24;
+    --primary-light: rgba(245, 158, 11, 0.25);
+    --primary-glow: rgba(245, 158, 11, 0.45);
+    --shadow-md: 0 8px 28px rgba(0,0,0,0.4);
+    --shadow-lg: 0 20px 45px rgba(0,0,0,0.6);
+  }
+
+  body.theme-dynamic.vibe-night {
+    --sky-bg: linear-gradient(180deg, #020617 0%, #090d16 50%, #0f172a 100%);
+    --bg-card: rgba(15, 23, 42, 0.88);
+    --bg-subtle: rgba(30, 41, 59, 0.75);
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
-    --primary: #14b8a6;
-    --primary-hover: #2dd4bf;
-    --primary-light: rgba(20, 184, 166, 0.18);
-    --primary-glow: rgba(20, 184, 166, 0.35);
-    --border: #26334d;
-    --shadow-md: 0 6px 20px rgba(0,0,0,0.4);
-    --shadow-lg: 0 16px 36px rgba(0,0,0,0.6);
-    --sky-gradient: linear-gradient(180deg, #050811 0%, #090d16 100%);
+    --border: rgba(51, 65, 85, 0.85);
+    --primary: #2dd4bf;
+    --primary-hover: #5eead4;
+    --primary-light: rgba(45, 212, 191, 0.2);
+    --primary-glow: rgba(45, 212, 191, 0.4);
+    --shadow-md: 0 8px 30px rgba(0,0,0,0.5);
+    --shadow-lg: 0 20px 48px rgba(0,0,0,0.7);
   }
 
-  /* Sky Atmosphere Variations */
-  body.sky-dawn { --sky-gradient: linear-gradient(180deg, #fed7aa 0%, #f8fafc 100%); }
-  body.sky-dusk { --sky-gradient: linear-gradient(180deg, #fbcfe8 0%, #fed7aa 50%, #f8fafc 100%); }
-  body.sky-night { --sky-gradient: linear-gradient(180deg, #020617 0%, #0b0f19 60%, #1e1b4b 100%); }
-
-  * { box-sizing: border-box; transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
+  * { box-sizing: border-box; transition: background 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.6s ease, border-color 0.5s ease, color 0.4s ease, box-shadow 0.5s ease; }
   body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
-    background: var(--sky-gradient);
+    background: var(--sky-bg);
     background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.5;
     padding-bottom: 60px;
     position: relative;
-    overflow-x: hidden;
     min-height: 100vh;
   }
 
-  /* Celestial Canvas (Sun & Moon Arc + Stars) */
+  /* Celestial Sky Arc Stage */
   .celestial-stage {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 380px;
+    height: 180px;
     pointer-events: none;
     z-index: 0;
     overflow: hidden;
+    display: none;
   }
+  body.theme-dynamic .celestial-stage { display: block; }
 
   .celestial-body {
     position: absolute;
@@ -81,27 +149,38 @@
     height: 52px;
     border-radius: 50%;
     transform: translate(-50%, -50%);
-    transition: left 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s ease;
-    will-change: transform, left, top;
+    transition: left 1.4s cubic-bezier(0.25, 1, 0.4, 1), top 1.4s cubic-bezier(0.25, 1, 0.4, 1), opacity 0.9s ease;
+    will-change: left, top;
   }
 
   .sun-body {
-    background: radial-gradient(circle, #fde047 30%, #f59e0b 80%);
-    box-shadow: 0 0 45px rgba(245, 158, 11, 0.7), 0 0 90px rgba(253, 224, 71, 0.4);
+    background: radial-gradient(circle, #fef08a 25%, #f59e0b 80%);
+    box-shadow: 0 0 45px rgba(245, 158, 11, 0.8), 0 0 95px rgba(253, 224, 71, 0.5);
+    animation: sunRadiance 4s infinite ease-in-out;
+  }
+  @keyframes sunRadiance {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 42px rgba(245, 158, 11, 0.75), 0 0 90px rgba(253, 224, 71, 0.45); }
+    50% { transform: translate(-50%, -50%) scale(1.08); box-shadow: 0 0 65px rgba(245, 158, 11, 0.95), 0 0 120px rgba(253, 224, 71, 0.65); }
   }
 
   .moon-body {
     background: radial-gradient(circle at 35% 35%, #ffffff 40%, #cbd5e1 90%);
-    box-shadow: 0 0 25px rgba(255, 255, 255, 0.6), 0 0 60px rgba(147, 197, 253, 0.25);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 70px rgba(147, 197, 253, 0.4);
+    animation: moonGlow 5s infinite ease-in-out;
+  }
+  @keyframes moonGlow {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 28px rgba(255, 255, 255, 0.75), 0 0 65px rgba(147, 197, 253, 0.35); }
+    50% { transform: translate(-50%, -50%) scale(1.06); box-shadow: 0 0 45px rgba(255, 255, 255, 0.95), 0 0 90px rgba(147, 197, 253, 0.55); }
   }
 
   .star-field {
     position: absolute;
     inset: 0;
     opacity: 0;
-    transition: opacity 1s ease;
+    transition: opacity 1.2s ease;
   }
-  body.sky-night .star-field { opacity: 0.9; }
+  body.theme-dynamic.vibe-night .star-field,
+  body.theme-dynamic.vibe-evening .star-field { opacity: 0.9; }
   .star {
     position: absolute;
     background: #ffffff;
@@ -113,9 +192,17 @@
     50% { opacity: 1; transform: scale(1.3); }
   }
 
-  .container { max-width: 860px; margin: 0 auto; padding: 20px 16px; position: relative; z-index: 1; }
+  /* Clear open sky above content */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 135px 16px 20px;
+    position: relative;
+    z-index: 1;
+    transition: padding-top 0.5s ease;
+  }
+  body.theme-static .container { padding-top: 24px; }
 
-  /* Header Bar */
   header {
     display: flex;
     justify-content: space-between;
@@ -125,14 +212,13 @@
     margin-bottom: 20px;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(8px);
   }
 
   .brand-group { display: flex; align-items: center; gap: 12px; }
   .brand-icon {
     font-size: 2rem;
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -161,7 +247,7 @@
     justify-content: center;
     gap: 6px;
     user-select: none;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(12px);
   }
   button:hover { border-color: var(--primary); }
   button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
@@ -177,7 +263,7 @@
   button.subtle { background: transparent; border-color: transparent; color: var(--text-muted); }
   button.subtle:hover { background: var(--bg-subtle); color: var(--text-main); }
 
-  /* AI Context & Celestial HUD */
+  /* Context Bar & Ambient HUD */
   .ai-context-bar {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -190,6 +276,7 @@
     flex-wrap: wrap;
     gap: 10px;
     box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(12px);
   }
   .context-pill {
     display: inline-flex;
@@ -204,15 +291,51 @@
   }
   .context-pill.highlight { background: var(--primary-light); color: var(--primary); }
 
-  /* Quick Soundscape Control */
-  .soundscape-pill {
-    cursor: pointer;
-    border: 1px solid transparent;
-  }
+  .soundscape-pill { cursor: pointer; border: 1px solid transparent; }
   .soundscape-pill:hover { border-color: var(--primary); }
   .soundscape-pill.playing { background: #dcfce7; color: #15803d; }
 
-  /* Panel Card */
+  /* Sound Equalizer Bars Animation */
+  .eq-bars {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+  }
+  .eq-bar {
+    width: 2.5px;
+    background: currentColor;
+    border-radius: 1px;
+    height: 3px;
+    transition: height 0.2s ease;
+  }
+  .soundscape-pill.playing .eq-bar:nth-child(1) { animation: eqAnim 0.7s infinite alternate ease-in-out; }
+  .soundscape-pill.playing .eq-bar:nth-child(2) { animation: eqAnim 0.9s infinite alternate ease-in-out 0.2s; }
+  .soundscape-pill.playing .eq-bar:nth-child(3) { animation: eqAnim 0.6s infinite alternate ease-in-out 0.4s; }
+  @keyframes eqAnim {
+    0% { height: 3px; }
+    100% { height: 12px; }
+  }
+
+  /* Analytics Overview */
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(12px);
+  }
+  .stat-val { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
+  .stat-label { font-size: 0.775rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+
+  /* Filter Panel */
   .panel-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -220,7 +343,7 @@
     padding: 22px;
     box-shadow: var(--shadow-md);
     margin-bottom: 24px;
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px);
   }
 
   .filter-section { margin-bottom: 18px; }
@@ -245,15 +368,15 @@
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
   }
-  .chip-btn:hover { border-color: var(--primary); }
+  .chip-btn:hover { border-color: var(--primary); transform: translateY(-1px); }
   .chip-btn.active {
     background: var(--primary);
     border-color: var(--primary);
     color: #ffffff;
     font-weight: 700;
-    box-shadow: 0 3px 10px var(--primary-glow);
+    box-shadow: 0 4px 12px var(--primary-glow);
   }
 
   .action-row {
@@ -282,8 +405,8 @@
     box-shadow: var(--shadow-lg);
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(14px);
-    animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(16px);
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .result-card.empty-state {
     border: 1px dashed var(--border);
@@ -300,8 +423,8 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   .card-top {
@@ -337,10 +460,9 @@
     border-left: 4px solid var(--primary);
   }
 
-  /* Explainable AI Reasoning Box */
   .ai-reasoning {
-    background: rgba(99, 102, 241, 0.08);
-    border: 1px solid rgba(99, 102, 241, 0.25);
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(99, 102, 241, 0.3);
     border-radius: var(--radius-md);
     padding: 11px 15px;
     font-size: 0.85rem;
@@ -350,7 +472,12 @@
     align-items: flex-start;
     gap: 8px;
   }
-  [data-theme="dark"] .ai-reasoning { background: rgba(99, 102, 241, 0.16); color: #a5b4fc; }
+  body.theme-dynamic.vibe-night .ai-reasoning,
+  body.theme-dynamic.vibe-evening .ai-reasoning,
+  [data-static-theme="dark"] .ai-reasoning {
+    background: rgba(99, 102, 241, 0.22);
+    color: #a5b4fc;
+  }
 
   .card-footer-actions {
     display: flex;
@@ -378,24 +505,7 @@
   .timer-display { font-size: 2.6rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primary); }
   .timer-controls { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
 
-  /* Break Analytics Quick Overview */
-  .analytics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-  .stat-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 14px 16px;
-    box-shadow: var(--shadow-sm);
-  }
-  .stat-val { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
-  .stat-label { font-size: 0.775rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-
-  /* Section Titles & History / Catalog */
+  /* History Section */
   .section-header {
     display: flex;
     justify-content: space-between;
@@ -420,17 +530,18 @@
     justify-content: space-between;
     align-items: center;
     font-size: 0.875rem;
+    backdrop-filter: blur(10px);
   }
   .history-item .left { display: flex; align-items: center; gap: 8px; }
   .history-item .time-tag { color: var(--text-muted); font-size: 0.75rem; }
 
-  /* Modal Windows */
+  /* Modals */
   .modal-backdrop {
     display: none;
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(6px);
     z-index: 100;
     align-items: center;
     justify-content: center;
@@ -448,6 +559,7 @@
     flex-direction: column;
     box-shadow: var(--shadow-lg);
     overflow: hidden;
+    backdrop-filter: blur(20px);
   }
   .modal-head {
     padding: 16px 20px;
@@ -459,10 +571,9 @@
   .modal-head h3 { margin: 0; font-size: 1.2rem; }
   .modal-body { padding: 20px; overflow-y: auto; }
 
-  /* Settings Controls Inside Modal */
   .settings-row {
-    margin-bottom: 20px;
-    padding-bottom: 16px;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
     border-bottom: 1px solid var(--border);
   }
   .settings-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
@@ -492,14 +603,13 @@
     border-radius: var(--radius-md);
     padding: 12px 14px;
     cursor: pointer;
-    transition: transform 0.15s ease, border-color 0.15s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease;
   }
   .catalog-card:hover {
     border-color: var(--primary);
     transform: translateY(-2px);
   }
 
-  /* Footer */
   footer {
     text-align: center;
     font-size: 0.8rem;
@@ -510,23 +620,23 @@
   }
 </style>
 </head>
-<body>
+<body class="theme-dynamic">
 
-<!-- Dynamic Celestial Stage (Sun & Moon Arc + Stars) -->
-<div class="celestial-stage" aria-hidden="true">
+<!-- Celestial Stage: Rotating Sun / Moon along Parabolic Sky Arc -->
+<div class="celestial-stage" id="celestial-stage" aria-hidden="true">
   <div class="star-field" id="stars-box"></div>
-  <div class="celestial-body sun-body" id="sun-orb" style="opacity:0;"></div>
-  <div class="celestial-body moon-body" id="moon-orb" style="opacity:0;"></div>
+  <div class="celestial-body sun-body" id="sun-orb" style="opacity:0; left:10%; top:60px;"></div>
+  <div class="celestial-body moon-body" id="moon-orb" style="opacity:0; left:10%; top:60px;"></div>
 </div>
 
 <div class="container">
-  <!-- Top Navigation -->
+  <!-- Top Navigation Header -->
   <header>
     <div class="brand-group">
       <div class="brand-icon">⚡</div>
       <div>
         <h1 id="t-title">What can I do between classes?</h1>
-        <p class="subtitle" id="t-subtitle">AI Campus Companion · Circadian & Multi-Attribute Utility v2.0</p>
+        <p class="subtitle" id="t-subtitle">Smart break activity optimizer for campus life</p>
       </div>
     </div>
     <div class="header-actions">
@@ -536,16 +646,19 @@
     </div>
   </header>
 
-  <!-- Real-time AI Context & Celestial HUD -->
+  <!-- Ambient AI HUD -->
   <div class="ai-context-bar">
     <div class="context-pill highlight" id="ai-time-pill">
       🕒 <span id="t-time-context">Time: Evaluating...</span>
     </div>
     <div class="context-pill" id="ai-engine-pill">
-      🤖 <span id="t-engine-name">4-Phase Circadian Utility Engine</span>
+      🤖 <span id="t-engine-name">Circadian Activity Engine</span>
     </div>
     <div class="context-pill soundscape-pill" id="quick-sound-btn" title="Toggle Ambient Audio">
-      🎵 <span id="t-sound-status">Soundscape: Off</span>
+      <span class="eq-bars" aria-hidden="true">
+        <span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span>
+      </span>
+      <span id="t-sound-status">Soundscape: Off</span>
     </div>
   </div>
 
@@ -567,7 +680,6 @@
 
   <!-- Filter & Recommendation Controls -->
   <div class="panel-card">
-    <!-- Break Duration -->
     <div class="filter-section">
       <span class="filter-label" id="t-lbl-time">Available Break Time</span>
       <div class="chip-group" data-filter="time">
@@ -578,7 +690,6 @@
       </div>
     </div>
 
-    <!-- Location Preference -->
     <div class="filter-section">
       <span class="filter-label" id="t-lbl-location">Location</span>
       <div class="chip-group" data-filter="location">
@@ -588,7 +699,6 @@
       </div>
     </div>
 
-    <!-- Energy Level -->
     <div class="filter-section">
       <span class="filter-label" id="t-lbl-energy">Energy Level</span>
       <div class="chip-group" data-filter="energy">
@@ -598,9 +708,8 @@
       </div>
     </div>
 
-    <!-- AI Goal Mode -->
     <div class="filter-section">
-      <span class="filter-label" id="t-lbl-goal">Goal Mode (AI Context Weight)</span>
+      <span class="filter-label" id="t-lbl-goal">Goal Mode</span>
       <div class="chip-group" data-filter="goal">
         <button type="button" class="chip-btn active" data-val="any" data-t="goalAny">Auto / Balanced</button>
         <button type="button" class="chip-btn" data-val="wellness" data-t="goalWellness">Mental Reset 🌿</button>
@@ -610,10 +719,9 @@
       </div>
     </div>
 
-    <!-- Recommendation Actions -->
     <div class="action-row">
       <button type="button" class="primary large" id="ai-pick-btn">
-        ✨ <span id="t-ai-pick">AI Smart Recommend</span>
+        ✨ <span id="t-ai-pick">Recommend Activity</span>
       </button>
       <button type="button" id="random-btn">
         🎲 <span id="t-random-pick">Surprise Me</span>
@@ -627,7 +735,7 @@
   <!-- Primary Recommendation Card -->
   <div class="result-container">
     <div id="result-box" class="result-card empty-state">
-      <p id="t-hint-empty">Select your break conditions above, then click <b>AI Smart Recommend</b>.</p>
+      <p id="t-hint-empty">Select your break conditions above, then click <b>Recommend Activity</b>.</p>
     </div>
   </div>
 
@@ -642,9 +750,9 @@
     </li>
   </ul>
 
-  <!-- Footer Disclaimer -->
+  <!-- Footer -->
   <footer>
-    <p id="t-footer-note">Fictional teaching activities for Introduction to Artificial Intelligence midterm demonstration. All preferences persisted locally.</p>
+    <p id="t-footer-note">What can I do between classes? · Built with care for campus life.</p>
   </footer>
 </div>
 
@@ -652,39 +760,48 @@
 <div class="modal-backdrop" id="settings-modal">
   <div class="modal-window">
     <div class="modal-head">
-      <h3 id="t-settings-title">⚙️ App Settings & AI Simulator</h3>
+      <h3 id="t-settings-title">⚙️ Settings</h3>
       <button type="button" class="subtle" id="close-settings-btn">✕</button>
     </div>
     <div class="modal-body">
-      <!-- 1. Theme Mode (3 Options) -->
+      <!-- 1. Theme Architecture: Dynamic vs Static -->
       <div class="settings-row">
-        <div class="settings-title" id="t-theme-mode">Theme Mode</div>
-        <div class="settings-desc" id="t-theme-desc">Choose manual appearance, OS sync, or real-time daylight sync.</div>
-        <div class="chip-group" id="theme-chip-group">
-          <button type="button" class="chip-btn" data-theme-val="circadian">🕒 <span data-t="themeCircadian">Real-Time Sync</span></button>
-          <button type="button" class="chip-btn" data-theme-val="system">💻 <span data-t="themeSystem">System OS</span></button>
-          <button type="button" class="chip-btn" data-theme-val="light">☀️ <span data-t="themeLight">Light</span></button>
-          <button type="button" class="chip-btn" data-theme-val="dark">🌙 <span data-t="themeDark">Dark</span></button>
+        <div class="settings-title" id="t-theme-type">Theme System</div>
+        <div class="settings-desc" id="t-theme-type-desc">Choose Dynamic (animated sky and circadian environmental lighting) or Static (classic non-animated).</div>
+        <div class="chip-group" id="theme-system-chips">
+          <button type="button" class="chip-btn active" data-system-val="dynamic">🌌 <span data-t="themeDynamic">Dynamic</span></button>
+          <button type="button" class="chip-btn" data-system-val="static">🔲 <span data-t="themeStatic">Static</span></button>
         </div>
       </div>
 
-      <!-- 2. AI Time Simulator (Presentation Mode) -->
-      <div class="settings-row">
-        <div class="settings-title" id="t-sim-title">AI Time of Day Simulator (Presentation Mode)</div>
-        <div class="settings-desc" id="t-sim-desc">Preview how the AI shifts recommendations and sun/moon positions across the 4 circadian cycles.</div>
-        <div class="chip-group" id="sim-chip-group">
-          <button type="button" class="chip-btn active" data-sim-hour="real">⚡ Live Clock</button>
-          <button type="button" class="chip-btn" data-sim-hour="9">🌅 Morning (09:00)</button>
-          <button type="button" class="chip-btn" data-sim-hour="13">☀️ Noon (13:00)</button>
-          <button type="button" class="chip-btn" data-sim-hour="17.5">🌇 Sunset (17:30)</button>
-          <button type="button" class="chip-btn" data-sim-hour="0.5">🌙 Midnight (00:30)</button>
+      <!-- 2. Dynamic Time Selector (Only active when Theme System is Dynamic) -->
+      <div class="settings-row" id="dynamic-time-settings">
+        <div class="settings-title" id="t-time-mode-title">Dynamic Time Cycle</div>
+        <div class="settings-desc" id="t-time-mode-desc">Sync with your live device clock or select an atmospheric period to watch the sky revolve.</div>
+        <div class="chip-group" id="dynamic-time-chips">
+          <button type="button" class="chip-btn active" data-time-val="live">⚡ <span data-t="liveClock">Live Clock</span></button>
+          <button type="button" class="chip-btn" data-time-val="morning">🌅 <span data-t="morning">Morning</span></button>
+          <button type="button" class="chip-btn" data-time-val="afternoon">☀️ <span data-t="afternoon">Afternoon</span></button>
+          <button type="button" class="chip-btn" data-time-val="evening">🌇 <span data-t="evening">Evening</span></button>
+          <button type="button" class="chip-btn" data-time-val="night">🌙 <span data-t="night">Night</span></button>
         </div>
       </div>
 
-      <!-- 3. Ambient Soundscape Generator -->
-      <div class="settings-row">
-        <div class="settings-title" id="t-sound-title">Ambient Campus Soundscape (Synthesized Audio)</div>
-        <div class="settings-desc" id="t-sound-desc">Plays calming background audio synthesized client-side via Web Audio API during break countdowns.</div>
+      <!-- 3. Static Theme Options (Only active when Theme System is Static) -->
+      <div class="settings-row" id="static-theme-settings" style="display:none;">
+        <div class="settings-title" id="t-static-title">Static Appearance</div>
+        <div class="settings-desc" id="t-static-desc">Classic clean appearance without celestial animations.</div>
+        <div class="chip-group" id="static-theme-chips">
+          <button type="button" class="chip-btn active" data-static-val="system">💻 <span data-t="themeSystem">System OS</span></button>
+          <button type="button" class="chip-btn" data-static-val="light">☀️ <span data-t="themeLight">Light</span></button>
+          <button type="button" class="chip-btn" data-static-val="dark">🌙 <span data-t="themeDark">Dark</span></button>
+        </div>
+      </div>
+
+      <!-- 4. Ambient Soundscape Generator -->
+      <div class="settings-row" id="soundscape-settings-row">
+        <div class="settings-title" id="t-sound-title">Ambient Campus Soundscape</div>
+        <div class="settings-desc" id="t-sound-desc">Synthesized audio via Web Audio API with smooth fade-in and fade-out.</div>
         <div class="chip-group" id="sound-chip-group">
           <button type="button" class="chip-btn active" data-sound-val="none">Mute</button>
           <button type="button" class="chip-btn" data-sound-val="rain">🌧️ Gentle Rain</button>
@@ -693,10 +810,10 @@
         </div>
       </div>
 
-      <!-- 4. Data Storage & Reset -->
+      <!-- 5. Data Memory & Reset -->
       <div class="settings-row">
-        <div class="settings-title" id="t-data-title">AI Memory & Preferences</div>
-        <div class="settings-desc" id="t-data-desc">Manage locally learned reinforcement weights and completed break analytics.</div>
+        <div class="settings-title" id="t-data-title">Saved Preferences & Data</div>
+        <div class="settings-desc" id="t-data-desc">Reset learned recommendation weights or clear your completed activity statistics.</div>
         <div style="display:flex; gap:8px;">
           <button type="button" id="reset-weights-btn">🧠 <span id="t-reset-weights">Reset AI Weights</span></button>
           <button type="button" id="clear-all-data-btn" style="color:var(--coral);">⚠️ <span id="t-reset-all">Reset All Stats</span></button>
@@ -722,7 +839,7 @@
 
 <script>
 (function() {
-  // 20 Enriched Activities with Full Metadata and AI Heuristics
+  // 20 Structured Campus Activities
   var ACTIVITIES = [
     { id: "A01", name_zh: "整理書包與桌面", name_en: "Organize your bag & desk", category: "productivity", location_type: "indoor", minutes: 10, energy: "low", icon: "🎒", best_time: "morning", steps_zh: "清空不需要的紙屑收據、把文具與筆記本分層歸位、擦拭桌面恢復清爽。", steps_en: "Discard receipts/wrappers, sort pens and notebooks, and wipe your desk clean." },
     { id: "A02", name_zh: "畫一張靈感小卡", name_en: "Draw a small inspiration card", category: "creative", location_type: "indoor", minutes: 15, energy: "low", icon: "🎨", best_time: "afternoon", steps_zh: "拿出一張便條紙或小卡，隨筆塗鴉剛才上課聽到的關鍵詞或心情插畫。", steps_en: "Take a note card and doodle a lecture concept, motivational quote, or mood sketch." },
@@ -749,20 +866,20 @@
   var TEXT = {
     en: {
       title: "What can I do between classes?",
-      subtitle: "AI Campus Companion · Circadian & Multi-Attribute Utility v2.0",
+      subtitle: "Smart break activity optimizer for campus life",
       browse: "Catalog", settings: "Settings",
-      engineName: "4-Phase Circadian Utility Engine",
+      engineName: "Circadian Activity Engine",
       lblTime: "Available Break Time",
       lblLocation: "Location Preference",
       lblEnergy: "Energy Level",
-      lblGoal: "Goal Mode (AI Context Weight)",
+      lblGoal: "Goal Mode",
       all: "All", indoor: "Indoor", outdoor: "Outdoor",
       low: "Low (Chill)", medium: "Medium",
       goalAny: "Auto / Balanced", goalWellness: "Mental Reset 🌿", goalProd: "Study & Focus 💻", goalMovement: "Physical Refresh 🏃", goalCreative: "Creative & Social 🎨",
-      aiPick: "AI Smart Recommend",
+      aiPick: "Recommend Activity",
       randomPick: "Surprise Me",
       reset: "Reset",
-      hintEmpty: "Select your break conditions above, then click <b>AI Smart Recommend</b>.",
+      hintEmpty: "Select your break conditions above, then click <b>Recommend Activity</b>.",
       noneFound: "No matching activities found for these strict filters. Try increasing available time or selecting 'All'!",
       historyTitle: "Recent Activity Log (Saved)",
       clear: "Clear Log",
@@ -773,44 +890,48 @@
       resumeTimer: "Resume",
       stopTimer: "Reset Timer",
       timerDone: "Break Complete! Time to head to your next class.",
-      reasonWhy: "AI Reasoning:",
+      reasonWhy: "Recommendation Reason:",
       matchRate: "Match Score",
       catalogTitle: "Activity Catalog (20 Items)",
       searchPlaceholder: "Search activities by name or keyword...",
-      footerNote: "Fictional teaching activities for Introduction to Artificial Intelligence midterm demonstration. All preferences persisted locally.",
-      upvoteTip: "Boost in AI ranking",
-      downvoteTip: "Reduce in AI ranking",
-      morning: "Morning Focus", afternoon: "Afternoon Boost", evening: "Evening Review", night: "Late Night Reset",
+      footerNote: "What can I do between classes? · Built with care for campus life.",
+      upvoteTip: "Boost in recommendation ranking",
+      downvoteTip: "Reduce in recommendation ranking",
+      morning: "Morning", afternoon: "Afternoon", evening: "Evening", night: "Night",
       statMins: "Minutes Recharged", statActs: "Breaks Completed", statTop: "Favorite Category",
-      settingsTitle: "⚙️ App Settings & AI Simulator",
-      themeMode: "Theme Mode",
-      themeDesc: "Choose manual appearance, OS sync, or real-time daylight sync.",
-      themeCircadian: "Real-Time Sync", themeSystem: "System OS", themeLight: "Light", themeDark: "Dark",
-      simTitle: "AI Time of Day Simulator (Presentation Mode)",
-      simDesc: "Preview how the AI shifts recommendations and sun/moon positions across the 4 circadian cycles.",
-      soundTitle: "Ambient Campus Soundscape (Synthesized Audio)",
-      soundDesc: "Plays calming background audio synthesized client-side via Web Audio API during break countdowns.",
-      dataTitle: "AI Memory & Preferences",
-      dataDesc: "Manage locally learned reinforcement weights and completed break analytics.",
+      settingsTitle: "⚙️ Settings",
+      themeType: "Theme System",
+      themeTypeDesc: "Choose Dynamic (animated sky and circadian environmental lighting) or Static (classic non-animated).",
+      themeDynamic: "Dynamic", themeStatic: "Static",
+      timeModeTitle: "Dynamic Time Cycle",
+      timeModeDesc: "Sync with your live device clock or select an atmospheric period to watch the sky revolve.",
+      liveClock: "Live Clock",
+      staticTitle: "Static Appearance",
+      staticDesc: "Classic clean appearance without celestial animations.",
+      themeSystem: "System OS", themeLight: "Light", themeDark: "Dark",
+      soundTitle: "Ambient Campus Soundscape",
+      soundDesc: "Synthesized audio via Web Audio API with smooth fade-in and fade-out.",
+      dataTitle: "Saved Preferences & Data",
+      dataDesc: "Reset learned recommendation weights or clear your completed activity statistics.",
       resetWeights: "Reset AI Weights", resetAll: "Reset All Stats",
       soundOff: "Soundscape: Off", soundOn: "Soundscape: Playing"
     },
     zh: {
       title: "課間我想做什麼？",
-      subtitle: "AI 智慧課間決策優化器 · 生物節律與多屬性效用 v2.0",
-      browse: "活動庫", settings: "設定與模擬",
-      engineName: "4階段生物節律推薦引擎",
+      subtitle: "智慧校園課間生活助手 · 找到專屬的充能節奏",
+      browse: "活動庫", settings: "系統設定",
+      engineName: "生物節律活動推薦引擎",
       lblTime: "下堂課前可用時間",
       lblLocation: "活動地點偏好",
       lblEnergy: "目前體力狀況",
-      lblGoal: "AI 偏好目標導向",
+      lblGoal: "活動目標導向",
       all: "全部", indoor: "室內", outdoor: "室外",
       low: "低體力（放空休閒）", medium: "中等（活動精神）",
       goalAny: "自動平衡推薦", goalWellness: "心靈放鬆 🌿", goalProd: "學習專注 💻", goalMovement: "身體舒活 🏃", goalCreative: "創意社交 🎨",
-      aiPick: "AI 智慧推薦",
+      aiPick: "智慧推薦活動",
       randomPick: "隨機挑選",
       reset: "重設條件",
-      hintEmpty: "請在上方設定你的課間狀況，再按 <b>AI 智慧推薦</b>。",
+      hintEmpty: "請在上方設定你的課間狀況，再按 <b>智慧推薦活動</b>。",
       noneFound: "目前條件下沒有符合的活動，試試放寬可用時間或選擇「全部」！",
       historyTitle: "最近活動紀錄（本機儲存）",
       clear: "清除紀錄",
@@ -821,37 +942,42 @@
       resumeTimer: "繼續",
       stopTimer: "重設計時",
       timerDone: "課間時間到囉！收拾好物品準備前往下一堂課吧！",
-      reasonWhy: "AI 決策理由：",
+      reasonWhy: "推薦理由：",
       matchRate: "契合度評分",
       catalogTitle: "活動清單庫（共 20 項活動）",
       searchPlaceholder: "輸入關鍵字或活動名稱搜尋...",
-      footerNote: "本專案為人工智慧導論期中實作範例。所有活動與偏好紀錄均保存在本機瀏覽器。",
-      upvoteTip: "提高 AI 推薦權重",
-      downvoteTip: "降低 AI 推薦權重",
-      morning: "晨間啟動期", afternoon: "午後提神期", evening: "黃昏整理期", night: "深夜修復期",
+      footerNote: "課間我想做什麼？ · 為校園生活精心打造。",
+      upvoteTip: "提高推薦權重",
+      downvoteTip: "降低推薦權重",
+      morning: "晨間", afternoon: "午後", evening: "黃昏", night: "夜間",
       statMins: "累積充能分鐘", statActs: "完成課間次數", statTop: "最常選類別",
-      settingsTitle: "⚙️ 系統設定與 AI 模擬器",
-      themeMode: "外觀佈景模式",
-      themeDesc: "可選擇手動亮暗、隨作業系統切換，或依現實日照生理時鐘自動切換。",
-      themeCircadian: "日照時鐘同步", themeSystem: "系統預設", themeLight: "淺色模式", themeDark: "深色模式",
-      simTitle: "AI 日夜時間模擬器（期中報告展示用）",
-      simDesc: "即時模擬一天 4 個不同時段，觀察太陽月亮軌跡、天色與 AI 推薦邏輯之變化。",
-      soundTitle: "課間環境白噪音（Web Audio 純音合成）",
-      soundDesc: "免下載任何音檔，透過瀏覽器內建合成器播放助眠放鬆背景音效。",
-      dataTitle: "AI 偏好記憶與數據管理",
-      dataDesc: "管理已學習的強化學習權重與課間累積數據。",
-      resetWeights: "重設 AI 學習權重", resetAll: "重設所有統計數據",
+      settingsTitle: "⚙️ 系統設定",
+      themeType: "主題架構",
+      themeTypeDesc: "選擇「動態環境」（隨日照天色與日月星辰動態旋轉）或「靜態傳統」（經典無動畫界面）。",
+      themeDynamic: "動態環境", themeStatic: "靜態傳統",
+      timeModeTitle: "動態天色時段",
+      timeModeDesc: "即時連動設備時鐘（精準至分鐘），或點選特定時段觀看天色與日夜旋轉。",
+      liveClock: "即時時鐘",
+      staticTitle: "靜態外觀偏好",
+      staticDesc: "經典無背景天色與日月動畫之介面。",
+      themeSystem: "系統預設", themeLight: "淺色模式", themeDark: "深色模式",
+      soundTitle: "課間環境白噪音",
+      soundDesc: "免下載任何音檔，透過瀏覽器即時合成器播放平滑淡入淡出之音效。",
+      dataTitle: "偏好記憶與數據管理",
+      dataDesc: "管理已學習的推薦權重與課間累積數據。",
+      resetWeights: "重設推薦權重", resetAll: "重設所有統計數據",
       soundOff: "背景音效：關閉", soundOn: "背景音效：播放中"
     }
   };
 
-  // State Management
+  // State
   var state = {
     lang: "en",
     filters: { time: 15, location: "all", energy: "all", goal: "any" },
-    themeMode: "circadian", // "circadian", "system", "light", "dark"
-    simHour: "real",        // "real" or numeric (e.g. 9, 13, 17.5, 0.5)
-    soundMode: "none",      // "none", "rain", "lofi", "white"
+    themeSystem: "dynamic",
+    dynamicTime: "live",
+    staticTheme: "system",
+    soundMode: "none",
     currentRecommendation: null,
     history: [],
     weights: {},
@@ -860,18 +986,14 @@
   };
 
   // ==========================================
-  // Web Audio Synthesizer (Zero external files!)
+  // Web Audio Synthesizer with Smooth Fade In/Out
   // ==========================================
   var audioCtx = null;
   var soundNodes = null;
 
   function initAudio() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
   }
 
   function playChime() {
@@ -880,10 +1002,10 @@
       var osc = audioCtx.createOscillator();
       var gain = audioCtx.createGain();
       osc.type = "sine";
-      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3); // A5
+      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
       gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.2);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start();
@@ -891,67 +1013,90 @@
     } catch(e) {}
   }
 
-  function stopSoundscape() {
-    if (soundNodes) {
+  function stopSoundscape(fadeDuration) {
+    if (typeof fadeDuration !== "number") fadeDuration = 1.2;
+    if (soundNodes && soundNodes.gain && audioCtx) {
       try {
-        if (soundNodes.src) soundNodes.src.stop();
-        if (soundNodes.osc1) soundNodes.osc1.stop();
-        if (soundNodes.osc2) soundNodes.osc2.stop();
-      } catch(e) {}
+        var g = soundNodes.gain.gain;
+        var now = audioCtx.currentTime;
+        g.cancelScheduledValues(now);
+        g.setValueAtTime(Math.max(0.0001, g.value), now);
+        g.exponentialRampToValueAtTime(0.0001, now + fadeDuration);
+        var old = soundNodes;
+        soundNodes = null;
+        setTimeout(function() {
+          try {
+            if (old.src) old.src.stop();
+            if (old.osc1) old.osc1.stop();
+            if (old.osc2) old.osc2.stop();
+          } catch(e) {}
+        }, (fadeDuration * 1000) + 50);
+      } catch(e) {
+        soundNodes = null;
+      }
+    } else {
       soundNodes = null;
     }
     updateSoundscapePill();
   }
 
   function startSoundscape(type) {
-    stopSoundscape();
+    stopSoundscape(0.8);
     if (type === "none") return;
-    try {
-      initAudio();
-      var bufferSize = audioCtx.sampleRate * 2;
-      var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      var data = buffer.getChannelData(0);
 
-      if (type === "rain" || type === "white") {
-        for (var i = 0; i < bufferSize; i++) {
-          data[i] = Math.random() * 2 - 1; // White noise baseline
+    setTimeout(function() {
+      try {
+        initAudio();
+        var now = audioCtx.currentTime;
+        var bufferSize = audioCtx.sampleRate * 2;
+        var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        var data = buffer.getChannelData(0);
+
+        if (type === "rain" || type === "white") {
+          for (var i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+          var noise = audioCtx.createBufferSource();
+          noise.buffer = buffer;
+          noise.loop = true;
+
+          var filter = audioCtx.createBiquadFilter();
+          filter.type = type === "rain" ? "lowpass" : "bandpass";
+          filter.frequency.value = type === "rain" ? 850 : 1200;
+
+          var gain = audioCtx.createGain();
+          var targetVol = type === "rain" ? 0.08 : 0.05;
+
+          // Smooth Fade-In
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.exponentialRampToValueAtTime(targetVol, now + 1.8);
+
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+          noise.start();
+          soundNodes = { src: noise, gain: gain };
+        } else if (type === "lofi") {
+          var osc1 = audioCtx.createOscillator();
+          var osc2 = audioCtx.createOscillator();
+          var gainLofi = audioCtx.createGain();
+          osc1.type = "sine";
+          osc2.type = "sine";
+          osc1.frequency.value = 210;
+          osc2.frequency.value = 216;
+
+          // Smooth Fade-In
+          gainLofi.gain.setValueAtTime(0.0001, now);
+          gainLofi.gain.exponentialRampToValueAtTime(0.08, now + 1.8);
+
+          osc1.connect(gainLofi);
+          osc2.connect(gainLofi);
+          gainLofi.connect(audioCtx.destination);
+          osc1.start();
+          osc2.start();
+          soundNodes = { osc1: osc1, osc2: osc2, gain: gainLofi };
         }
-        var noise = audioCtx.createBufferSource();
-        noise.buffer = buffer;
-        noise.loop = true;
-
-        var filter = audioCtx.createBiquadFilter();
-        filter.type = type === "rain" ? "lowpass" : "bandpass";
-        filter.frequency.value = type === "rain" ? 800 : 1200;
-
-        var gain = audioCtx.createGain();
-        gain.gain.value = type === "rain" ? 0.08 : 0.05;
-
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(audioCtx.destination);
-        noise.start();
-        soundNodes = { src: noise, gain: gain };
-      } else if (type === "lofi") {
-        // Binaural theta beat (210Hz + 216Hz = 6Hz calm wave)
-        var osc1 = audioCtx.createOscillator();
-        var osc2 = audioCtx.createOscillator();
-        var gainLofi = audioCtx.createGain();
-        osc1.type = "sine";
-        osc2.type = "sine";
-        osc1.frequency.value = 210;
-        osc2.frequency.value = 216;
-        gainLofi.gain.value = 0.08;
-
-        osc1.connect(gainLofi);
-        osc2.connect(gainLofi);
-        gainLofi.connect(audioCtx.destination);
-        osc1.start();
-        osc2.start();
-        soundNodes = { osc1: osc1, osc2: osc2, gain: gainLofi };
-      }
-    } catch(e) {}
-    updateSoundscapePill();
+      } catch(e) {}
+      updateSoundscapePill();
+    }, 250);
   }
 
   function updateSoundscapePill() {
@@ -967,16 +1112,16 @@
   }
 
   // ==========================================
-  // Celestial Trajectory Physics (Sun & Moon Arc)
+  // Continuous Clockwise Celestial Revolution Physics
   // ==========================================
   function generateStars() {
     var box = document.getElementById("stars-box");
     box.innerHTML = "";
-    for (var i = 0; i < 30; i++) {
+    for (var i = 0; i < 35; i++) {
       var s = document.createElement("div");
       s.className = "star";
       s.style.left = (Math.random() * 100) + "%";
-      s.style.top = (Math.random() * 70) + "%";
+      s.style.top = (Math.random() * 90) + "px";
       s.style.width = (Math.random() * 2 + 1.5) + "px";
       s.style.height = s.style.width;
       s.style.animationDelay = (Math.random() * 3) + "s";
@@ -984,99 +1129,111 @@
     }
   }
 
-  function updateCelestialPosition() {
-    var currentHour = getEffectiveHour();
+  function getEffectiveDecimalHour() {
+    if (state.themeSystem === "dynamic" && state.dynamicTime !== "live") {
+      if (state.dynamicTime === "morning") return 9.0;
+      if (state.dynamicTime === "afternoon") return 13.5;
+      if (state.dynamicTime === "evening") return 18.0;
+      if (state.dynamicTime === "night") return 23.5;
+    }
+    var now = new Date();
+    return now.getHours() + (now.getMinutes() / 60) + (now.getSeconds() / 3600);
+  }
+
+  function updateAtmosphereAndCelestial() {
+    if (state.themeSystem === "static") {
+      document.body.className = "theme-static";
+      var st = state.staticTheme;
+      if (st === "system") {
+        var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute("data-static-theme", isDark ? "dark" : "light");
+      } else {
+        document.documentElement.setAttribute("data-static-theme", st);
+      }
+      return;
+    }
+
+    // Dynamic Theme Active
+    document.documentElement.removeAttribute("data-static-theme");
+    document.body.className = "theme-dynamic";
+
+    var hour = getEffectiveDecimalHour();
     var sun = document.getElementById("sun-orb");
     var moon = document.getElementById("moon-orb");
 
-    // Sky Atmosphere Color Shift
-    document.body.classList.remove("sky-dawn", "sky-dusk", "sky-night");
-    if (currentHour >= 5.5 && currentHour < 8) {
-      document.body.classList.add("sky-dawn");
-    } else if (currentHour >= 16.5 && currentHour < 18.5) {
-      document.body.classList.add("sky-dusk");
-    } else if (currentHour >= 18.5 || currentHour < 5.5) {
-      document.body.classList.add("sky-night");
-    }
+    // 1. Determine Circadian Vibe
+    var vibe = "morning";
+    if (hour >= 5.5 && hour < 11.5) vibe = "vibe-morning";
+    else if (hour >= 11.5 && hour < 17.0) vibe = "vibe-afternoon";
+    else if (hour >= 17.0 && hour < 20.0) vibe = "vibe-evening";
+    else vibe = "vibe-night";
 
-    // Daytime Sun Arc: 06:00 (left) -> 12:00 (zenith) -> 18:00 (right)
-    if (currentHour >= 6 && currentHour <= 18) {
-      var sunProgress = (currentHour - 6) / 12; // 0 to 1
-      var sunX = 8 + sunProgress * 84; // 8% to 92%
-      var sunY = 40 + (1 - Math.sin(sunProgress * Math.PI)) * 140; // Parabolic arc
+    document.body.classList.remove("vibe-morning", "vibe-afternoon", "vibe-evening", "vibe-night");
+    document.body.classList.add(vibe);
+
+    // 2. Continuous Clockwise Parabolic Arc
+    if (hour >= 6 && hour < 18) {
+      // Daylight: Sun active
+      var progress = (hour - 6) / 12; // 0 to 1
+      var sunX = 6 + (progress * 88); // 6% to 94%
+      var sunY = 25 + (4 * Math.pow(progress - 0.5, 2) * 85);
+
       sun.style.left = sunX + "%";
       sun.style.top = sunY + "px";
       sun.style.opacity = "1";
 
       moon.style.opacity = "0";
     } else {
-      // Nighttime Moon Arc: 18:00 (left) -> 00:00 (zenith) -> 06:00 (right)
-      var moonHour = currentHour >= 18 ? currentHour - 18 : currentHour + 6;
-      var moonProgress = moonHour / 12; // 0 to 1
-      var moonX = 8 + moonProgress * 84;
-      var moonY = 40 + (1 - Math.sin(moonProgress * Math.PI)) * 140;
+      // Nighttime: Moon active
+      var nightHour = hour >= 18 ? (hour - 18) : (hour + 6); // 0 to 12
+      var moonProgress = nightHour / 12; // 0 to 1
+      var moonX = 6 + (moonProgress * 88);
+      var moonY = 25 + (4 * Math.pow(moonProgress - 0.5, 2) * 85);
+
       moon.style.left = moonX + "%";
       moon.style.top = moonY + "px";
       moon.style.opacity = "1";
 
       sun.style.opacity = "0";
     }
-
-    // Apply auto-theme if mode is circadian
-    if (state.themeMode === "circadian") {
-      var isDaylight = currentHour >= 6 && currentHour < 18;
-      applyThemeDirect(isDaylight ? "light" : "dark");
-    }
-  }
-
-  function getEffectiveHour() {
-    if (state.simHour !== "real") {
-      return Number(state.simHour);
-    }
-    var now = new Date();
-    return now.getHours() + (now.getMinutes() / 60);
   }
 
   // ==========================================
-  // 4-Phase Circadian Utility AI Engine
+  // Circadian Recommendation Engine
   // ==========================================
   function evaluateUtility(act) {
     var f = state.filters;
     var score = 100;
     var reasons = [];
 
-    // 1. Hard Filter Constraints
     if (f.location !== "all" && act.location_type !== f.location) return { score: -1 };
     if (act.minutes > f.time) return { score: -1 };
     if (f.energy !== "all" && act.energy !== f.energy) return { score: -1 };
 
-    // 2. Duration Fit Utility
     var timeDiff = f.time - act.minutes;
     if (timeDiff === 0) {
       score += 25;
       reasons.push(state.lang === "zh" ? "完美利用 " + f.time + " 分鐘" : "Exact match for your " + f.time + "m break");
     } else if (timeDiff <= 5) {
       score += 15;
-      reasons.push(state.lang === "zh" ? "預留回教室緩衝時間" : "Optimal duration with class transition buffer");
+      reasons.push(state.lang === "zh" ? "預留回教室緩衝時間" : "Optimal duration with transition buffer");
     } else {
       score -= (timeDiff * 0.8);
     }
 
-    // 3. 4-Phase Circadian Synchronization
-    var hour = getEffectiveHour();
+    var hour = getEffectiveDecimalHour();
     var phase = (hour >= 6 && hour < 12) ? "morning" :
-                (hour >= 12 && hour < 18) ? "afternoon" :
-                (hour >= 18 && hour < 22) ? "evening" : "night";
+                (hour >= 12 && hour < 17.5) ? "afternoon" :
+                (hour >= 17.5 && hour < 21.5) ? "evening" : "night";
 
     if (act.best_time === phase || act.best_time === "any") {
       score += 25;
       var phaseLabel = TEXT[state.lang][phase];
-      reasons.push(state.lang === "zh" ? "符合「" + phaseLabel + "」生理節奏" : "Fits current " + phaseLabel + " circadian rhythm");
+      reasons.push(state.lang === "zh" ? "契合當前「" + phaseLabel + "」節奏" : "Fits current " + phaseLabel + " circadian rhythm");
     } else {
       score -= 10;
     }
 
-    // 4. Goal Mode Utility Weighting
     if (f.goal !== "any") {
       if (act.category === f.goal) {
         score += 35;
@@ -1086,16 +1243,14 @@
       }
     }
 
-    // 5. Anti-Fatigue / Novelty Penalty
     if (state.history.length > 0 && state.history[0].id === act.id) {
       score -= 45;
     }
 
-    // 6. Learned Reinforcement Weights (Multi-Armed Bandit)
     var userMod = state.weights[act.id] || 0;
     if (userMod !== 0) {
       score += userMod * 15;
-      if (userMod > 0) reasons.push(state.lang === "zh" ? "已學習你的正面偏好" : "Learned from your positive ratings");
+      if (userMod > 0) reasons.push(state.lang === "zh" ? "已學習你的正面喜好" : "Learned from your positive ratings");
     }
 
     return {
@@ -1119,7 +1274,6 @@
 
     var chosen = null;
     if (mode === "smart") {
-      // Epsilon-Greedy: 85% Exploit (Highest Utility), 15% Explore
       var isExploration = Math.random() < 0.15;
       if (!isExploration) {
         candidates.sort(function(a, b) { return b.utility.score - a.utility.score; });
@@ -1153,7 +1307,7 @@
   }
 
   // ==========================================
-  // Persistence & State Management
+  // LocalStorage Persistence
   // ==========================================
   function loadPersistedState() {
     try {
@@ -1161,11 +1315,14 @@
       if (savedHist) state.history = JSON.parse(savedHist);
       var savedWeights = localStorage.getItem("picker_weights");
       if (savedWeights) state.weights = JSON.parse(savedWeights);
-      var savedThemeMode = localStorage.getItem("picker_theme_mode");
-      if (savedThemeMode) state.themeMode = savedThemeMode;
+      var savedThemeSys = localStorage.getItem("picker_theme_sys");
+      if (savedThemeSys) state.themeSystem = savedThemeSys;
+      var savedDynTime = localStorage.getItem("picker_dynamic_time");
+      if (savedDynTime) state.dynamicTime = savedDynTime;
+      var savedStatTheme = localStorage.getItem("picker_static_theme");
+      if (savedStatTheme) state.staticTheme = savedStatTheme;
       var savedStats = localStorage.getItem("picker_stats");
       if (savedStats) state.stats = JSON.parse(savedStats);
-      applyThemeMode(state.themeMode);
     } catch(e) {}
   }
 
@@ -1173,35 +1330,11 @@
     try {
       localStorage.setItem("picker_history", JSON.stringify(state.history.slice(0, 8)));
       localStorage.setItem("picker_weights", JSON.stringify(state.weights));
-      localStorage.setItem("picker_theme_mode", state.themeMode);
+      localStorage.setItem("picker_theme_sys", state.themeSystem);
+      localStorage.setItem("picker_dynamic_time", state.dynamicTime);
+      localStorage.setItem("picker_static_theme", state.staticTheme);
       localStorage.setItem("picker_stats", JSON.stringify(state.stats));
     } catch(e) {}
-  }
-
-  function applyThemeMode(mode) {
-    state.themeMode = mode;
-    document.querySelectorAll("#theme-chip-group .chip-btn").forEach(function(b) {
-      b.classList.toggle("active", b.getAttribute("data-theme-val") === mode);
-    });
-
-    if (mode === "light") applyThemeDirect("light");
-    else if (mode === "dark") applyThemeDirect("dark");
-    else if (mode === "system") {
-      var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      applyThemeDirect(isDark ? "dark" : "light");
-    } else {
-      // circadian
-      updateCelestialPosition();
-    }
-    persistData();
-  }
-
-  function applyThemeDirect(theme) {
-    if (theme === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
-    } else {
-      document.documentElement.removeAttribute("data-theme");
-    }
   }
 
   // ==========================================
@@ -1300,9 +1433,7 @@
     document.getElementById("timer-stop-btn").addEventListener("click", stopTimer);
   }
 
-  // ==========================================
-  // Timer Management & Soundscape Auto-Play
-  // ==========================================
+  // Timer
   function startTimer(seconds, act) {
     var banner = document.getElementById("timer-banner");
     if (!banner) return;
@@ -1313,9 +1444,7 @@
     state.timer.running = true;
     updateTimerDisplay();
 
-    if (state.soundMode !== "none") {
-      startSoundscape(state.soundMode);
-    }
+    if (state.soundMode !== "none") startSoundscape(state.soundMode);
 
     state.timer.interval = setInterval(function() {
       if (!state.timer.running) return;
@@ -1324,10 +1453,9 @@
       if (state.timer.remaining <= 0) {
         clearInterval(state.timer.interval);
         playChime();
-        stopSoundscape();
+        stopSoundscape(1.5);
         alert(TEXT[state.lang].timerDone);
 
-        // Update stats
         if (act) {
           state.stats.totalMinutes += act.minutes;
           state.stats.completedCount += 1;
@@ -1335,7 +1463,6 @@
           persistData();
           renderStats();
         }
-
         stopTimer();
       }
     }, 1000);
@@ -1360,7 +1487,7 @@
     state.timer.running = false;
     var banner = document.getElementById("timer-banner");
     if (banner) banner.classList.remove("active");
-    stopSoundscape();
+    stopSoundscape(1.2);
   }
 
   function renderStats() {
@@ -1452,17 +1579,18 @@
     document.getElementById("catalog-search").placeholder = t.searchPlaceholder;
     document.getElementById("t-footer-note").textContent = t.footerNote;
 
-    // Stats Labels
     document.getElementById("t-stat-mins").textContent = t.statMins;
     document.getElementById("t-stat-activities").textContent = t.statActs;
     document.getElementById("t-stat-top").textContent = t.statTop;
 
-    // Settings Modal Labels
+    // Settings Modal
     document.getElementById("t-settings-title").textContent = t.settingsTitle;
-    document.getElementById("t-theme-mode").textContent = t.themeMode;
-    document.getElementById("t-theme-desc").textContent = t.themeDesc;
-    document.getElementById("t-sim-title").textContent = t.simTitle;
-    document.getElementById("t-sim-desc").textContent = t.simDesc;
+    document.getElementById("t-theme-type").textContent = t.themeType;
+    document.getElementById("t-theme-type-desc").textContent = t.themeTypeDesc;
+    document.getElementById("t-time-mode-title").textContent = t.timeModeTitle;
+    document.getElementById("t-time-mode-desc").textContent = t.timeModeDesc;
+    document.getElementById("t-static-title").textContent = t.staticTitle;
+    document.getElementById("t-static-desc").textContent = t.staticDesc;
     document.getElementById("t-sound-title").textContent = t.soundTitle;
     document.getElementById("t-sound-desc").textContent = t.soundDesc;
     document.getElementById("t-data-title").textContent = t.dataTitle;
@@ -1476,12 +1604,14 @@
     });
 
     // Time Context Pill
-    var hour = getEffectiveHour();
+    var hour = getEffectiveDecimalHour();
     var phase = (hour >= 6 && hour < 12) ? "morning" :
-                (hour >= 12 && hour < 18) ? "afternoon" :
-                (hour >= 18 && hour < 22) ? "evening" : "night";
-    var floorHour = Math.floor(hour);
-    var hourStr = (floorHour < 10 ? "0" + floorHour : floorHour) + ":" + (hour % 1 > 0 ? "30" : "00");
+                (hour >= 12 && hour < 17.5) ? "afternoon" :
+                (hour >= 17.5 && hour < 21.5) ? "evening" : "night";
+
+    var h = Math.floor(hour);
+    var m = Math.floor((hour - h) * 60);
+    var hourStr = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
     document.getElementById("t-time-context").textContent = hourStr + " · " + t[phase];
 
     if (state.currentRecommendation) {
@@ -1491,18 +1621,38 @@
     }
     renderHistory();
     renderStats();
-    updateCelestialPosition();
+    updateAtmosphereAndCelestial();
     updateSoundscapePill();
   }
 
-  // ==========================================
-  // Initialization & Event Binding
-  // ==========================================
+  function syncSettingsUI() {
+    document.querySelectorAll("#theme-system-chips .chip-btn").forEach(function(b) {
+      b.classList.toggle("active", b.getAttribute("data-system-val") === state.themeSystem);
+    });
+
+    if (state.themeSystem === "dynamic") {
+      document.getElementById("dynamic-time-settings").style.display = "block";
+      document.getElementById("static-theme-settings").style.display = "none";
+    } else {
+      document.getElementById("dynamic-time-settings").style.display = "none";
+      document.getElementById("static-theme-settings").style.display = "block";
+    }
+
+    document.querySelectorAll("#dynamic-time-chips .chip-btn").forEach(function(b) {
+      b.classList.toggle("active", b.getAttribute("data-time-val") === state.dynamicTime);
+    });
+
+    document.querySelectorAll("#static-theme-chips .chip-btn").forEach(function(b) {
+      b.classList.toggle("active", b.getAttribute("data-static-val") === state.staticTheme);
+    });
+
+    updateAtmosphereAndCelestial();
+  }
+
   function init() {
     generateStars();
     loadPersistedState();
 
-    // Chip Filters
     document.querySelectorAll(".chip-group[data-filter]").forEach(function(group) {
       var filterKey = group.getAttribute("data-filter");
       group.querySelectorAll(".chip-btn").forEach(function(btn) {
@@ -1515,7 +1665,6 @@
       });
     });
 
-    // Action buttons
     document.getElementById("ai-pick-btn").addEventListener("click", function() { pickActivity("smart"); });
     document.getElementById("random-btn").addEventListener("click", function() { pickActivity("random"); });
     document.getElementById("reset-btn").addEventListener("click", function() {
@@ -1533,13 +1682,12 @@
       renderHistory();
     });
 
-    // Language toggle
     document.getElementById("lang-btn").addEventListener("click", function() {
       state.lang = state.lang === "en" ? "zh" : "en";
       applyLanguage();
     });
 
-    // Modals
+    // Catalog Modal
     document.getElementById("catalog-btn").addEventListener("click", function() {
       document.getElementById("catalog-modal").classList.add("open");
       renderCatalog("");
@@ -1554,8 +1702,10 @@
       renderCatalog(e.target.value);
     });
 
+    // Settings Modal
     document.getElementById("settings-btn").addEventListener("click", function() {
       document.getElementById("settings-modal").classList.add("open");
+      syncSettingsUI();
     });
     document.getElementById("close-settings-btn").addEventListener("click", function() {
       document.getElementById("settings-modal").classList.remove("open");
@@ -1564,24 +1714,37 @@
       if (e.target === this) this.classList.remove("open");
     });
 
-    // Theme Mode Switcher Inside Settings
-    document.querySelectorAll("#theme-chip-group .chip-btn").forEach(function(btn) {
+    // Theme System Selection
+    document.querySelectorAll("#theme-system-chips .chip-btn").forEach(function(btn) {
       btn.addEventListener("click", function() {
-        applyThemeMode(btn.getAttribute("data-theme-val"));
-      });
-    });
-
-    // AI Time Simulator Inside Settings
-    document.querySelectorAll("#sim-chip-group .chip-btn").forEach(function(btn) {
-      btn.addEventListener("click", function() {
-        document.querySelectorAll("#sim-chip-group .chip-btn").forEach(function(b) { b.classList.remove("active"); });
-        btn.classList.add("active");
-        state.simHour = btn.getAttribute("data-sim-hour");
+        state.themeSystem = btn.getAttribute("data-system-val");
+        persistData();
+        syncSettingsUI();
         applyLanguage();
       });
     });
 
-    // Soundscape Selector Inside Settings
+    // Dynamic Time Selection
+    document.querySelectorAll("#dynamic-time-chips .chip-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        state.dynamicTime = btn.getAttribute("data-time-val");
+        persistData();
+        syncSettingsUI();
+        applyLanguage();
+      });
+    });
+
+    // Static Theme Selection
+    document.querySelectorAll("#static-theme-chips .chip-btn").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        state.staticTheme = btn.getAttribute("data-static-val");
+        persistData();
+        syncSettingsUI();
+        applyLanguage();
+      });
+    });
+
+    // Soundscapes
     document.querySelectorAll("#sound-chip-group .chip-btn").forEach(function(btn) {
       btn.addEventListener("click", function() {
         document.querySelectorAll("#sound-chip-group .chip-btn").forEach(function(b) { b.classList.remove("active"); });
@@ -1591,24 +1754,22 @@
       });
     });
 
-    // Quick Soundscape Pill in HUD
     document.getElementById("quick-sound-btn").addEventListener("click", function() {
       if (soundNodes) {
-        stopSoundscape();
+        stopSoundscape(1.2);
       } else {
         state.soundMode = state.soundMode === "none" ? "rain" : state.soundMode;
         startSoundscape(state.soundMode);
       }
     });
 
-    // Data Resets
     document.getElementById("reset-weights-btn").addEventListener("click", function() {
       state.weights = {};
       persistData();
-      alert("AI reinforcement learning weights have been reset to neutral.");
+      alert("Recommendation weights have been reset to neutral.");
     });
     document.getElementById("clear-all-data-btn").addEventListener("click", function() {
-      if (confirm("Reset all break minutes, activity counts, and logs?")) {
+      if (confirm("Reset all activity statistics and logs?")) {
         state.stats = { totalMinutes: 0, completedCount: 0, categories: {} };
         state.history = [];
         state.weights = {};
@@ -1618,9 +1779,14 @@
       }
     });
 
-    // Interval to refresh celestial position every minute
-    setInterval(updateCelestialPosition, 60000);
+    setInterval(function() {
+      if (state.themeSystem === "dynamic" && state.dynamicTime === "live") {
+        updateAtmosphereAndCelestial();
+        applyLanguage();
+      }
+    }, 20000);
 
+    syncSettingsUI();
     applyLanguage();
   }
 
