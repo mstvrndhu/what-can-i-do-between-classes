@@ -1,59 +1,52 @@
-# What can I do between classes? (課間我想做什麼？) · Smart Campus Companion v2.1
+# What can I do between classes? (下課可以做什麼？)
 
-> A modern, context-aware web companion designed to help students optimize break intervals through 4-phase circadian heuristics, smooth revolving celestial physics, synthesized ambient audio, and responsive environmental lighting.
-
----
-
-## 🚀 Live Demo & Links
-* **Live Web App (GitHub Pages)**: [https://mstvrndhu.github.io/what-can-i-do-between-classes/](https://mstvrndhu.github.io/what-can-i-do-between-classes/)
-* **GitHub Repository**: [https://github.com/mstvrndhu/what-can-i-do-between-classes](https://github.com/mstvrndhu/what-can-i-do-between-classes)
-* **Releases**:
-  * [v2.1 Release](https://github.com/mstvrndhu/what-can-i-do-between-classes/releases/tag/v2.1)
-  * [v2.0 Release](https://github.com/mstvrndhu/what-can-i-do-between-classes/releases/tag/v2.0)
-  * [v1.0 Release](https://github.com/mstvrndhu/what-can-i-do-between-classes/releases/tag/v1.0)
+> **Live Webpage**: [https://mstvrndhu.github.io/what-can-i-do-between-classes/](https://mstvrndhu.github.io/what-can-i-do-between-classes/)  
+> **Release**: `v3.0` (Production Grade)
 
 ---
 
-## 🌟 What's New in v2.1
+## What is this?
 
-### 1. 🌌 Decoupled Theme System (Dynamic vs Static)
-* **Dynamic Theme (Default)**:
-  * Environmental circadian lighting that softly tints cards and backgrounds to match the mood of Morning, Afternoon, Evening, and Night.
-  * Live or custom time cycle selector (`Live Clock`, `Morning`, `Afternoon`, `Evening`, `Night`).
-* **Static Theme**:
-  * Clean, non-animated classic modes (`System OS`, `Light`, `Dark`).
-
-### 2. ☀️ Continuous Clockwise Celestial Revolution
-* **Unobstructed View**: Generous top sky clearance so the revolving Sun and Moon glide cleanly above content without being blocked by headers or glass blur.
-* **Exact Solar Math**: Continuous parabolic arc synced to current hour and minute (e.g. 14:36, 18:29, 01:30).
-* **Radiance Pulses**: Glowing sun corona and soft lunar halo breathing animations.
-
-### 3. 🎵 Smooth Audio Fading & HUD Equalizer
-* **Exponential Fade In/Out**: Web Audio API gain ramps smoothly over 1.8 seconds when starting and 1.2 seconds when stopping for zero clicks or pops.
-* **Live Equalizer**: Interactive bouncing audio bars in the top status pill during playback.
-
-### 4. 🧠 Circadian Recommendation Engine
-* Evaluates duration fit, energy requirements, and circadian context across 20 structured campus activities with transparent reasoning badges.
+A modern, intelligent, and lightweight campus companion designed to help university students optimize breaks between lectures. It calculates upcoming schedule gaps, matches energy levels, suggests contextual recharge activities, and tracks well-being analytics—all running 100% locally in your browser with zero external dependencies.
 
 ---
 
-## 📂 Project Structure
+## Key Features in v3.0
 
-```text
-├── index.html         # Complete single-page application (HTML, CSS, JS)
-├── activities.json    # Catalog of 20 enriched campus activities
-└── README.md          # Comprehensive documentation
-```
+### 1. Zero-Flash & Anti-Jitter Theme Architecture
+- **Black Baseline Canvas**: Default canvas starts at `#090d16` (dark mode baseline), completely eliminating any white flash when switching between dark themes or reloading the page late at night.
+- **Early-Execution Head Engine**: Executes theme preferences immediately prior to the first render pass, preventing layout jumps (e.g. top padding shifting on reload in static mode).
+- **Dynamic Mode**: Continuous atmospheric circadian lighting (Morning, Afternoon, Sunset, Night) with a revolving parabolic celestial arc (Sun & Moon) synchronized to the device clock.
+- **Static Mode**: Minimalist, high-contrast, non-animated appearance supporting System OS, Light, and Dark modes.
+
+### 2. Class Timetable & Real-Time Break Gap Engine
+- **Live Timetable Gap Detection**: Displays real-time status banner indicating current course or the exact time remaining until your next class.
+- **Auto-Sync Mode**: Automatically aligns the break time filter (`10m`, `15m`, `30m`, `60m`) with your actual remaining gap.
+- **Customizable Courses**: Add, edit, or remove your daily courses with room numbers and class schedules, or load the pre-configured sample university timetable.
+
+### 3. 1-Click JSON Backup & Restore System
+- **1-Click Export**: Download your full campus companion profile (`campus-companion-backup.json`) including courses, custom activities, recharge history, ratings, and AI weights.
+- **1-Click Restore**: Use standard HTML5 `FileReader` to restore and load your data on any device or fresh browser installation without needing a database server.
+
+### 4. Custom Activity Creator & Enhanced Catalog
+- **Create Your Own Breaks**: Add personalized activities with custom emoji, duration, location, category, and action steps.
+- **Searchable Catalog**: Instant keyword search across both core and custom activities.
+
+### 5. Post-Break Reflection & Analytics
+- **5-Star Reflection Modal**: Rate each completed session and tag your recharge feeling (*Energized ⚡*, *Relaxed 🌿*, *Focused 💻*, *Ready for Class ✨*).
+- **Student Dashboard**: Live tracking of total recharged minutes, completed sessions, and favorite categories.
+
+### 6. Ambient Synthesized Soundscapes
+- Built with pure Web Audio API (Rain, Lo-Fi Binaural Hum, Focus White Noise) with smooth `1.8s` exponential fade-in and `1.2s` fade-out transitions.
+
+### 7. Bilingual Experience
+- Seamless toggle between **English** and **Traditional Chinese (Taiwan usage)**.
 
 ---
 
-## 🏃 How to Run Locally
-
-### Option 1: Direct File Launch
-Double-click `index.html` to open in any web browser.
-
-### Option 2: Local Web Server
-```bash
-python -m http.server 8000
-```
-Open [http://localhost:8000](http://localhost:8000) in your browser.
+## Technical Specifications
+- **Stack**: Vanilla HTML5, CSS3, Modern JavaScript (ES6+).
+- **Dependencies**: None (0 external libraries, 0 CDN calls, completely offline-first).
+- **Storage**: Browser `localStorage` with JSON export/import.
+- **Audio**: Web Audio API (real-time procedural audio synthesis).
+- **Hosting**: GitHub Pages via `main` branch.

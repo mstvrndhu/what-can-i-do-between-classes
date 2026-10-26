@@ -4,13 +4,49 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What can I do between classes? · Smart Campus Companion</title>
+
+<!-- Early Head Script: Runs synchronously before initial render to prevent white flashes and layout jumps -->
+<script>
+(function() {
+  try {
+    var saved = localStorage.getItem("picker_v3_state") || localStorage.getItem("picker_theme_sys");
+    var parsed = saved ? JSON.parse(saved) : null;
+    var now = new Date();
+    var hour = now.getHours() + (now.getMinutes() / 60);
+    var isNight = (hour < 6 || hour >= 18);
+    var isDarkOS = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    var themeSys = (parsed && parsed.themeSystem) ? parsed.themeSystem : "dynamic";
+    var staticTheme = (parsed && parsed.staticTheme) ? parsed.staticTheme : "system";
+    var dynTime = (parsed && parsed.dynamicTime) ? parsed.dynamicTime : "live";
+
+    if (themeSys === "static") {
+      var targetStatic = staticTheme === "system" ? (isDarkOS ? "dark" : "light") : staticTheme;
+      document.documentElement.setAttribute("data-static-theme", targetStatic);
+      document.documentElement.setAttribute("data-theme-system", "static");
+      document.documentElement.className = "theme-static is-reloading";
+    } else {
+      var effectiveHour = (dynTime === "morning" ? 9 : (dynTime === "afternoon" ? 13.5 : (dynTime === "evening" ? 18 : (dynTime === "night" ? 23.5 : hour))));
+      var vibe = "vibe-morning";
+      if (effectiveHour >= 5.5 && effectiveHour < 11.5) vibe = "vibe-morning";
+      else if (effectiveHour >= 11.5 && effectiveHour < 17.0) vibe = "vibe-afternoon";
+      else if (effectiveHour >= 17.0 && effectiveHour < 20.0) vibe = "vibe-evening";
+      else vibe = "vibe-night";
+
+      document.documentElement.setAttribute("data-static-theme", (effectiveHour < 6 || effectiveHour >= 18) ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme-system", "dynamic");
+      document.documentElement.className = "theme-dynamic " + vibe + " is-reloading";
+    }
+  } catch(e) {
+    document.documentElement.setAttribute("data-static-theme", "dark");
+    document.documentElement.className = "is-reloading";
+  }
+})();
+</script>
+
 <style>
+  /* Base Design Tokens */
   :root {
-    --bg-page: #f8fafc;
-    --bg-card: rgba(255, 255, 255, 0.88);
-    --bg-subtle: rgba(241, 245, 249, 0.75);
-    --text-main: #0f172a;
-    --text-muted: #64748b;
     --primary: #0d9488;
     --primary-hover: #0f766e;
     --primary-light: rgba(13, 148, 136, 0.15);
@@ -18,14 +54,21 @@
     --accent: #f59e0b;
     --coral: #f43f5e;
     --indigo: #6366f1;
-    --border: rgba(226, 232, 240, 0.8);
     --radius-sm: 8px;
     --radius-md: 14px;
     --radius-lg: 20px;
     --shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
     --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
     --shadow-lg: 0 16px 36px rgba(0,0,0,0.09);
-    --sky-bg: linear-gradient(180deg, #e0f2fe 0%, #f8fafc 100%);
+    
+    /* Default base: Dark (#090d16) so initial loads & reloads NEVER flash white */
+    --bg-page: #090d16;
+    --bg-card: rgba(19, 27, 46, 0.92);
+    --bg-subtle: rgba(30, 41, 59, 0.8);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border: #26334d;
+    --sky-bg: #090d16;
   }
 
   /* Static Dark Theme */
@@ -60,10 +103,11 @@
   }
 
   /* Dynamic Theme: 4 Atmospheric Circadian Vibes */
-  body.theme-dynamic.vibe-morning {
+  body.theme-dynamic.vibe-morning,
+  html.vibe-morning body {
     --sky-bg: linear-gradient(180deg, #fef3c7 0%, #e0f2fe 45%, #f0fdf4 100%);
-    --bg-card: rgba(255, 255, 255, 0.9);
-    --bg-subtle: rgba(240, 253, 250, 0.75);
+    --bg-card: rgba(255, 255, 255, 0.92);
+    --bg-subtle: rgba(240, 253, 250, 0.8);
     --text-main: #0f2922;
     --text-muted: #47665f;
     --border: rgba(187, 247, 208, 0.7);
@@ -73,9 +117,10 @@
     --primary-glow: rgba(5, 150, 105, 0.3);
   }
 
-  body.theme-dynamic.vibe-afternoon {
+  body.theme-dynamic.vibe-afternoon,
+  html.vibe-afternoon body {
     --sky-bg: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 40%, #f8fafc 100%);
-    --bg-card: rgba(255, 255, 255, 0.92);
+    --bg-card: rgba(255, 255, 255, 0.93);
     --bg-subtle: rgba(241, 245, 249, 0.85);
     --text-main: #0f172a;
     --text-muted: #475569;
@@ -86,10 +131,11 @@
     --primary-glow: rgba(2, 132, 199, 0.3);
   }
 
-  body.theme-dynamic.vibe-evening {
+  body.theme-dynamic.vibe-evening,
+  html.vibe-evening body {
     --sky-bg: linear-gradient(180deg, #fdba74 0%, #fb7185 35%, #4338ca 85%, #1e1b4b 100%);
-    --bg-card: rgba(30, 27, 75, 0.86);
-    --bg-subtle: rgba(49, 46, 129, 0.65);
+    --bg-card: rgba(30, 27, 75, 0.88);
+    --bg-subtle: rgba(49, 46, 129, 0.68);
     --text-main: #fdf4ff;
     --text-muted: #cbd5e1;
     --border: rgba(244, 114, 182, 0.4);
@@ -101,10 +147,11 @@
     --shadow-lg: 0 20px 45px rgba(0,0,0,0.6);
   }
 
-  body.theme-dynamic.vibe-night {
+  body.theme-dynamic.vibe-night,
+  html.vibe-night body {
     --sky-bg: linear-gradient(180deg, #020617 0%, #090d16 50%, #0f172a 100%);
-    --bg-card: rgba(15, 23, 42, 0.88);
-    --bg-subtle: rgba(30, 41, 59, 0.75);
+    --bg-card: rgba(15, 23, 42, 0.9);
+    --bg-subtle: rgba(30, 41, 59, 0.8);
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --border: rgba(51, 65, 85, 0.85);
@@ -116,15 +163,34 @@
     --shadow-lg: 0 20px 48px rgba(0,0,0,0.7);
   }
 
-  * { box-sizing: border-box; transition: background 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.6s ease, border-color 0.5s ease, color 0.4s ease, box-shadow 0.5s ease; }
+  /* Anti-Flash & Smooth Transitions */
+  * {
+    box-sizing: border-box;
+    transition: background 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.5s ease, border-color 0.4s ease, color 0.35s ease, box-shadow 0.4s ease;
+  }
+  
+  /* Suppress transitions completely during page load/reload to prevent layout jumps or flashes */
+  html.is-reloading,
+  html.is-reloading *,
+  .no-theme-transition,
+  .no-theme-transition * {
+    transition: none !important;
+  }
+
+  /* Default canvas starts dark so no white flash can possibly occur */
+  html {
+    background-color: #090d16;
+  }
+
   body {
     margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+    background: #090d16;
     background: var(--sky-bg);
     background-attachment: fixed;
     color: var(--text-main);
     line-height: 1.5;
-    padding-bottom: 60px;
+    padding-bottom: 70px;
     position: relative;
     min-height: 100vh;
   }
@@ -141,7 +207,10 @@
     overflow: hidden;
     display: none;
   }
-  body.theme-dynamic .celestial-stage { display: block; }
+  body.theme-dynamic .celestial-stage,
+  html.theme-dynamic .celestial-stage { display: block; }
+  body.theme-static .celestial-stage,
+  html.theme-static .celestial-stage { display: none !important; }
 
   .celestial-body {
     position: absolute;
@@ -180,7 +249,10 @@
     transition: opacity 1.2s ease;
   }
   body.theme-dynamic.vibe-night .star-field,
-  body.theme-dynamic.vibe-evening .star-field { opacity: 0.9; }
+  body.theme-dynamic.vibe-evening .star-field,
+  html.vibe-night .star-field,
+  html.vibe-evening .star-field { opacity: 0.9; }
+
   .star {
     position: absolute;
     background: #ffffff;
@@ -192,191 +264,262 @@
     50% { opacity: 1; transform: scale(1.3); }
   }
 
-  /* Clear open sky above content */
+  /* Layout Container */
   .container {
     max-width: 860px;
     margin: 0 auto;
-    padding: 135px 16px 20px;
+    padding: 0 20px;
+    padding-top: 135px; /* Clear open sky clearance */
     position: relative;
-    z-index: 1;
+    z-index: 10;
     transition: padding-top 0.5s ease;
   }
-  body.theme-static .container { padding-top: 24px; }
+  /* In static mode, top padding starts and stays cleanly at 28px without any jumping */
+  html.theme-static .container,
+  body.theme-static .container {
+    padding-top: 28px;
+  }
 
+  /* Header */
   header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
     margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 14px;
   }
-
   .brand-group { display: flex; align-items: center; gap: 12px; }
   .brand-icon {
-    font-size: 2rem;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--primary-light);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
+    font-size: 2.2rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 8px var(--primary-glow));
   }
+  h1 {
+    font-size: 1.7rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
+  }
+  .subtitle {
+    margin: 3px 0 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+  .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-  h1 { font-size: 1.45rem; font-weight: 800; margin: 0; letter-spacing: -0.02em; }
-  .subtitle { font-size: 0.85rem; color: var(--text-muted); margin: 2px 0 0; }
-
-  .header-actions { display: flex; gap: 8px; align-items: center; }
-
+  /* Button Styles */
   button {
-    font: inherit;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 8px 14px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     background: var(--bg-card);
     color: var(--text-main);
-    padding: 8px 14px;
-    font-size: 0.875rem;
-    font-weight: 600;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 6px;
-    user-select: none;
-    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-sm);
   }
-  button:hover { border-color: var(--primary); }
-  button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-
+  button:hover {
+    border-color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  button:active { transform: translateY(0); }
   button.primary {
     background: var(--primary);
-    border-color: var(--primary);
     color: #ffffff;
+    border-color: var(--primary);
     box-shadow: 0 4px 14px var(--primary-glow);
   }
-  button.primary:hover { background: var(--primary-hover); }
-
-  button.subtle { background: transparent; border-color: transparent; color: var(--text-muted); }
-  button.subtle:hover { background: var(--bg-subtle); color: var(--text-main); }
-
-  /* Context Bar & Ambient HUD */
-  .ai-context-bar {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
+  button.primary:hover {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+  }
+  button.subtle {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    color: var(--text-muted);
+  }
+  button.subtle:hover {
+    background: var(--bg-subtle);
+    color: var(--text-main);
+  }
+  button.large {
+    padding: 12px 22px;
+    font-size: 1rem;
     border-radius: var(--radius-md);
-    padding: 12px 16px;
-    margin-bottom: 20px;
+  }
+
+  /* Context Bar & HUD */
+  .ai-context-bar {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
     gap: 10px;
-    box-shadow: var(--shadow-sm);
-    backdrop-filter: blur(12px);
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    align-items: center;
   }
   .context-pill {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.8rem;
-    padding: 5px 12px;
-    border-radius: 999px;
-    background: var(--bg-subtle);
-    color: var(--text-muted);
-    font-weight: 600;
+    gap: 7px;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-sm);
   }
-  .context-pill.highlight { background: var(--primary-light); color: var(--primary); }
-
-  .soundscape-pill { cursor: pointer; border: 1px solid transparent; }
+  .context-pill.highlight {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .soundscape-pill {
+    cursor: pointer;
+    user-select: none;
+  }
   .soundscape-pill:hover { border-color: var(--primary); }
-  .soundscape-pill.playing { background: #dcfce7; color: #15803d; }
+  .soundscape-pill.active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
 
-  /* Sound Equalizer Bars Animation */
+  /* Animated Sound Wave Equalizer */
   .eq-bars {
     display: inline-flex;
     align-items: flex-end;
     gap: 2px;
     height: 12px;
+    width: 14px;
   }
   .eq-bar {
-    width: 2.5px;
+    width: 3px;
     background: currentColor;
-    border-radius: 1px;
+    border-radius: 2px;
     height: 3px;
     transition: height 0.2s ease;
   }
-  .soundscape-pill.playing .eq-bar:nth-child(1) { animation: eqAnim 0.7s infinite alternate ease-in-out; }
-  .soundscape-pill.playing .eq-bar:nth-child(2) { animation: eqAnim 0.9s infinite alternate ease-in-out 0.2s; }
-  .soundscape-pill.playing .eq-bar:nth-child(3) { animation: eqAnim 0.6s infinite alternate ease-in-out 0.4s; }
-  @keyframes eqAnim {
+  .soundscape-pill.active .eq-bar:nth-child(1) { animation: eqJump 0.8s infinite ease-in-out alternate; }
+  .soundscape-pill.active .eq-bar:nth-child(2) { animation: eqJump 0.6s 0.2s infinite ease-in-out alternate; }
+  .soundscape-pill.active .eq-bar:nth-child(3) { animation: eqJump 0.9s 0.4s infinite ease-in-out alternate; }
+  @keyframes eqJump {
     0% { height: 3px; }
     100% { height: 12px; }
   }
 
-  /* Analytics Overview */
+  /* Class Timetable & Schedule Gap Banner */
+  .schedule-gap-banner {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--primary);
+  }
+  .schedule-gap-info { display: flex; align-items: center; gap: 12px; }
+  .schedule-status-icon { font-size: 1.8rem; line-height: 1; }
+  .schedule-gap-title { font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin: 0; }
+  .schedule-gap-detail { font-size: 0.82rem; color: var(--text-muted); margin: 2px 0 0; }
+  .schedule-actions { display: flex; align-items: center; gap: 8px; }
+  .badge-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+
+  /* Analytics Grid */
   .analytics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
   .stat-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 14px 16px;
-    box-shadow: var(--shadow-sm);
+    padding: 14px;
+    text-align: center;
     backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-sm);
   }
-  .stat-val { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
-  .stat-label { font-size: 0.775rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+  .stat-val {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.1;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
 
-  /* Filter Panel */
+  /* Panel Card */
   .panel-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 22px;
+    backdrop-filter: blur(14px);
     box-shadow: var(--shadow-md);
     margin-bottom: 24px;
-    backdrop-filter: blur(14px);
   }
 
+  /* Filter Section */
   .filter-section { margin-bottom: 18px; }
-  .filter-section:last-child { margin-bottom: 0; }
+  .filter-section:last-of-type { margin-bottom: 22px; }
   .filter-label {
-    display: block;
-    font-size: 0.825rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-muted);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    color: var(--text-main);
   }
-
   .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip-btn {
-    padding: 8px 14px;
     border-radius: 999px;
-    border: 1px solid var(--border);
+    padding: 7px 15px;
+    font-size: 0.84rem;
     background: var(--bg-subtle);
+    border: 1px solid var(--border);
     color: var(--text-main);
-    font-size: 0.875rem;
-    font-weight: 500;
+    box-shadow: none;
     cursor: pointer;
-    transition: all 0.2s ease;
   }
-  .chip-btn:hover { border-color: var(--primary); transform: translateY(-1px); }
+  .chip-btn:hover { border-color: var(--primary); }
   .chip-btn.active {
     background: var(--primary);
-    border-color: var(--primary);
     color: #ffffff;
-    font-weight: 700;
-    box-shadow: 0 4px 12px var(--primary-glow);
+    border-color: var(--primary);
+    box-shadow: 0 2px 10px var(--primary-glow);
+  }
+  .chip-btn.auto-selected {
+    outline: 2px dashed var(--accent);
+    outline-offset: 2px;
   }
 
   .action-row {
@@ -384,71 +527,53 @@
     gap: 10px;
     flex-wrap: wrap;
     align-items: center;
-    margin-top: 22px;
-    padding-top: 18px;
-    border-top: 1px dashed var(--border);
-  }
-  .action-row button.large {
-    padding: 13px 26px;
-    font-size: 1rem;
-    border-radius: var(--radius-md);
-    flex-grow: 1;
   }
 
-  /* Result Card Section */
-  .result-container { margin-bottom: 24px; }
+  /* Result Card */
+  .result-container { margin-bottom: 28px; }
   .result-card {
     background: var(--bg-card);
-    border: 2px solid var(--primary);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 26px;
+    padding: 24px;
+    backdrop-filter: blur(16px);
     box-shadow: var(--shadow-lg);
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(16px);
-    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .result-card.empty-state {
-    border: 1px dashed var(--border);
-    box-shadow: none;
     text-align: center;
-    padding: 38px 20px;
+    padding: 40px 20px;
     color: var(--text-muted);
   }
-  .result-card.none-found {
-    border-color: var(--coral);
-    background: rgba(244, 63, 94, 0.05);
-    text-align: center;
-    padding: 32px;
+  .result-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent), var(--indigo));
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(12px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .card-top {
+  .result-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 12px;
     margin-bottom: 14px;
+    gap: 12px;
   }
-  .card-badges { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     font-size: 0.75rem;
     font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 6px;
-    background: var(--bg-subtle);
-    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--primary-light);
+    color: var(--primary);
   }
-  .badge.category { background: var(--primary-light); color: var(--primary); }
-  .badge.energy-low { background: #dcfce7; color: #15803d; }
-  .badge.energy-med { background: #fef3c7; color: #b45309; }
-
   .activity-title-row { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
-  .activity-emoji { font-size: 2.4rem; line-height: 1; }
+  .activity-emoji { font-size: 2.6rem; line-height: 1; }
   .activity-title { font-size: 1.45rem; font-weight: 800; margin: 0; }
 
   .activity-steps {
@@ -489,8 +614,6 @@
     border-top: 1px solid var(--border);
   }
 
-  .interactive-feedback { display: flex; gap: 6px; align-items: center; }
-
   /* Break Countdown Timer */
   .timer-banner {
     display: none;
@@ -501,11 +624,11 @@
     border: 1px solid var(--border);
     text-align: center;
   }
-  .timer-banner.active { display: block; animation: fadeIn 0.25s ease; }
+  .timer-banner.active { display: block; }
   .timer-display { font-size: 2.6rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primary); }
   .timer-controls { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
 
-  /* History Section */
+  /* History & Timeline */
   .section-header {
     display: flex;
     justify-content: space-between;
@@ -513,7 +636,6 @@
     margin: 28px 0 14px;
   }
   .section-header h2 { font-size: 1.15rem; font-weight: 700; margin: 0; }
-
   .history-list {
     list-style: none;
     padding: 0;
@@ -540,8 +662,8 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(8px);
     z-index: 100;
     align-items: center;
     justify-content: center;
@@ -553,48 +675,53 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     width: 100%;
-    max-width: 680px;
+    max-width: 650px;
     max-height: 85vh;
     display: flex;
     flex-direction: column;
     box-shadow: var(--shadow-lg);
     overflow: hidden;
-    backdrop-filter: blur(20px);
   }
   .modal-head {
-    padding: 16px 20px;
+    padding: 18px 22px;
     border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  .modal-head h3 { margin: 0; font-size: 1.2rem; }
-  .modal-body { padding: 20px; overflow-y: auto; }
-
+  .modal-head h3 { margin: 0; font-size: 1.2rem; font-weight: 800; }
+  .modal-body {
+    padding: 22px;
+    overflow-y: auto;
+  }
   .settings-row {
     margin-bottom: 22px;
     padding-bottom: 18px;
     border-bottom: 1px solid var(--border);
   }
-  .settings-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-  .settings-title { font-weight: 700; margin-bottom: 6px; font-size: 0.95rem; }
-  .settings-desc { font-size: 0.825rem; color: var(--text-muted); margin-bottom: 10px; }
+  .settings-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .settings-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+  .settings-desc { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 10px; }
 
+  /* Catalog Grid */
   .search-input {
     width: 100%;
     padding: 10px 14px;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius-md);
     border: 1px solid var(--border);
     background: var(--bg-subtle);
     color: var(--text-main);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     margin-bottom: 16px;
+    box-sizing: border-box;
   }
-  .search-input:focus { outline: 2px solid var(--primary); }
-
   .catalog-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 12px;
   }
   .catalog-card {
@@ -604,11 +731,79 @@
     padding: 12px 14px;
     cursor: pointer;
     transition: transform 0.2s ease, border-color 0.2s ease;
+    position: relative;
   }
   .catalog-card:hover {
     border-color: var(--primary);
     transform: translateY(-2px);
   }
+  .custom-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin-left: 6px;
+  }
+
+  /* Schedule List in Modal */
+  .timetable-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .timetable-card {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .timetable-card.active-now {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .form-group label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+  .form-group input, .form-group select {
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-subtle);
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+  .form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* Rating Modal */
+  .star-rating {
+    display: flex;
+    gap: 10px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    justify-content: center;
+    margin: 14px 0;
+  }
+  .star-rating span { transition: transform 0.15s ease; }
+  .star-rating span:hover { transform: scale(1.2); }
 
   footer {
     text-align: center;
@@ -636,11 +831,13 @@
       <div class="brand-icon">⚡</div>
       <div>
         <h1 id="t-title">What can I do between classes?</h1>
-        <p class="subtitle" id="t-subtitle">Smart break activity optimizer for campus life</p>
+        <p class="subtitle" id="t-subtitle">Smart campus break optimizer with timetable gap detection</p>
       </div>
     </div>
     <div class="header-actions">
+      <button type="button" id="schedule-btn">📅 <span id="t-schedule-btn">Schedule</span></button>
       <button type="button" id="catalog-btn">📚 <span id="t-browse">Catalog</span></button>
+      <button type="button" id="backup-btn">💾 <span id="t-backup-nav">Data & Backup</span></button>
       <button type="button" id="settings-btn" aria-label="Settings">⚙️ <span id="t-settings">Settings</span></button>
       <button type="button" id="lang-btn">中文</button>
     </div>
@@ -652,13 +849,32 @@
       🕒 <span id="t-time-context">Time: Evaluating...</span>
     </div>
     <div class="context-pill" id="ai-engine-pill">
-      🤖 <span id="t-engine-name">Circadian Activity Engine</span>
+      🤖 <span id="t-engine-name">Circadian AI Engine</span>
     </div>
     <div class="context-pill soundscape-pill" id="quick-sound-btn" title="Toggle Ambient Audio">
       <span class="eq-bars" aria-hidden="true">
         <span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span>
       </span>
       <span id="t-sound-status">Soundscape: Off</span>
+    </div>
+  </div>
+
+  <!-- Real-Time Schedule Gap Banner -->
+  <div class="schedule-gap-banner" id="schedule-gap-banner">
+    <div class="schedule-gap-info">
+      <div class="schedule-status-icon" id="gap-status-icon">⚡</div>
+      <div>
+        <div class="schedule-gap-title" id="gap-title">Evaluating Class Schedule...</div>
+        <div class="schedule-gap-detail" id="gap-detail">Connecting live device clock to your campus timetable.</div>
+      </div>
+    </div>
+    <div class="schedule-actions">
+      <button type="button" id="schedule-sync-toggle" class="subtle" title="Toggle Auto Break-Gap Sync">
+        🔄 <span id="t-auto-sync-status">Auto-Sync: ON</span>
+      </button>
+      <button type="button" id="edit-schedule-quick-btn" class="subtle">
+        ✏️ <span id="t-edit-schedule">Edit Classes</span>
+      </button>
     </div>
   </div>
 
@@ -681,7 +897,10 @@
   <!-- Filter & Recommendation Controls -->
   <div class="panel-card">
     <div class="filter-section">
-      <span class="filter-label" id="t-lbl-time">Available Break Time</span>
+      <div class="filter-label">
+        <span id="t-lbl-time">Available Break Time</span>
+        <span id="t-gap-indicator" class="badge-tag" style="display:none;">Auto-Aligned</span>
+      </div>
       <div class="chip-group" data-filter="time">
         <button type="button" class="chip-btn" data-val="10">10 min</button>
         <button type="button" class="chip-btn active" data-val="15">15 min</button>
@@ -756,7 +975,167 @@
   </footer>
 </div>
 
-<!-- Settings Modal / Drawer -->
+<!-- 1. Schedule & Timetable Modal -->
+<div class="modal-backdrop" id="schedule-modal">
+  <div class="modal-window">
+    <div class="modal-head">
+      <h3 id="t-schedule-title">📅 Class Schedule & Break Gap Engine</h3>
+      <button type="button" class="subtle" id="close-schedule-btn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-desc" id="t-schedule-desc">
+        Add your lectures below. The app calculates your upcoming break gaps automatically and synchronizes the break timer for you!
+      </div>
+      <div class="timetable-list" id="timetable-items"></div>
+      
+      <div style="background:var(--bg-subtle); padding:16px; border-radius:var(--radius-md); border:1px solid var(--border); margin-top:14px;">
+        <h4 style="margin:0 0 10px 0; font-size:0.92rem;" id="t-add-class-title">+ Add Lecture / Course</h4>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label id="t-class-name-lbl">Course Name</label>
+            <input type="text" id="inp-class-name" placeholder="e.g. Intro to Artificial Intelligence">
+          </div>
+          <div class="form-group">
+            <label id="t-class-room-lbl">Room / Hall</label>
+            <input type="text" id="inp-class-room" placeholder="e.g. Tech Hall 302">
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label id="t-class-start-lbl">Start Time (HH:MM)</label>
+            <input type="time" id="inp-class-start" value="13:30">
+          </div>
+          <div class="form-group">
+            <label id="t-class-end-lbl">End Time (HH:MM)</label>
+            <input type="time" id="inp-class-end" value="15:00">
+          </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+          <button type="button" class="subtle" id="reset-default-classes-btn">🔄 <span id="t-reset-classes">Load Sample Timetable</span></button>
+          <button type="button" class="primary" id="add-class-btn">💾 <span id="t-save-class">Add to Schedule</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. Data Backup & Restore Modal -->
+<div class="modal-backdrop" id="backup-modal">
+  <div class="modal-window">
+    <div class="modal-head">
+      <h3 id="t-backup-title">💾 Data Backup & Restore (JSON)</h3>
+      <button type="button" class="subtle" id="close-backup-btn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-row">
+        <div class="settings-title" id="t-export-title">Export All Data (Download Backup)</div>
+        <div class="settings-desc" id="t-export-desc">Download your entire schedule, custom activities, recharge statistics, and preferences into a single JSON file. Works offline and transfers easily to new devices.</div>
+        <button type="button" class="primary" id="download-backup-btn">📥 <span id="t-download-btn">Download Backup (.json)</span></button>
+      </div>
+
+      <div class="settings-row">
+        <div class="settings-title" id="t-import-title">Restore from Backup File</div>
+        <div class="settings-desc" id="t-import-desc">Select a previously saved backup JSON file to restore your full schedule, custom activities, and past recharge records.</div>
+        <input type="file" id="backup-file-input" accept=".json" style="display:none;">
+        <button type="button" id="trigger-restore-btn">📤 <span id="t-restore-btn">Select Backup File (.json)</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Custom Activity Modal -->
+<div class="modal-backdrop" id="custom-act-modal">
+  <div class="modal-window">
+    <div class="modal-head">
+      <h3 id="t-custom-act-title">✨ Create Custom Activity</h3>
+      <button type="button" class="subtle" id="close-custom-modal-btn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label id="t-custom-name-en">Activity Name (English)</label>
+          <input type="text" id="inp-act-en" placeholder="e.g. Campus Rooftop Stargazing">
+        </div>
+        <div class="form-group">
+          <label id="t-custom-name-zh">活動名稱 (繁體中文)</label>
+          <input type="text" id="inp-act-zh" placeholder="例：頂樓看雲與深呼吸">
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label id="t-custom-duration">Duration (Minutes)</label>
+          <select id="inp-act-mins">
+            <option value="10">10 Minutes</option>
+            <option value="15" selected>15 Minutes</option>
+            <option value="30">30 Minutes</option>
+            <option value="60">60 Minutes</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="t-custom-category">Category</label>
+          <select id="inp-act-cat">
+            <option value="wellness">Mental Reset 🌿</option>
+            <option value="productivity">Study & Focus 💻</option>
+            <option value="movement">Physical Refresh 🏃</option>
+            <option value="creative">Creative / Social 🎨</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label id="t-custom-loc">Location</label>
+          <select id="inp-act-loc">
+            <option value="indoor">Indoor</option>
+            <option value="outdoor">Outdoor</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="t-custom-emoji">Icon (Emoji)</label>
+          <input type="text" id="inp-act-icon" value="🌟" maxlength="4">
+        </div>
+      </div>
+      <div class="form-group">
+        <label id="t-custom-steps">Quick Action Steps / Tips</label>
+        <input type="text" id="inp-act-steps" placeholder="Brief description of what to do during this break...">
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+        <button type="button" class="primary" id="save-custom-act-btn">💾 <span id="t-save-custom-btn">Save Custom Activity</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. Post-Break Reflection Modal -->
+<div class="modal-backdrop" id="reflection-modal">
+  <div class="modal-window" style="max-width:440px; text-align:center;">
+    <div class="modal-head" style="justify-content:center;">
+      <h3 id="t-reflection-title">🎉 Break Completed!</h3>
+    </div>
+    <div class="modal-body">
+      <p id="t-reflection-sub" style="color:var(--text-muted); font-size:0.9rem; margin-top:0;">
+        Great job stepping away and taking care of yourself! How refreshed do you feel?
+      </p>
+      <div class="star-rating" id="star-rating-box">
+        <span data-star="1">⭐</span>
+        <span data-star="2">⭐</span>
+        <span data-star="3">⭐</span>
+        <span data-star="4">⭐</span>
+        <span data-star="5">⭐</span>
+      </div>
+      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:14px 0;" id="tag-feelings">
+        <button type="button" class="chip-btn active" data-feeling="Energized">⚡ Energized</button>
+        <button type="button" class="chip-btn" data-feeling="Relaxed">🌿 Relaxed</button>
+        <button type="button" class="chip-btn" data-feeling="Focused">💻 Focused</button>
+        <button type="button" class="chip-btn" data-feeling="Refreshed">✨ Ready for Next Class</button>
+      </div>
+      <button type="button" class="primary large" id="save-reflection-btn" style="width:100%; justify-content:center; margin-top:10px;">
+        📝 <span id="t-save-log-btn">Log This Break</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Settings Modal -->
 <div class="modal-backdrop" id="settings-modal">
   <div class="modal-window">
     <div class="modal-head">
@@ -764,7 +1143,7 @@
       <button type="button" class="subtle" id="close-settings-btn">✕</button>
     </div>
     <div class="modal-body">
-      <!-- 1. Theme Architecture: Dynamic vs Static -->
+      <!-- Theme Architecture: Dynamic vs Static -->
       <div class="settings-row">
         <div class="settings-title" id="t-theme-type">Theme System</div>
         <div class="settings-desc" id="t-theme-type-desc">Choose Dynamic (animated sky and circadian environmental lighting) or Static (classic non-animated).</div>
@@ -774,7 +1153,7 @@
         </div>
       </div>
 
-      <!-- 2. Dynamic Time Selector (Only active when Theme System is Dynamic) -->
+      <!-- Dynamic Time Selector -->
       <div class="settings-row" id="dynamic-time-settings">
         <div class="settings-title" id="t-time-mode-title">Dynamic Time Cycle</div>
         <div class="settings-desc" id="t-time-mode-desc">Sync with your live device clock or select an atmospheric period to watch the sky revolve.</div>
@@ -787,7 +1166,7 @@
         </div>
       </div>
 
-      <!-- 3. Static Theme Options (Only active when Theme System is Static) -->
+      <!-- Static Theme Options -->
       <div class="settings-row" id="static-theme-settings" style="display:none;">
         <div class="settings-title" id="t-static-title">Static Appearance</div>
         <div class="settings-desc" id="t-static-desc">Classic clean appearance without celestial animations.</div>
@@ -798,7 +1177,7 @@
         </div>
       </div>
 
-      <!-- 4. Ambient Soundscape Generator -->
+      <!-- Ambient Soundscape -->
       <div class="settings-row" id="soundscape-settings-row">
         <div class="settings-title" id="t-sound-title">Ambient Campus Soundscape</div>
         <div class="settings-desc" id="t-sound-desc">Synthesized audio via Web Audio API with smooth fade-in and fade-out.</div>
@@ -810,7 +1189,7 @@
         </div>
       </div>
 
-      <!-- 5. Data Memory & Reset -->
+      <!-- Reset & Data -->
       <div class="settings-row">
         <div class="settings-title" id="t-data-title">Saved Preferences & Data</div>
         <div class="settings-desc" id="t-data-desc">Reset learned recommendation weights or clear your completed activity statistics.</div>
@@ -823,12 +1202,15 @@
   </div>
 </div>
 
-<!-- Catalog Modal / Drawer -->
+<!-- 6. Catalog Modal -->
 <div class="modal-backdrop" id="catalog-modal">
   <div class="modal-window">
     <div class="modal-head">
-      <h3 id="t-modal-title">Activity Catalog (20 Items)</h3>
-      <button type="button" class="subtle" id="close-modal-btn">✕</button>
+      <h3 id="t-modal-title">Activity Catalog</h3>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="primary" id="open-custom-act-btn">+ <span id="t-add-act-btn">New Custom Activity</span></button>
+        <button type="button" class="subtle" id="close-modal-btn">✕</button>
+      </div>
     </div>
     <div class="modal-body">
       <input type="text" class="search-input" id="catalog-search" placeholder="Search activities by name or keyword...">
@@ -839,8 +1221,8 @@
 
 <script>
 (function() {
-  // 20 Structured Campus Activities
-  var ACTIVITIES = [
+  // 20 Core Campus Activities
+  var CORE_ACTIVITIES = [
     { id: "A01", name_zh: "整理書包與桌面", name_en: "Organize your bag & desk", category: "productivity", location_type: "indoor", minutes: 10, energy: "low", icon: "🎒", best_time: "morning", steps_zh: "清空不需要的紙屑收據、把文具與筆記本分層歸位、擦拭桌面恢復清爽。", steps_en: "Discard receipts/wrappers, sort pens and notebooks, and wipe your desk clean." },
     { id: "A02", name_zh: "畫一張靈感小卡", name_en: "Draw a small inspiration card", category: "creative", location_type: "indoor", minutes: 15, energy: "low", icon: "🎨", best_time: "afternoon", steps_zh: "拿出一張便條紙或小卡，隨筆塗鴉剛才上課聽到的關鍵詞或心情插畫。", steps_en: "Take a note card and doodle a lecture concept, motivational quote, or mood sketch." },
     { id: "A03", name_zh: "寫三句重點讀書筆記", name_en: "Write three key study notes", category: "productivity", location_type: "indoor", minutes: 10, energy: "low", icon: "✍️", best_time: "morning", steps_zh: "回顧上一堂課，用自己的話總結三個核心知識點，加深長期記憶。", steps_en: "Summarize the 3 most crucial takeaways from the last class in your own words." },
@@ -848,55 +1230,52 @@
     { id: "A05", name_zh: "排好明日待辦與行事曆", name_en: "Plan tomorrow’s tasks & calendar", category: "productivity", location_type: "indoor", minutes: 20, energy: "low", icon: "📋", best_time: "evening", steps_zh: "列出明天的作業期限與上課教室，標記最重要的三件優先事項。", steps_en: "Review upcoming assignment deadlines and classrooms; flag top 3 priorities." },
     { id: "A06", name_zh: "整理本機練習檔與下載區", name_en: "Organize practice files & downloads", category: "productivity", location_type: "indoor", minutes: 30, energy: "medium", icon: "💻", best_time: "afternoon", steps_zh: "將桌面與 Downloads 資料夾的教材檔案分類歸入專案資料夾。", steps_en: "Sort downloaded course slides and code exercises into dedicated project directories." },
     { id: "A07", name_zh: "在校園合適走廊或中庭慢走", name_en: "Take a gentle walk in courtyard", category: "movement", location_type: "outdoor", minutes: 15, energy: "low", icon: "🚶", best_time: "morning", steps_zh: "暫離座位走到走廊或花園中庭，維持輕鬆步伐放鬆久坐的雙腿。", steps_en: "Step outside to the courtyard or hall, stretch your legs at a comfortable walking pace." },
-    { id: "A08", name_zh: "觀察天空雲彩並畫速寫", name_en: "Observe the sky and sketch", category: "creative", location_type: "outdoor", minutes: 20, energy: "low", icon: "☁️", best_time: "afternoon", steps_zh: "走到戶外抬頭觀察雲朵光影與微風，用速寫本記錄下此時的天氣氛圍。", steps_en: "Look up at the cloud formations and lighting, jotting down quick shapes and impressions." },
-    { id: "A09", name_zh: "合適校園步道快走提神", name_en: "Take a brisk walk across campus", category: "movement", location_type: "outdoor", minutes: 30, energy: "medium", icon: "🏃", best_time: "afternoon", steps_zh: "繞行學院大樓或操場外圍快走，加速血液循環掃除下午課間的睡意。", steps_en: "Brisk walk around the building or athletic field to boost heart rate and banish drowsiness." },
-    { id: "A10", name_zh: "規劃小組期末專案大綱", name_en: "Plan a group exercise outline", category: "productivity", location_type: "indoor", minutes: 45, energy: "medium", icon: "👥", best_time: "afternoon", steps_zh: "整理組內分工進度，擬定下次討論議題與待確認事項清單。", steps_en: "Map out milestones for group coursework and outline agenda items for the next meeting." },
-    { id: "A11", name_zh: "探索並記錄校園自然色彩", name_en: "Record colors in campus nature", category: "creative", location_type: "outdoor", minutes: 45, energy: "low", icon: "🌿", best_time: "afternoon", steps_zh: "在校園草坪或林蔭步道尋找 3 種植物或花朵，拍下或記錄自然的色彩漸層。", steps_en: "Stroll near campus greenery, spotting 3 distinct botanical colors or leaf textures." },
-    { id: "A12", name_zh: "構思下一次社團活動主題", name_en: "Brainstorm a future club activity", category: "creative", location_type: "indoor", minutes: 60, energy: "medium", icon: "💡", best_time: "evening", steps_zh: "用便利貼進行腦力激盪，擬出社團迎新、聚會或工作坊的亮點提案。", steps_en: "Mind-map creative ideas, interactive icebreakers, and themes for upcoming club events." },
-    { id: "A13", name_zh: "課桌椅肩頸深層伸展", name_en: "Desk shoulder & neck stretch", category: "movement", location_type: "indoor", minutes: 10, energy: "low", icon: "🧘", best_time: "any", steps_zh: "雙手抱頭向下緩慢拉伸頸後肌群，左右側彎拉伸斜方肌，各維持15秒鐘。", steps_en: "Gently tilt head side-to-side, roll shoulders backward, and stretch tight neck muscles." },
-    { id: "A14", name_zh: "4-7-8 腹式呼吸減壓調息", name_en: "4-7-8 Mindful breathing reset", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "🌬️", best_time: "night", steps_zh: "用鼻子吸氣4秒、屏息7秒、用嘴緩慢呼氣8秒，連續進行4個循環穩定自律神經。", steps_en: "Inhale 4s, hold breath 7s, exhale slowly for 8s. Repeat 4 cycles to lower stress hormones." },
-    { id: "A15", name_zh: "補水與遠眺綠色護眼", name_en: "Hydration & eye rest break", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "💧", best_time: "night", steps_zh: "喝滿一杯溫水，走到窗邊注視6公尺外的遠景綠樹，讓睫狀肌徹底放鬆。", steps_en: "Drink a full glass of water, then gaze at distance trees beyond 20 feet to relieve eye strain." },
-    { id: "A16", name_zh: "教學大樓爬樓梯微運動提神", name_en: "Stair climb energy recharge", category: "movement", location_type: "indoor", minutes: 15, energy: "medium", icon: "🪜", best_time: "afternoon", steps_zh: "不搭電梯改爬2至3層樓梯，維持穩定呼吸，迅速喚醒下肢肌肉與大腦思緒。", steps_en: "Skip the elevator and climb 2-3 flights of stairs at steady pace to boost circulation." },
-    { id: "A17", name_zh: "尋找校園未曾去過的秘密角落", name_en: "Explore a campus hidden corner", category: "creative", location_type: "outdoor", minutes: 25, energy: "medium", icon: "🗺️", best_time: "afternoon", steps_zh: "走平常沒走過的學院步道或圖書館背側小徑，發現校園新視角與安靜據點。", steps_en: "Take an unfamiliar pathway behind another department building to discover peaceful spots." },
-    { id: "A18", name_zh: "閃卡抽考上課核心要點", name_en: "Quick lecture flashcard drill", category: "productivity", location_type: "indoor", minutes: 15, energy: "medium", icon: "⚡", best_time: "morning", steps_zh: "打開筆記或閃卡，進行 10 個核心概念的主動回憶（Active Recall）。", steps_en: "Run through 10 digital flashcards to test recall on key terminology from lectures." },
-    { id: "A19", name_zh: "戴耳機享受沉浸放鬆音樂", name_en: "Lo-Fi / ambient music chillout", category: "wellness", location_type: "indoor", minutes: 15, energy: "low", icon: "🎵", best_time: "night", steps_zh: "戴上降噪耳機，閉上雙眼聆聽三首無人聲 Lo-Fi 或大自然白噪音放鬆大腦。", steps_en: "Put on headphones and close eyes for 3 ambient or Lo-Fi tracks to reset sensory overload." },
-    { id: "A20", name_zh: "傳訊息給同學互相關心加油", name_en: "Send an encouraging text to a friend", category: "wellness", location_type: "indoor", minutes: 5, energy: "low", icon: "💬", best_time: "any", steps_zh: "發一則溫暖的訊息給同系好友或室友，問問對方今天課堂順利與否。", steps_en: "Drop a cheerful greeting or funny meme to a classmate or friend to stay connected." }
+    { id: "A08", name_zh: "裝滿溫開水並做三次深呼吸", name_en: "Refill water & take 3 deep breaths", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "💧", best_time: "morning", steps_zh: "走到飲水機裝滿水，一口一口慢慢喝下，同時配合鼻吸嘴呼放鬆橫膈膜。", steps_en: "Refill your bottle, take slow deliberate sips, and practice diaphragmatic breathing." },
+    { id: "A09", name_zh: "換一個位置換個視角看教室", name_en: "Change seat for a fresh view", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "🪑", best_time: "afternoon", steps_zh: "換到靠窗或不同角度的空位，改變光線與視野，轉換學習思考的情境。", steps_en: "Move to a window seat or another angle to reset your visual environment." },
+    { id: "A10", name_zh: "跟同學交換一則冷知識", name_en: "Share a fun trivia with a peer", category: "creative", location_type: "indoor", minutes: 10, energy: "low", icon: "💬", best_time: "afternoon", steps_zh: "找旁邊的同學聊聊今天看到的好玩冷知識，輕鬆破冰。", steps_en: "Share an interesting trivia fact or light joke to spark a friendly conversation." },
+    { id: "A11", name_zh: "閉眼聽完一首完整純音樂", name_en: "Close eyes & listen to one song", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "🎧", best_time: "afternoon", steps_zh: "戴上耳機播放一首無人聲器樂或白噪音，閉上雙眼讓眼部肌肉放鬆。", steps_en: "Put on headphones with an instrumental track, close your eyes, and rest your vision." },
+    { id: "A12", name_zh: "肩頸伸展四式放鬆久坐", name_en: "4-step neck & shoulder stretch", category: "movement", location_type: "indoor", minutes: 10, energy: "low", icon: "🧘", best_time: "morning", steps_zh: "緩慢左右側屈頸部、旋轉肩胛骨、背部擴胸伸展，緩解打字疲倦。", steps_en: "Gently tilt your neck sideways, roll shoulders, and expand your chest to release tension." },
+    { id: "A13", name_zh: "去合作社買健康小點心", name_en: "Grab a healthy snack at store", category: "wellness", location_type: "indoor", minutes: 15, energy: "medium", icon: "🍎", best_time: "afternoon", steps_zh: "走到校園便利商店買顆茶葉蛋、燕麥奶或堅果，及時補充腦力能量。", steps_en: "Walk to the campus mart and pick up a nourishing snack like nuts or fruit." },
+    { id: "A14", name_zh: "爬兩層樓梯刺激血液循環", name_en: "Climb two flights of stairs", category: "movement", location_type: "indoor", minutes: 10, energy: "medium", icon: "🪜", best_time: "afternoon", steps_zh: "不搭電梯改走樓梯兩層樓，節奏穩定均勻，喚醒下半身循環與警覺度。", steps_en: "Take the stairs instead of the elevator at a steady pace to boost heart rate and alertness." },
+    { id: "A15", name_zh: "在紙上列出本週三件好事", name_en: "List 3 good things this week", category: "creative", location_type: "indoor", minutes: 15, energy: "low", icon: "✨", best_time: "evening", steps_zh: "寫下這週發生的三件小確幸或完成的事情，提升正向心理韌性。", steps_en: "Jot down 3 positive things or small victories from this week to cultivate gratitude." },
+    { id: "A16", name_zh: "到通風走廊眺望遠處綠樹 5 分鐘", name_en: "Gaze at campus greenery (20-20-20)", category: "wellness", location_type: "outdoor", minutes: 10, energy: "low", icon: "🌳", best_time: "morning", steps_zh: "遠眺校園遠方的綠樹或山景，讓睫狀肌完全放鬆，實踐 20-20-20 護眼原則。", steps_en: "Look into the far distance at green trees or the horizon to relax eye ciliary muscles." },
+    { id: "A17", name_zh: "快速擦拭手機與眼鏡鏡片", name_en: "Clean eyeglasses and phone screen", category: "productivity", location_type: "indoor", minutes: 10, energy: "low", icon: "👓", best_time: "morning", steps_zh: "用超細纖維布搭配螢幕清潔劑擦拭鏡片與手機表面，保持清爽透亮。", steps_en: "Use a microfiber cloth to wipe your glasses and smartphone display thoroughly." },
+    { id: "A18", name_zh: "給自己留一句鼓勵小紙條", name_en: "Leave yourself an encouraging note", category: "creative", location_type: "indoor", minutes: 10, energy: "low", icon: "💌", best_time: "evening", steps_zh: "在筆記本封面內側寫下一句肯定的話：「你今天已經做得很棒了」。", steps_en: "Write a kind affirmation inside your notebook cover to boost self-compassion." },
+    { id: "A19", name_zh: "整理相簿刪除不需要的課堂截圖", name_en: "Prune junk photo captures", category: "productivity", location_type: "indoor", minutes: 15, energy: "low", icon: "📱", best_time: "evening", steps_zh: "打開手機相簿，清理已經用完的黑板截圖或重複的投影片照片。", steps_en: "Delete blurry classroom board photos and redundant screenshot clutter." },
+    { id: "A20", name_zh: "專注練習呼吸法 4-7-8", name_en: "Practice 4-7-8 breathing reset", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "🌬️", best_time: "afternoon", steps_zh: "吸氣 4 秒、屏氣 7 秒、吐氣 8 秒，連續 4 個循環，迅速平撫焦慮。", steps_en: "Inhale for 4s, hold for 7s, exhale for 8s. Repeat 4 cycles to lower stress hormones." }
+  ];
+
+  // Default Campus Timetable
+  var DEFAULT_TIMETABLE = [
+    { id: "c1", name: "Introduction to Artificial Intelligence", room: "Tech Hall 302", start: "09:10", end: "10:00" },
+    { id: "c2", name: "Calculus & Linear Algebra", room: "Math Building 101", start: "10:20", end: "12:10" },
+    { id: "c3", name: "Computer Systems & Architecture", room: "Engineering Lab B-2", start: "13:30", end: "15:20" },
+    { id: "c4", name: "Design Thinking & UI Studio", room: "Creative Hall 401", start: "15:40", end: "17:30" }
   ];
 
   var TEXT = {
     en: {
       title: "What can I do between classes?",
-      subtitle: "Smart break activity optimizer for campus life",
-      browse: "Catalog", settings: "Settings",
-      engineName: "Circadian Activity Engine",
+      subtitle: "Smart campus break optimizer with timetable gap detection",
+      browse: "Catalog",
+      settings: "Settings",
+      scheduleBtn: "Schedule",
+      backupNav: "Data & Backup",
+      engineName: "Circadian AI Engine",
       lblTime: "Available Break Time",
-      lblLocation: "Location Preference",
+      lblLocation: "Location",
       lblEnergy: "Energy Level",
       lblGoal: "Goal Mode",
       all: "All", indoor: "Indoor", outdoor: "Outdoor",
       low: "Low (Chill)", medium: "Medium",
-      goalAny: "Auto / Balanced", goalWellness: "Mental Reset 🌿", goalProd: "Study & Focus 💻", goalMovement: "Physical Refresh 🏃", goalCreative: "Creative & Social 🎨",
-      aiPick: "Recommend Activity",
-      randomPick: "Surprise Me",
-      reset: "Reset",
-      hintEmpty: "Select your break conditions above, then click <b>Recommend Activity</b>.",
-      noneFound: "No matching activities found for these strict filters. Try increasing available time or selecting 'All'!",
-      historyTitle: "Recent Activity Log (Saved)",
-      clear: "Clear Log",
-      noHistory: "No activities picked yet.",
-      stepsLabel: "Action Guide:",
-      startTimer: "Start Break Timer",
-      pauseTimer: "Pause",
-      resumeTimer: "Resume",
-      stopTimer: "Reset Timer",
-      timerDone: "Break Complete! Time to head to your next class.",
-      reasonWhy: "Recommendation Reason:",
-      matchRate: "Match Score",
-      catalogTitle: "Activity Catalog (20 Items)",
-      searchPlaceholder: "Search activities by name or keyword...",
+      goalAny: "Auto / Balanced", goalWellness: "Mental Reset 🌿",
+      goalProd: "Study & Focus 💻", goalMovement: "Physical Refresh 🏃",
+      goalCreative: "Creative / Social 🎨",
+      aiPick: "Recommend Activity", randomPick: "Surprise Me", reset: "Reset",
+      emptyState: "Select your break conditions above, then click <b>Recommend Activity</b>.",
+      historyTitle: "Recent Activity Log (Saved)", clear: "Clear Log", noHistory: "No activities logged yet.",
+      catalogTitle: "Activity Catalog", searchPlaceholder: "Search activities by name or keyword...",
       footerNote: "What can I do between classes? · Built with care for campus life.",
-      upvoteTip: "Boost in recommendation ranking",
-      downvoteTip: "Reduce in recommendation ranking",
       morning: "Morning", afternoon: "Afternoon", evening: "Evening", night: "Night",
       statMins: "Minutes Recharged", statActs: "Breaks Completed", statTop: "Favorite Category",
       settingsTitle: "⚙️ Settings",
@@ -914,63 +1293,91 @@
       dataTitle: "Saved Preferences & Data",
       dataDesc: "Reset learned recommendation weights or clear your completed activity statistics.",
       resetWeights: "Reset AI Weights", resetAll: "Reset All Stats",
-      soundOff: "Soundscape: Off", soundOn: "Soundscape: Playing"
+      scheduleTitle: "📅 Class Schedule & Break Gap Engine",
+      scheduleDesc: "Add your lectures below. The app calculates your upcoming break gaps automatically and synchronizes the break timer for you!",
+      addClassTitle: "+ Add Lecture / Course", classNameLbl: "Course Name", classRoomLbl: "Room / Hall",
+      classStartLbl: "Start Time", classEndLbl: "End Time",
+      saveClass: "Add to Schedule", resetClasses: "Load Sample Timetable",
+      backupTitle: "💾 Data Backup & Restore (JSON)",
+      exportTitle: "Export All Data (Download Backup)",
+      exportDesc: "Download your entire schedule, custom activities, recharge statistics, and preferences into a single JSON file. Works offline and transfers easily to new devices.",
+      downloadBtn: "Download Backup (.json)",
+      importTitle: "Restore from Backup File",
+      importDesc: "Select a previously saved backup JSON file to restore your full schedule, custom activities, and past recharge records.",
+      restoreBtn: "Select Backup File (.json)",
+      customActTitle: "✨ Create Custom Activity",
+      customNameEn: "Activity Name (English)", customNameZh: "Activity Name (繁體中文)",
+      customDuration: "Duration (Minutes)", customCategory: "Category",
+      customLoc: "Location", customEmoji: "Icon (Emoji)", customSteps: "Quick Action Steps / Tips",
+      saveCustomBtn: "Save Custom Activity", addActBtn: "New Custom Activity",
+      reflectionTitle: "🎉 Break Completed!",
+      reflectionSub: "Great job stepping away and taking care of yourself! How refreshed do you feel?",
+      saveLogBtn: "Log This Break",
+      editSchedule: "Edit Classes", autoSyncOn: "Auto-Sync: ON", autoSyncOff: "Auto-Sync: OFF"
     },
     zh: {
-      title: "課間我想做什麼？",
-      subtitle: "智慧校園課間生活助手 · 找到專屬的充能節奏",
-      browse: "活動庫", settings: "系統設定",
-      engineName: "生物節律活動推薦引擎",
-      lblTime: "下堂課前可用時間",
-      lblLocation: "活動地點偏好",
-      lblEnergy: "目前體力狀況",
-      lblGoal: "活動目標導向",
-      all: "全部", indoor: "室內", outdoor: "室外",
-      low: "低體力（放空休閒）", medium: "中等（活動精神）",
-      goalAny: "自動平衡推薦", goalWellness: "心靈放鬆 🌿", goalProd: "學習專注 💻", goalMovement: "身體舒活 🏃", goalCreative: "創意社交 🎨",
-      aiPick: "智慧推薦活動",
-      randomPick: "隨機挑選",
-      reset: "重設條件",
-      hintEmpty: "請在上方設定你的課間狀況，再按 <b>智慧推薦活動</b>。",
-      noneFound: "目前條件下沒有符合的活動，試試放寬可用時間或選擇「全部」！",
-      historyTitle: "最近活動紀錄（本機儲存）",
-      clear: "清除紀錄",
-      noHistory: "目前尚無挑選紀錄。",
-      stepsLabel: "行動引導：",
-      startTimer: "啟動課間倒數計時",
-      pauseTimer: "暫停",
-      resumeTimer: "繼續",
-      stopTimer: "重設計時",
-      timerDone: "課間時間到囉！收拾好物品準備前往下一堂課吧！",
-      reasonWhy: "推薦理由：",
-      matchRate: "契合度評分",
-      catalogTitle: "活動清單庫（共 20 項活動）",
-      searchPlaceholder: "輸入關鍵字或活動名稱搜尋...",
-      footerNote: "課間我想做什麼？ · 為校園生活精心打造。",
-      upvoteTip: "提高推薦權重",
-      downvoteTip: "降低推薦權重",
-      morning: "晨間", afternoon: "午後", evening: "黃昏", night: "夜間",
-      statMins: "累積充能分鐘", statActs: "完成課間次數", statTop: "最常選類別",
+      title: "下課可以做什麼？",
+      subtitle: "智慧校園空堂活動推薦器 · 自動對齊課表空檔",
+      browse: "活動庫",
+      settings: "設定",
+      scheduleBtn: "課表空堂",
+      backupNav: "備份還原",
+      engineName: "晝夜環境 AI 決策引擎",
+      lblTime: "目前可用的空堂時間",
+      lblLocation: "活動地點",
+      lblEnergy: "目前精力狀態",
+      lblGoal: "本次目標",
+      all: "不拘", indoor: "室內", outdoor: "室外",
+      low: "低負擔 (放鬆)", medium: "中等活動",
+      goalAny: "綜合平衡推薦", goalWellness: "身心重置 🌿",
+      goalProd: "專注與學習 💻", goalMovement: "身體活動 🏃",
+      goalCreative: "靈感與社交 🎨",
+      aiPick: "智慧推薦活動", randomPick: "隨機給我驚喜", reset: "恢復預設",
+      emptyState: "請在上方選取空堂條件，再點擊「<b>智慧推薦活動</b>」。",
+      historyTitle: "已完成休息紀錄 (自動儲存)", clear: "清除紀錄", noHistory: "尚無完成的活動紀錄。",
+      catalogTitle: "校園活動庫", searchPlaceholder: "輸入關鍵字或名稱搜尋活動...",
+      footerNote: "下課可以做什麼？ · 專為大學校園生活打造的輕量小工具。",
+      morning: "早晨時光", afternoon: "午後時光", evening: "黃昏夕陽", night: "深夜沉靜",
+      statMins: "累積充能分鐘", statActs: "完成休息次數", statTop: "最常選類別",
       settingsTitle: "⚙️ 系統設定",
       themeType: "主題架構",
-      themeTypeDesc: "選擇「動態環境」（隨日照天色與日月星辰動態旋轉）或「靜態傳統」（經典無動畫界面）。",
-      themeDynamic: "動態環境", themeStatic: "靜態傳統",
-      timeModeTitle: "動態天色時段",
-      timeModeDesc: "即時連動設備時鐘（精準至分鐘），或點選特定時段觀看天色與日夜旋轉。",
+      themeTypeDesc: "選擇「動態環境光影」（包含旋轉日月與即時晝夜調色）或「靜態純粹外觀」（經典無動畫）。",
+      themeDynamic: "動態光影", themeStatic: "靜態純粹",
+      timeModeTitle: "動態晝夜週期",
+      timeModeDesc: "即時對齊裝置時鐘，或手動切換特定時段欣賞天空旋轉軌跡。",
       liveClock: "即時時鐘",
-      staticTitle: "靜態外觀偏好",
-      staticDesc: "經典無背景天色與日月動畫之介面。",
-      themeSystem: "系統預設", themeLight: "淺色模式", themeDark: "深色模式",
-      soundTitle: "課間環境白噪音",
-      soundDesc: "免下載任何音檔，透過瀏覽器即時合成器播放平滑淡入淡出之音效。",
-      dataTitle: "偏好記憶與數據管理",
-      dataDesc: "管理已學習的推薦權重與課間累積數據。",
-      resetWeights: "重設推薦權重", resetAll: "重設所有統計數據",
-      soundOff: "背景音效：關閉", soundOn: "背景音效：播放中"
+      staticTitle: "靜態外觀",
+      staticDesc: "經典俐落外觀，無天體軌跡與光影旋轉。",
+      themeSystem: "跟隨系統", themeLight: "純淨淺色", themeDark: "沉浸深色",
+      soundTitle: "校園環境白噪音",
+      soundDesc: "透過瀏覽器 Web Audio API 純本機合成，具備平滑漸入漸出。",
+      dataTitle: "資料與偏好管理",
+      dataDesc: "重置 AI 推薦權重或清除所有完成次數與統計。",
+      resetWeights: "重置 AI 權重", resetAll: "清除所有統計紀錄",
+      scheduleTitle: "📅 課表管理與空堂自動對齊引擎",
+      scheduleDesc: "在下方填寫你的上課時段。系統將隨時計算距離下堂課的剩餘空檔，並自動幫你選取最合適的休息倒數！",
+      addClassTitle: "+ 新增課程時段", classNameLbl: "課程名稱", classRoomLbl: "教室 / 大樓",
+      classStartLbl: "開始時間", classEndLbl: "結束時間",
+      saveClass: "儲存至課表", resetClasses: "載入範例課表",
+      backupTitle: "💾 資料備份與還原 (JSON)",
+      exportTitle: "匯出所有資料 (下載備份檔)",
+      exportDesc: "將你的完整課表、自訂活動、充能統計與個人偏好一鍵打包成單一 JSON 檔案。完全離線可用，輕鬆搬移至新裝置。",
+      downloadBtn: "下載備份檔案 (.json)",
+      importTitle: "從備份檔還原",
+      importDesc: "選取先前儲存的備份 JSON 檔案，立刻還原完整課表、自訂活動與過往充能統計紀錄。",
+      restoreBtn: "選取備份檔案 (.json)",
+      customActTitle: "✨ 建立自訂校園活動",
+      customNameEn: "活動英文名稱", customNameZh: "活動中文名稱",
+      customDuration: "所需時長 (分鐘)", customCategory: "活動類別",
+      customLoc: "地點類型", customEmoji: "代表圖示 (Emoji)", customSteps: "具體執行步驟或心得",
+      saveCustomBtn: "儲存自訂活動", addActBtn: "新增自訂活動",
+      reflectionTitle: "🎉 休息完成！",
+      reflectionSub: "太棒了！暫時離開螢幕讓大腦深呼吸。你現在感覺如何？",
+      saveLogBtn: "記錄這段休息",
+      editSchedule: "編輯課表", autoSyncOn: "自動對齊：開啟", autoSyncOff: "自動對齊：關閉"
     }
   };
 
-  // State
   var state = {
     lang: "en",
     filters: { time: 15, location: "all", energy: "all", goal: "any" },
@@ -978,154 +1385,80 @@
     dynamicTime: "live",
     staticTheme: "system",
     soundMode: "none",
+    scheduleAutoSync: true,
+    timetable: [],
+    customActivities: [],
     currentRecommendation: null,
+    pendingReflection: null,
     history: [],
     weights: {},
     stats: { totalMinutes: 0, completedCount: 0, categories: {} },
-    timer: { interval: null, remaining: 0, total: 0, running: false }
+    timer: { duration: 0, remaining: 0, interval: null }
   };
 
-  // ==========================================
-  // Web Audio Synthesizer with Smooth Fade In/Out
-  // ==========================================
-  var audioCtx = null;
   var soundNodes = null;
+  var audioCtx = null;
 
-  function initAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
+  function getAllActivities() {
+    return CORE_ACTIVITIES.concat(state.customActivities);
   }
 
-  function playChime() {
-    try {
-      initAudio();
-      var osc = audioCtx.createOscillator();
-      var gain = audioCtx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3);
-      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 1.2);
-    } catch(e) {}
-  }
+  // --- Safe Theme Updating (Zero White Flash & Seamless Transitions) ---
+  function updateAtmosphereAndCelestial() {
+    var isDarkOS = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-  function stopSoundscape(fadeDuration) {
-    if (typeof fadeDuration !== "number") fadeDuration = 1.2;
-    if (soundNodes && soundNodes.gain && audioCtx) {
-      try {
-        var g = soundNodes.gain.gain;
-        var now = audioCtx.currentTime;
-        g.cancelScheduledValues(now);
-        g.setValueAtTime(Math.max(0.0001, g.value), now);
-        g.exponentialRampToValueAtTime(0.0001, now + fadeDuration);
-        var old = soundNodes;
-        soundNodes = null;
-        setTimeout(function() {
-          try {
-            if (old.src) old.src.stop();
-            if (old.osc1) old.osc1.stop();
-            if (old.osc2) old.osc2.stop();
-          } catch(e) {}
-        }, (fadeDuration * 1000) + 50);
-      } catch(e) {
-        soundNodes = null;
-      }
-    } else {
-      soundNodes = null;
+    if (state.themeSystem === "static") {
+      var targetStatic = state.staticTheme === "system" ? (isDarkOS ? "dark" : "light") : state.staticTheme;
+      document.documentElement.setAttribute("data-static-theme", targetStatic);
+      document.documentElement.setAttribute("data-theme-system", "static");
+      document.documentElement.classList.add("theme-static");
+      document.documentElement.classList.remove("theme-dynamic", "vibe-morning", "vibe-afternoon", "vibe-evening", "vibe-night");
+      document.body.className = "theme-static";
+      document.getElementById("celestial-stage").style.display = "none";
+      return;
     }
-    updateSoundscapePill();
-  }
 
-  function startSoundscape(type) {
-    stopSoundscape(0.8);
-    if (type === "none") return;
+    // Dynamic Theme Active
+    document.getElementById("celestial-stage").style.display = "block";
+    var hour = getEffectiveDecimalHour();
+    var isNightHour = (hour < 6 || hour >= 18);
+    // Bind static theme fallback to dark/light in sync with day period
+    document.documentElement.setAttribute("data-static-theme", isNightHour ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme-system", "dynamic");
+    document.documentElement.classList.remove("theme-static");
+    document.documentElement.classList.add("theme-dynamic");
 
-    setTimeout(function() {
-      try {
-        initAudio();
-        var now = audioCtx.currentTime;
-        var bufferSize = audioCtx.sampleRate * 2;
-        var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        var data = buffer.getChannelData(0);
+    var vibe = "morning";
+    if (hour >= 5.5 && hour < 11.5) vibe = "vibe-morning";
+    else if (hour >= 11.5 && hour < 17.0) vibe = "vibe-afternoon";
+    else if (hour >= 17.0 && hour < 20.0) vibe = "vibe-evening";
+    else vibe = "vibe-night";
 
-        if (type === "rain" || type === "white") {
-          for (var i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-          var noise = audioCtx.createBufferSource();
-          noise.buffer = buffer;
-          noise.loop = true;
+    document.documentElement.classList.remove("vibe-morning", "vibe-afternoon", "vibe-evening", "vibe-night");
+    document.documentElement.classList.add(vibe);
+    document.body.className = "theme-dynamic " + vibe;
 
-          var filter = audioCtx.createBiquadFilter();
-          filter.type = type === "rain" ? "lowpass" : "bandpass";
-          filter.frequency.value = type === "rain" ? 850 : 1200;
+    // Revolving Parabolic Arc
+    var sun = document.getElementById("sun-orb");
+    var moon = document.getElementById("moon-orb");
 
-          var gain = audioCtx.createGain();
-          var targetVol = type === "rain" ? 0.08 : 0.05;
-
-          // Smooth Fade-In
-          gain.gain.setValueAtTime(0.0001, now);
-          gain.gain.exponentialRampToValueAtTime(targetVol, now + 1.8);
-
-          noise.connect(filter);
-          filter.connect(gain);
-          gain.connect(audioCtx.destination);
-          noise.start();
-          soundNodes = { src: noise, gain: gain };
-        } else if (type === "lofi") {
-          var osc1 = audioCtx.createOscillator();
-          var osc2 = audioCtx.createOscillator();
-          var gainLofi = audioCtx.createGain();
-          osc1.type = "sine";
-          osc2.type = "sine";
-          osc1.frequency.value = 210;
-          osc2.frequency.value = 216;
-
-          // Smooth Fade-In
-          gainLofi.gain.setValueAtTime(0.0001, now);
-          gainLofi.gain.exponentialRampToValueAtTime(0.08, now + 1.8);
-
-          osc1.connect(gainLofi);
-          osc2.connect(gainLofi);
-          gainLofi.connect(audioCtx.destination);
-          osc1.start();
-          osc2.start();
-          soundNodes = { osc1: osc1, osc2: osc2, gain: gainLofi };
-        }
-      } catch(e) {}
-      updateSoundscapePill();
-    }, 250);
-  }
-
-  function updateSoundscapePill() {
-    var pill = document.getElementById("quick-sound-btn");
-    var txt = document.getElementById("t-sound-status");
-    if (soundNodes) {
-      pill.classList.add("playing");
-      txt.textContent = TEXT[state.lang].soundOn;
+    if (hour >= 6 && hour < 18) {
+      var progress = (hour - 6) / 12;
+      var sunX = 6 + (progress * 88);
+      var sunY = 25 + (4 * Math.pow(progress - 0.5, 2) * 85);
+      sun.style.left = sunX + "%";
+      sun.style.top = sunY + "px";
+      sun.style.opacity = "1";
+      moon.style.opacity = "0";
     } else {
-      pill.classList.remove("playing");
-      txt.textContent = TEXT[state.lang].soundOff;
-    }
-  }
-
-  // ==========================================
-  // Continuous Clockwise Celestial Revolution Physics
-  // ==========================================
-  function generateStars() {
-    var box = document.getElementById("stars-box");
-    box.innerHTML = "";
-    for (var i = 0; i < 35; i++) {
-      var s = document.createElement("div");
-      s.className = "star";
-      s.style.left = (Math.random() * 100) + "%";
-      s.style.top = (Math.random() * 90) + "px";
-      s.style.width = (Math.random() * 2 + 1.5) + "px";
-      s.style.height = s.style.width;
-      s.style.animationDelay = (Math.random() * 3) + "s";
-      box.appendChild(s);
+      var nightHour = hour >= 18 ? (hour - 18) : (hour + 6);
+      var moonProgress = nightHour / 12;
+      var moonX = 6 + (moonProgress * 88);
+      var moonY = 25 + (4 * Math.pow(moonProgress - 0.5, 2) * 85);
+      moon.style.left = moonX + "%";
+      moon.style.top = moonY + "px";
+      moon.style.opacity = "1";
+      sun.style.opacity = "0";
     }
   }
 
@@ -1140,398 +1473,498 @@
     return now.getHours() + (now.getMinutes() / 60) + (now.getSeconds() / 3600);
   }
 
-  function updateAtmosphereAndCelestial() {
-    if (state.themeSystem === "static") {
-      document.body.className = "theme-static";
-      var st = state.staticTheme;
-      if (st === "system") {
-        var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.setAttribute("data-static-theme", isDark ? "dark" : "light");
-      } else {
-        document.documentElement.setAttribute("data-static-theme", st);
-      }
-      return;
-    }
-
-    // Dynamic Theme Active
-    document.documentElement.removeAttribute("data-static-theme");
-    document.body.className = "theme-dynamic";
-
-    var hour = getEffectiveDecimalHour();
-    var sun = document.getElementById("sun-orb");
-    var moon = document.getElementById("moon-orb");
-
-    // 1. Determine Circadian Vibe
-    var vibe = "morning";
-    if (hour >= 5.5 && hour < 11.5) vibe = "vibe-morning";
-    else if (hour >= 11.5 && hour < 17.0) vibe = "vibe-afternoon";
-    else if (hour >= 17.0 && hour < 20.0) vibe = "vibe-evening";
-    else vibe = "vibe-night";
-
-    document.body.classList.remove("vibe-morning", "vibe-afternoon", "vibe-evening", "vibe-night");
-    document.body.classList.add(vibe);
-
-    // 2. Continuous Clockwise Parabolic Arc
-    if (hour >= 6 && hour < 18) {
-      // Daylight: Sun active
-      var progress = (hour - 6) / 12; // 0 to 1
-      var sunX = 6 + (progress * 88); // 6% to 94%
-      var sunY = 25 + (4 * Math.pow(progress - 0.5, 2) * 85);
-
-      sun.style.left = sunX + "%";
-      sun.style.top = sunY + "px";
-      sun.style.opacity = "1";
-
-      moon.style.opacity = "0";
-    } else {
-      // Nighttime: Moon active
-      var nightHour = hour >= 18 ? (hour - 18) : (hour + 6); // 0 to 12
-      var moonProgress = nightHour / 12; // 0 to 1
-      var moonX = 6 + (moonProgress * 88);
-      var moonY = 25 + (4 * Math.pow(moonProgress - 0.5, 2) * 85);
-
-      moon.style.left = moonX + "%";
-      moon.style.top = moonY + "px";
-      moon.style.opacity = "1";
-
-      sun.style.opacity = "0";
+  function generateStars() {
+    var box = document.getElementById("stars-box");
+    box.innerHTML = "";
+    for (var i = 0; i < 45; i++) {
+      var star = document.createElement("div");
+      star.className = "star";
+      star.style.width = (Math.random() * 2.5 + 1.2) + "px";
+      star.style.height = star.style.width;
+      star.style.left = (Math.random() * 100) + "%";
+      star.style.top = (Math.random() * 100) + "%";
+      star.style.animationDelay = (Math.random() * 3) + "s";
+      box.appendChild(star);
     }
   }
 
-  // ==========================================
-  // Circadian Recommendation Engine
-  // ==========================================
-  function evaluateUtility(act) {
-    var f = state.filters;
-    var score = 100;
-    var reasons = [];
+  // --- Web Audio Synthesizer (Exponential Fading) ---
+  function getAudioContext() {
+    if (!audioCtx) {
+      var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) audioCtx = new AudioContextClass();
+    }
+    if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }
 
-    if (f.location !== "all" && act.location_type !== f.location) return { score: -1 };
-    if (act.minutes > f.time) return { score: -1 };
-    if (f.energy !== "all" && act.energy !== f.energy) return { score: -1 };
+  function startSoundscape(type) {
+    var ctx = getAudioContext();
+    if (!ctx) return;
+    stopSoundscape(0.4);
+    if (type === "none") return;
 
-    var timeDiff = f.time - act.minutes;
-    if (timeDiff === 0) {
-      score += 25;
-      reasons.push(state.lang === "zh" ? "完美利用 " + f.time + " 分鐘" : "Exact match for your " + f.time + "m break");
-    } else if (timeDiff <= 5) {
-      score += 15;
-      reasons.push(state.lang === "zh" ? "預留回教室緩衝時間" : "Optimal duration with transition buffer");
-    } else {
-      score -= (timeDiff * 0.8);
+    var masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+    masterGain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 1.8);
+    masterGain.connect(ctx.destination);
+
+    var nodes = [];
+
+    if (type === "rain") {
+      var bufferSize = ctx.sampleRate * 2;
+      var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      var data = buffer.getChannelData(0);
+      var lastOut = 0.0;
+      for (var i = 0; i < bufferSize; i++) {
+        var white = Math.random() * 2 - 1;
+        data[i] = (lastOut + (0.02 * white)) / 1.02;
+        lastOut = data[i];
+        data[i] *= 3.5;
+      }
+      var noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+      noise.loop = true;
+      var filter = ctx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(900, ctx.currentTime);
+      noise.connect(filter);
+      filter.connect(masterGain);
+      noise.start();
+      nodes.push(noise);
+    } else if (type === "lofi") {
+      var osc1 = ctx.createOscillator();
+      var osc2 = ctx.createOscillator();
+      osc1.type = "sine";
+      osc2.type = "sine";
+      osc1.frequency.setValueAtTime(144, ctx.currentTime);
+      osc2.frequency.setValueAtTime(148, ctx.currentTime);
+      var subGain = ctx.createGain();
+      subGain.gain.setValueAtTime(0.35, ctx.currentTime);
+      osc1.connect(subGain);
+      osc2.connect(subGain);
+      subGain.connect(masterGain);
+      osc1.start();
+      osc2.start();
+      nodes.push(osc1, osc2);
+    } else if (type === "white") {
+      var bSize = ctx.sampleRate * 2;
+      var b = ctx.createBuffer(1, bSize, ctx.sampleRate);
+      var d = b.getChannelData(0);
+      for (var j = 0; j < bSize; j++) d[j] = (Math.random() * 2 - 1) * 0.18;
+      var wSource = ctx.createBufferSource();
+      wSource.buffer = b;
+      wSource.loop = true;
+      var bq = ctx.createBiquadFilter();
+      bq.type = "bandpass";
+      bq.frequency.setValueAtTime(1200, ctx.currentTime);
+      bq.Q.setValueAtTime(1.2, ctx.currentTime);
+      wSource.connect(bq);
+      bq.connect(masterGain);
+      wSource.start();
+      nodes.push(wSource);
     }
 
-    var hour = getEffectiveDecimalHour();
-    var phase = (hour >= 6 && hour < 12) ? "morning" :
-                (hour >= 12 && hour < 17.5) ? "afternoon" :
-                (hour >= 17.5 && hour < 21.5) ? "evening" : "night";
+    soundNodes = { masterGain: masterGain, sources: nodes, type: type };
+    updateSoundscapePill();
+  }
 
-    if (act.best_time === phase || act.best_time === "any") {
-      score += 25;
-      var phaseLabel = TEXT[state.lang][phase];
-      reasons.push(state.lang === "zh" ? "契合當前「" + phaseLabel + "」節奏" : "Fits current " + phaseLabel + " circadian rhythm");
+  function stopSoundscape(fadeTime) {
+    if (!soundNodes || !audioCtx) return;
+    var duration = typeof fadeTime === "number" ? fadeTime : 1.2;
+    var g = soundNodes.masterGain;
+    var current = Math.max(0.0001, g.gain.value);
+    g.gain.setValueAtTime(current, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+    var oldNodes = soundNodes;
+    soundNodes = null;
+    setTimeout(function() {
+      oldNodes.sources.forEach(function(s) {
+        try { s.stop(); s.disconnect(); } catch(e) {}
+      });
+      try { oldNodes.masterGain.disconnect(); } catch(e) {}
+    }, (duration * 1000) + 100);
+
+    updateSoundscapePill();
+  }
+
+  function updateSoundscapePill() {
+    var pill = document.getElementById("quick-sound-btn");
+    var label = document.getElementById("t-sound-status");
+    if (soundNodes) {
+      pill.classList.add("active");
+      var modeNames = { rain: "Rain", lofi: "Lo-Fi Hum", white: "White Noise" };
+      label.textContent = "Audio: " + (modeNames[soundNodes.type] || "Playing");
     } else {
-      score -= 10;
+      pill.classList.remove("active");
+      label.textContent = "Soundscape: Off";
+    }
+  }
+
+  // --- Real-Time Timetable & Break Gap Engine ---
+  function parseTimeToMinutes(timeStr) {
+    var parts = timeStr.split(":");
+    return (parseInt(parts[0], 10) * 60) + parseInt(parts[1], 10);
+  }
+
+  function formatMinutesToTime(mins) {
+    var h = Math.floor(mins / 60);
+    var m = mins % 60;
+    return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+  }
+
+  function evaluateScheduleGap() {
+    var now = new Date();
+    var currentMin = (now.getHours() * 60) + now.getMinutes();
+
+    var sorted = state.timetable.slice().sort(function(a, b) {
+      return parseTimeToMinutes(a.start) - parseTimeToMinutes(b.start);
+    });
+
+    var banner = document.getElementById("schedule-gap-banner");
+    var icon = document.getElementById("gap-status-icon");
+    var title = document.getElementById("gap-title");
+    var detail = document.getElementById("gap-detail");
+    var gapIndicator = document.getElementById("t-gap-indicator");
+
+    if (sorted.length === 0) {
+      icon.textContent = "📅";
+      title.textContent = state.lang === "zh" ? "尚未設定課表" : "No classes in timetable yet";
+      detail.textContent = state.lang === "zh" ? "點擊右側「編輯課表」新增課程，即可自動偵測下課空檔！" : "Click 'Edit Classes' to add your lectures and unlock automated gap detection!";
+      gapIndicator.style.display = "none";
+      return;
+    }
+
+    var inClass = null;
+    var nextClass = null;
+    var prevClass = null;
+
+    for (var i = 0; i < sorted.length; i++) {
+      var s = parseTimeToMinutes(sorted[i].start);
+      var e = parseTimeToMinutes(sorted[i].end);
+      if (currentMin >= s && currentMin < e) {
+        inClass = sorted[i];
+        if (i + 1 < sorted.length) nextClass = sorted[i + 1];
+        break;
+      }
+      if (currentMin < s) {
+        nextClass = sorted[i];
+        if (i > 0) prevClass = sorted[i - 1];
+        break;
+      }
+    }
+
+    if (inClass) {
+      var remainingInClass = parseTimeToMinutes(inClass.end) - currentMin;
+      icon.textContent = "📖";
+      title.textContent = (state.lang === "zh" ? "目前上課中：" : "Currently in class: ") + inClass.name;
+      detail.textContent = (state.lang === "zh" ? "下課時間 " : "Ends at ") + inClass.end + " (" + inClass.room + ") · " +
+        (state.lang === "zh" ? "還有 " : "") + remainingInClass + (state.lang === "zh" ? " 分鐘下課" : "m remaining");
+      gapIndicator.style.display = "none";
+    } else if (nextClass) {
+      var gapToNext = parseTimeToMinutes(nextClass.start) - currentMin;
+      icon.textContent = "⚡";
+      title.textContent = (state.lang === "zh" ? "下課空堂中！距離下堂課還有 " : "Campus Break Detected: ") + gapToNext + (state.lang === "zh" ? " 分鐘" : " mins free");
+      detail.textContent = (state.lang === "zh" ? "下堂課：" : "Next up: ") + nextClass.name + " (" + nextClass.room + ") at " + nextClass.start;
+
+      if (state.scheduleAutoSync) {
+        var closest = 15;
+        if (gapToNext < 12) closest = 10;
+        else if (gapToNext < 25) closest = 15;
+        else if (gapToNext < 48) closest = 30;
+        else closest = 60;
+
+        state.filters.time = closest;
+        document.querySelectorAll('[data-filter="time"] .chip-btn').forEach(function(b) {
+          var val = Number(b.getAttribute("data-val"));
+          b.classList.toggle("active", val === closest);
+          b.classList.toggle("auto-selected", val === closest);
+        });
+        gapIndicator.style.display = "inline";
+        gapIndicator.textContent = (state.lang === "zh" ? "自動對齊 " : "Auto: ") + closest + "m";
+      } else {
+        gapIndicator.style.display = "none";
+      }
+    } else {
+      icon.textContent = "🌙";
+      title.textContent = state.lang === "zh" ? "今日課程已全部結束" : "All lectures completed for today!";
+      detail.textContent = state.lang === "zh" ? "辛苦了！享受平靜的校園傍晚與個人充能時光。" : "Great job today! Enjoy a restful campus evening reset.";
+      gapIndicator.style.display = "none";
+    }
+  }
+
+  function renderTimetableList() {
+    var container = document.getElementById("timetable-items");
+    container.innerHTML = "";
+    if (state.timetable.length === 0) {
+      container.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:16px;">' +
+        (state.lang === "zh" ? "目前無課程紀錄，可點擊下方載入範例課表。" : "No courses added yet. Click below to load sample timetable.") + '</div>';
+      return;
+    }
+
+    state.timetable.forEach(function(c, idx) {
+      var card = document.createElement("div");
+      card.className = "timetable-card";
+      card.innerHTML =
+        '<div>' +
+          '<b>' + c.name + '</b>' +
+          '<div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">' +
+            '📍 ' + c.room + ' · ⏰ ' + c.start + ' - ' + c.end +
+          '</div>' +
+        '</div>' +
+        '<button type="button" class="subtle" data-del-class="' + idx + '" style="color:var(--coral);">🗑️</button>';
+      container.appendChild(card);
+    });
+
+    container.querySelectorAll("[data-del-class]").forEach(function(b) {
+      b.addEventListener("click", function() {
+        var i = Number(this.getAttribute("data-del-class"));
+        state.timetable.splice(i, 1);
+        persistData();
+        renderTimetableList();
+        evaluateScheduleGap();
+      });
+    });
+  }
+
+  // --- Recommendation Engine (MAUT Scoring) ---
+  function evaluateUtility(activity) {
+    var score = 100;
+    var reasons = [];
+    var f = state.filters;
+
+    if (activity.minutes <= f.time) {
+      score += 20;
+      reasons.push(state.lang === "zh" ? ("完美符合 " + f.time + " 分鐘空檔") : ("Fits your " + f.time + " min window"));
+    } else {
+      score -= (activity.minutes - f.time) * 4;
+    }
+
+    if (f.location !== "all") {
+      if (activity.location_type === f.location) {
+        score += 25;
+        reasons.push(state.lang === "zh" ? "符合偏好地點" : "Matches desired location");
+      } else {
+        score -= 35;
+      }
+    }
+
+    if (f.energy !== "all") {
+      if (activity.energy === f.energy) {
+        score += 20;
+        reasons.push(state.lang === "zh" ? "體能負荷剛好" : "Matches current energy level");
+      } else {
+        score -= 15;
+      }
     }
 
     if (f.goal !== "any") {
-      if (act.category === f.goal) {
+      if (activity.category === f.goal) {
         score += 35;
-        reasons.push(state.lang === "zh" ? "符合設定目標偏好" : "Strong alignment with selected goal preference");
+        reasons.push(state.lang === "zh" ? "直擊你設定的充電目標" : "Aligns directly with your break goal");
       } else {
         score -= 20;
       }
     }
 
-    if (state.history.length > 0 && state.history[0].id === act.id) {
-      score -= 45;
+    var hour = getEffectiveDecimalHour();
+    var currentPhase = (hour >= 6 && hour < 12) ? "morning" :
+                       (hour >= 12 && hour < 17.5) ? "afternoon" :
+                       (hour >= 17.5 && hour < 21.5) ? "evening" : "night";
+    if (activity.best_time === currentPhase) {
+      score += 15;
+      reasons.push(state.lang === "zh" ? "適合目前晝夜生理時鐘" : "Optimized for your circadian rhythm");
     }
 
-    var userMod = state.weights[act.id] || 0;
-    if (userMod !== 0) {
-      score += userMod * 15;
-      if (userMod > 0) reasons.push(state.lang === "zh" ? "已學習你的正面喜好" : "Learned from your positive ratings");
-    }
+    if (state.weights[activity.id]) score += state.weights[activity.id];
 
-    return {
-      score: Math.max(10, Math.min(99, Math.round(score))),
-      reasons: reasons.slice(0, 3)
-    };
+    return { score: Math.max(10, Math.min(100, Math.round(score))), reasons: reasons };
   }
 
   function pickActivity(mode) {
-    var candidates = [];
-    ACTIVITIES.forEach(function(a) {
-      var u = evaluateUtility(a);
-      if (u.score > 0) candidates.push({ activity: a, utility: u });
-    });
+    var all = getAllActivities();
+    if (all.length === 0) return;
 
-    if (candidates.length === 0) {
-      state.currentRecommendation = null;
-      renderResult(null, "none");
+    if (mode === "random") {
+      var randomAct = all[Math.floor(Math.random() * all.length)];
+      var randomUtil = evaluateUtility(randomAct);
+      state.currentRecommendation = { activity: randomAct, utility: randomUtil };
+      renderResult(state.currentRecommendation, "picked");
       return;
     }
 
-    var chosen = null;
-    if (mode === "smart") {
-      var isExploration = Math.random() < 0.15;
-      if (!isExploration) {
-        candidates.sort(function(a, b) { return b.utility.score - a.utility.score; });
-        chosen = candidates[0];
-      } else {
-        var topPool = candidates.sort(function(a, b) { return b.utility.score - a.utility.score; }).slice(0, 3);
-        chosen = topPool[Math.floor(Math.random() * topPool.length)];
-      }
-    } else {
-      var filtered = candidates.filter(function(c) {
-        return state.history.length === 0 || c.activity.id !== state.history[0].id;
-      });
-      chosen = filtered.length > 0 ? filtered[Math.floor(Math.random() * filtered.length)] : candidates[0];
-    }
-
-    state.currentRecommendation = chosen;
-
-    state.history.unshift({
-      id: chosen.activity.id,
-      name_en: chosen.activity.name_en,
-      name_zh: chosen.activity.name_zh,
-      minutes: chosen.activity.minutes,
-      icon: chosen.activity.icon,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    var scored = all.map(function(act) {
+      return { activity: act, utility: evaluateUtility(act) };
     });
-    if (state.history.length > 10) state.history.pop();
-    persistData();
+    scored.sort(function(a, b) { return b.utility.score - a.utility.score; });
 
-    renderResult(chosen, "picked");
-    renderHistory();
+    var topPool = scored.slice(0, 3);
+    var picked = topPool[Math.floor(Math.random() * topPool.length)];
+    state.currentRecommendation = picked;
+    renderResult(picked, "picked");
   }
 
-  // ==========================================
-  // LocalStorage Persistence
-  // ==========================================
-  function loadPersistedState() {
-    try {
-      var savedHist = localStorage.getItem("picker_history");
-      if (savedHist) state.history = JSON.parse(savedHist);
-      var savedWeights = localStorage.getItem("picker_weights");
-      if (savedWeights) state.weights = JSON.parse(savedWeights);
-      var savedThemeSys = localStorage.getItem("picker_theme_sys");
-      if (savedThemeSys) state.themeSystem = savedThemeSys;
-      var savedDynTime = localStorage.getItem("picker_dynamic_time");
-      if (savedDynTime) state.dynamicTime = savedDynTime;
-      var savedStatTheme = localStorage.getItem("picker_static_theme");
-      if (savedStatTheme) state.staticTheme = savedStatTheme;
-      var savedStats = localStorage.getItem("picker_stats");
-      if (savedStats) state.stats = JSON.parse(savedStats);
-    } catch(e) {}
-  }
-
-  function persistData() {
-    try {
-      localStorage.setItem("picker_history", JSON.stringify(state.history.slice(0, 8)));
-      localStorage.setItem("picker_weights", JSON.stringify(state.weights));
-      localStorage.setItem("picker_theme_sys", state.themeSystem);
-      localStorage.setItem("picker_dynamic_time", state.dynamicTime);
-      localStorage.setItem("picker_static_theme", state.staticTheme);
-      localStorage.setItem("picker_stats", JSON.stringify(state.stats));
-    } catch(e) {}
-  }
-
-  // ==========================================
-  // UI Rendering & Event Handling
-  // ==========================================
-  function renderResult(item, status) {
+  function renderResult(rec, viewMode) {
     var box = document.getElementById("result-box");
-    var t = TEXT[state.lang];
-
-    stopTimer();
-
-    if (status === "none") {
-      box.className = "result-card none-found";
-      box.innerHTML = '<div style="font-size:2rem;margin-bottom:8px;">🔍</div>' +
-                      '<h3>' + t.noneFound + '</h3>';
-      return;
-    }
-
-    if (!item) {
+    if (!rec || viewMode === "empty") {
       box.className = "result-card empty-state";
-      box.innerHTML = '<p>' + t.hintEmpty + '</p>';
+      box.innerHTML = '<p id="t-hint-empty">' + TEXT[state.lang].emptyState + '</p>';
       return;
     }
 
-    var act = item.activity;
-    var util = item.utility;
+    var act = rec.activity;
+    var util = rec.utility;
     var name = state.lang === "zh" ? act.name_zh : act.name_en;
-    var steps = state.lang === "zh" ? act.steps_zh : act.steps_en;
-    var energyLabel = act.energy === "low" ? t.low : t.medium;
-    var energyClass = act.energy === "low" ? "energy-low" : "energy-med";
+    var steps = state.lang === "zh" ? (act.steps_zh || act.steps_en || "") : (act.steps_en || act.steps_zh || "");
 
-    var reasonsHtml = "";
-    if (util && util.reasons && util.reasons.length > 0) {
-      reasonsHtml = '<div class="ai-reasoning">' +
-        '<span>💡</span>' +
-        '<div><b>' + t.reasonWhy + '</b> ' + util.reasons.join(' • ') + '</div>' +
-      '</div>';
-    }
+    var reasonsHtml = util.reasons.map(function(r) {
+      return '<span>• ' + r + '</span>';
+    }).join(" ");
+
+    var categoryLabels = {
+      wellness: { en: "Mental Reset", zh: "身心重置" },
+      productivity: { en: "Study & Focus", zh: "專注學習" },
+      movement: { en: "Physical Refresh", zh: "身體活動" },
+      creative: { en: "Creative & Social", zh: "靈感社交" }
+    };
+    var catName = categoryLabels[act.category] ? (state.lang === "zh" ? categoryLabels[act.category].zh : categoryLabels[act.category].en) : act.category;
 
     box.className = "result-card";
     box.innerHTML =
-      '<div class="card-top">' +
-        '<div class="card-badges">' +
-          '<span class="badge category">🏷️ ' + act.category.toUpperCase() + '</span>' +
-          '<span class="badge ' + energyClass + '">⚡ ' + energyLabel + '</span>' +
+      '<div class="result-header">' +
+        '<div style="display:flex; gap:8px; flex-wrap:wrap;">' +
           '<span class="badge">⏱️ ' + act.minutes + ' min</span>' +
-          '<span class="badge">📍 ' + t[act.location_type] + '</span>' +
+          '<span class="badge">🏷️ ' + catName + '</span>' +
+          '<span class="badge">📍 ' + act.location_type + '</span>' +
         '</div>' +
-        '<div class="context-pill highlight">' +
-          '🎯 ' + t.matchRate + ': ' + (util ? util.score : 90) + '%' +
+        '<div class="badge" style="background:var(--primary-light); color:var(--primary); font-weight:800;">' +
+          '⚡ ' + util.score + '% Utility' +
         '</div>' +
       '</div>' +
       '<div class="activity-title-row">' +
-        '<span class="activity-emoji">' + act.icon + '</span>' +
+        '<div class="activity-emoji">' + act.icon + '</div>' +
         '<h2 class="activity-title">' + name + '</h2>' +
       '</div>' +
       '<div class="activity-steps">' +
-        '<b>' + t.stepsLabel + '</b> ' + steps +
+        '<b>' + (state.lang === "zh" ? "執行步驟：" : "Action Steps: ") + '</b>' + steps +
       '</div>' +
-      reasonsHtml +
+      '<div class="ai-reasoning">' +
+        '<div style="font-size:1.1rem; line-height:1;">💡</div>' +
+        '<div>' + (state.lang === "zh" ? "<b>AI 決策理由：</b>" : "<b>AI Evaluation: </b>") + reasonsHtml + '</div>' +
+      '</div>' +
       '<div class="card-footer-actions">' +
-        '<button type="button" class="primary" id="start-timer-btn">⏱️ ' + t.startTimer + ' (' + act.minutes + 'm)</button>' +
         '<div class="interactive-feedback">' +
-          '<button type="button" class="subtle" id="upvote-btn" title="' + t.upvoteTip + '">👍</button>' +
-          '<button type="button" class="subtle" id="downvote-btn" title="' + t.downvoteTip + '">👎</button>' +
-          '<button type="button" class="subtle" id="reroll-btn">🔀</button>' +
+          '<button type="button" class="subtle" id="like-btn">👍 ' + (state.lang === "zh" ? "合適" : "Like") + '</button>' +
+          '<button type="button" class="subtle" id="dislike-btn">👎 ' + (state.lang === "zh" ? "換一個" : "Dislike") + '</button>' +
+        '</div>' +
+        '<div style="display:flex; gap:8px;">' +
+          '<button type="button" class="primary" id="start-timer-btn">⏱️ ' + (state.lang === "zh" ? "開始計時" : "Start Break Timer") + '</button>' +
+          '<button type="button" id="complete-break-btn">🎉 ' + (state.lang === "zh" ? "完成休息" : "Mark Done") + '</button>' +
         '</div>' +
       '</div>' +
-      '<div class="timer-banner" id="timer-banner">' +
+      '<div class="timer-banner" id="timer-box">' +
         '<div class="timer-display" id="timer-display">00:00</div>' +
         '<div class="timer-controls">' +
-          '<button type="button" id="timer-pause-btn">' + t.pauseTimer + '</button>' +
-          '<button type="button" class="subtle" id="timer-stop-btn">' + t.stopTimer + '</button>' +
+          '<button type="button" class="subtle" id="pause-timer-btn">⏸️ Pause</button>' +
+          '<button type="button" class="subtle" id="stop-timer-btn" style="color:var(--coral);">⏹️ Stop</button>' +
         '</div>' +
       '</div>';
 
-    document.getElementById("start-timer-btn").addEventListener("click", function() {
-      startTimer(act.minutes * 60, act);
-    });
-    document.getElementById("upvote-btn").addEventListener("click", function() {
-      state.weights[act.id] = (state.weights[act.id] || 0) + 1;
+    document.getElementById("like-btn").addEventListener("click", function() {
+      state.weights[act.id] = (state.weights[act.id] || 0) + 12;
       persistData();
-      this.style.color = "var(--primary)";
-      this.textContent = "👍 +1";
+      alert(state.lang === "zh" ? "已紀錄您的喜好！" : "Learned preference: AI will prioritize similar breaks.");
     });
-    document.getElementById("downvote-btn").addEventListener("click", function() {
-      state.weights[act.id] = (state.weights[act.id] || 0) - 1;
+
+    document.getElementById("dislike-btn").addEventListener("click", function() {
+      state.weights[act.id] = (state.weights[act.id] || 0) - 15;
       persistData();
-      this.style.color = "var(--coral)";
-      this.textContent = "👎 -1";
-    });
-    document.getElementById("reroll-btn").addEventListener("click", function() {
       pickActivity("smart");
     });
-    document.getElementById("timer-pause-btn").addEventListener("click", toggleTimerPause);
-    document.getElementById("timer-stop-btn").addEventListener("click", stopTimer);
+
+    document.getElementById("start-timer-btn").addEventListener("click", function() {
+      startBreakTimer(act.minutes * 60);
+    });
+
+    document.getElementById("complete-break-btn").addEventListener("click", function() {
+      openReflectionModal(act);
+    });
   }
 
-  // Timer
-  function startTimer(seconds, act) {
-    var banner = document.getElementById("timer-banner");
-    if (!banner) return;
-    banner.classList.add("active");
-    clearInterval(state.timer.interval);
+  // --- Timer Engine ---
+  function startBreakTimer(seconds) {
+    if (state.timer.interval) clearInterval(state.timer.interval);
+    state.timer.duration = seconds;
     state.timer.remaining = seconds;
-    state.timer.total = seconds;
-    state.timer.running = true;
+
+    var box = document.getElementById("timer-box");
+    box.classList.add("active");
     updateTimerDisplay();
 
-    if (state.soundMode !== "none") startSoundscape(state.soundMode);
-
     state.timer.interval = setInterval(function() {
-      if (!state.timer.running) return;
       state.timer.remaining--;
       updateTimerDisplay();
       if (state.timer.remaining <= 0) {
         clearInterval(state.timer.interval);
-        playChime();
-        stopSoundscape(1.5);
-        alert(TEXT[state.lang].timerDone);
-
-        if (act) {
-          state.stats.totalMinutes += act.minutes;
-          state.stats.completedCount += 1;
-          state.stats.categories[act.category] = (state.stats.categories[act.category] || 0) + 1;
-          persistData();
-          renderStats();
-        }
-        stopTimer();
+        state.timer.interval = null;
+        if (state.currentRecommendation) openReflectionModal(state.currentRecommendation.activity);
       }
     }, 1000);
+
+    var pauseBtn = document.getElementById("pause-timer-btn");
+    var stopBtn = document.getElementById("stop-timer-btn");
+    pauseBtn.onclick = function() {
+      if (state.timer.interval) {
+        clearInterval(state.timer.interval);
+        state.timer.interval = null;
+        pauseBtn.textContent = "▶️ Resume";
+      } else {
+        state.timer.interval = setInterval(function() {
+          state.timer.remaining--;
+          updateTimerDisplay();
+          if (state.timer.remaining <= 0) {
+            clearInterval(state.timer.interval);
+            state.timer.interval = null;
+            if (state.currentRecommendation) openReflectionModal(state.currentRecommendation.activity);
+          }
+        }, 1000);
+        pauseBtn.textContent = "⏸️ Pause";
+      }
+    };
+    stopBtn.onclick = function() {
+      clearInterval(state.timer.interval);
+      state.timer.interval = null;
+      box.classList.remove("active");
+    };
   }
 
   function updateTimerDisplay() {
-    var d = document.getElementById("timer-display");
-    if (!d) return;
+    var el = document.getElementById("timer-display");
+    if (!el) return;
     var m = Math.floor(state.timer.remaining / 60);
     var s = state.timer.remaining % 60;
-    d.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+    el.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
   }
 
-  function toggleTimerPause() {
-    state.timer.running = !state.timer.running;
-    var btn = document.getElementById("timer-pause-btn");
-    if (btn) btn.textContent = state.timer.running ? TEXT[state.lang].pauseTimer : TEXT[state.lang].resumeTimer;
+  // --- Post-Break Reflection Modal ---
+  function openReflectionModal(activity) {
+    state.pendingReflection = {
+      activity: activity,
+      rating: 5,
+      feeling: "Energized"
+    };
+    document.getElementById("reflection-modal").classList.add("open");
   }
 
-  function stopTimer() {
-    clearInterval(state.timer.interval);
-    state.timer.running = false;
-    var banner = document.getElementById("timer-banner");
-    if (banner) banner.classList.remove("active");
-    stopSoundscape(1.2);
-  }
-
-  function renderStats() {
-    document.getElementById("stat-minutes").textContent = state.stats.totalMinutes;
-    document.getElementById("stat-count").textContent = state.stats.completedCount;
-    var topCat = "🌿";
-    var maxVal = 0;
-    for (var k in state.stats.categories) {
-      if (state.stats.categories[k] > maxVal) {
-        maxVal = state.stats.categories[k];
-        topCat = k === "productivity" ? "💻" : k === "movement" ? "🏃" : k === "creative" ? "🎨" : "🌿";
-      }
-    }
-    document.getElementById("stat-favorite").textContent = topCat;
-  }
-
-  function renderHistory() {
-    var list = document.getElementById("history-items");
-    list.innerHTML = "";
-    if (state.history.length === 0) {
-      list.innerHTML = '<li class="history-item" style="color:var(--text-muted); justify-content:center;">' + TEXT[state.lang].noHistory + '</li>';
-      return;
-    }
-    state.history.forEach(function(item) {
-      var li = document.createElement("li");
-      li.className = "history-item";
-      var name = state.lang === "zh" ? item.name_zh : item.name_en;
-      li.innerHTML =
-        '<div class="left">' +
-          '<span>' + item.icon + '</span>' +
-          '<b>' + name + '</b>' +
-          '<span class="badge">' + item.minutes + ' min</span>' +
-        '</div>' +
-        '<span class="time-tag">' + item.timestamp + '</span>';
-      list.appendChild(li);
-    });
-  }
-
+  // --- Catalog Drawer ---
   function renderCatalog(filterText) {
     var container = document.getElementById("catalog-container");
     container.innerHTML = "";
     var query = (filterText || "").toLowerCase().trim();
+    var all = getAllActivities();
 
-    var matches = ACTIVITIES.filter(function(a) {
+    var matches = all.filter(function(a) {
       if (!query) return true;
       var name = (a.name_en + " " + a.name_zh + " " + a.category).toLowerCase();
       return name.indexOf(query) !== -1;
@@ -1541,9 +1974,10 @@
       var card = document.createElement("div");
       card.className = "catalog-card";
       var name = state.lang === "zh" ? act.name_zh : act.name_en;
+      var isCustom = act.id.startsWith("CUSTOM_");
       card.innerHTML =
-        '<div style="font-size:1.4rem; margin-bottom:4px;">' + act.icon + '</div>' +
-        '<b>' + name + '</b>' +
+        '<div style="font-size:1.5rem; margin-bottom:4px;">' + act.icon + '</div>' +
+        '<b>' + name + '</b>' + (isCustom ? '<span class="custom-tag">Custom</span>' : '') +
         '<div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">' +
           act.minutes + ' min · ' + act.category + ' · ' + act.location_type +
         '</div>';
@@ -1556,6 +1990,147 @@
     });
   }
 
+  // --- History & Stats ---
+  function renderHistory() {
+    var list = document.getElementById("history-items");
+    list.innerHTML = "";
+    if (state.history.length === 0) {
+      list.innerHTML = '<li class="history-item" style="color:var(--text-muted); justify-content:center;">' + TEXT[state.lang].noHistory + '</li>';
+      return;
+    }
+    state.history.forEach(function(item) {
+      var li = document.createElement("li");
+      li.className = "history-item";
+      var name = state.lang === "zh" ? item.name_zh : item.name_en;
+      var ratingStars = "⭐".repeat(item.rating || 5);
+      li.innerHTML =
+        '<div class="left">' +
+          '<span>' + item.icon + '</span>' +
+          '<b>' + name + '</b>' +
+          '<span class="badge">' + item.minutes + ' min</span>' +
+          '<span style="font-size:0.75rem; color:var(--text-muted);">' + ratingStars + ' (' + (item.feeling || "Recharged") + ')</span>' +
+        '</div>' +
+        '<span class="time-tag">' + item.timestamp + '</span>';
+      list.appendChild(li);
+    });
+  }
+
+  function renderStats() {
+    document.getElementById("stat-minutes").textContent = state.stats.totalMinutes;
+    document.getElementById("stat-count").textContent = state.stats.completedCount;
+    var favCat = "🌿";
+    var max = 0;
+    for (var cat in state.stats.categories) {
+      if (state.stats.categories[cat] > max) {
+        max = state.stats.categories[cat];
+        favCat = cat === "wellness" ? "🌿" : (cat === "productivity" ? "💻" : (cat === "movement" ? "🏃" : "🎨"));
+      }
+    }
+    document.getElementById("stat-favorite").textContent = favCat;
+  }
+
+  // --- Persistence & 1-Click Backup / Restore ---
+  function persistData() {
+    try {
+      localStorage.setItem("picker_v3_state", JSON.stringify({
+        weights: state.weights,
+        themeSystem: state.themeSystem,
+        dynamicTime: state.dynamicTime,
+        staticTheme: state.staticTheme,
+        scheduleAutoSync: state.scheduleAutoSync,
+        timetable: state.timetable,
+        customActivities: state.customActivities,
+        stats: state.stats,
+        history: state.history.slice(0, 15)
+      }));
+    } catch(e) {}
+  }
+
+  function loadPersistedState() {
+    try {
+      var saved = localStorage.getItem("picker_v3_state");
+      if (saved) {
+        var parsed = JSON.parse(saved);
+        if (parsed.weights) state.weights = parsed.weights;
+        if (parsed.themeSystem) state.themeSystem = parsed.themeSystem;
+        if (parsed.dynamicTime) state.dynamicTime = parsed.dynamicTime;
+        if (parsed.staticTheme) state.staticTheme = parsed.staticTheme;
+        if (typeof parsed.scheduleAutoSync === "boolean") state.scheduleAutoSync = parsed.scheduleAutoSync;
+        if (Array.isArray(parsed.timetable)) state.timetable = parsed.timetable;
+        if (Array.isArray(parsed.customActivities)) state.customActivities = parsed.customActivities;
+        if (parsed.stats) state.stats = parsed.stats;
+        if (Array.isArray(parsed.history)) state.history = parsed.history;
+      }
+      if (!state.timetable || state.timetable.length === 0) {
+        state.timetable = DEFAULT_TIMETABLE.slice();
+      }
+    } catch(e) {
+      state.timetable = DEFAULT_TIMETABLE.slice();
+    }
+  }
+
+  function downloadBackupFile() {
+    var payload = {
+      app: "what-can-i-do-between-classes",
+      version: "3.0",
+      exportedAt: new Date().toISOString(),
+      timetable: state.timetable,
+      customActivities: state.customActivities,
+      history: state.history,
+      stats: state.stats,
+      weights: state.weights,
+      settings: {
+        themeSystem: state.themeSystem,
+        dynamicTime: state.dynamicTime,
+        staticTheme: state.staticTheme,
+        scheduleAutoSync: state.scheduleAutoSync,
+        lang: state.lang
+      }
+    };
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
+    var dlAnchor = document.createElement("a");
+    var dateStr = new Date().toISOString().slice(0, 10);
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", "campus-companion-backup-" + dateStr + ".json");
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+  }
+
+  function restoreFromBackupFile(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var data = JSON.parse(e.target.result);
+        if (!data || !data.version) throw new Error("Invalid backup format");
+        if (Array.isArray(data.timetable)) state.timetable = data.timetable;
+        if (Array.isArray(data.customActivities)) state.customActivities = data.customActivities;
+        if (Array.isArray(data.history)) state.history = data.history;
+        if (data.stats) state.stats = data.stats;
+        if (data.weights) state.weights = data.weights;
+        if (data.settings) {
+          if (data.settings.themeSystem) state.themeSystem = data.settings.themeSystem;
+          if (data.settings.dynamicTime) state.dynamicTime = data.settings.dynamicTime;
+          if (data.settings.staticTheme) state.staticTheme = data.settings.staticTheme;
+          if (typeof data.settings.scheduleAutoSync === "boolean") state.scheduleAutoSync = data.settings.scheduleAutoSync;
+        }
+        persistData();
+        renderTimetableList();
+        evaluateScheduleGap();
+        renderStats();
+        renderHistory();
+        syncSettingsUI();
+        applyLanguage();
+        alert(state.lang === "zh" ? "備份還原成功！所有課表與自訂活動已同步。" : "Backup restored successfully! All schedules and custom activities are live.");
+        document.getElementById("backup-modal").classList.remove("open");
+      } catch(err) {
+        alert("Failed to restore backup: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // --- Language & Text Localization ---
   function applyLanguage() {
     var t = TEXT[state.lang];
     document.documentElement.lang = state.lang === "zh" ? "zh-Hant-TW" : "en";
@@ -1564,6 +2139,8 @@
     document.getElementById("t-subtitle").textContent = t.subtitle;
     document.getElementById("t-browse").textContent = t.browse;
     document.getElementById("t-settings").textContent = t.settings;
+    document.getElementById("t-schedule-btn").textContent = t.scheduleBtn;
+    document.getElementById("t-backup-nav").textContent = t.backupNav;
     document.getElementById("lang-btn").textContent = state.lang === "zh" ? "English" : "繁體中文";
     document.getElementById("t-engine-name").textContent = t.engineName;
     document.getElementById("t-lbl-time").textContent = t.lblTime;
@@ -1583,7 +2160,27 @@
     document.getElementById("t-stat-activities").textContent = t.statActs;
     document.getElementById("t-stat-top").textContent = t.statTop;
 
-    // Settings Modal
+    // Modals
+    document.getElementById("t-schedule-title").textContent = t.scheduleTitle;
+    document.getElementById("t-schedule-desc").textContent = t.scheduleDesc;
+    document.getElementById("t-add-class-title").textContent = t.addClassTitle;
+    document.getElementById("t-class-name-lbl").textContent = t.classNameLbl;
+    document.getElementById("t-class-room-lbl").textContent = t.classRoomLbl;
+    document.getElementById("t-class-start-lbl").textContent = t.classStartLbl;
+    document.getElementById("t-class-end-lbl").textContent = t.classEndLbl;
+    document.getElementById("t-save-class").textContent = t.saveClass;
+    document.getElementById("t-reset-classes").textContent = t.resetClasses;
+    document.getElementById("t-edit-schedule").textContent = t.editSchedule;
+    document.getElementById("t-auto-sync-status").textContent = state.scheduleAutoSync ? t.autoSyncOn : t.autoSyncOff;
+
+    document.getElementById("t-backup-title").textContent = t.backupTitle;
+    document.getElementById("t-export-title").textContent = t.exportTitle;
+    document.getElementById("t-export-desc").textContent = t.exportDesc;
+    document.getElementById("t-download-btn").textContent = t.downloadBtn;
+    document.getElementById("t-import-title").textContent = t.importTitle;
+    document.getElementById("t-import-desc").textContent = t.importDesc;
+    document.getElementById("t-restore-btn").textContent = t.restoreBtn;
+
     document.getElementById("t-settings-title").textContent = t.settingsTitle;
     document.getElementById("t-theme-type").textContent = t.themeType;
     document.getElementById("t-theme-type-desc").textContent = t.themeTypeDesc;
@@ -1598,6 +2195,21 @@
     document.getElementById("t-reset-weights").textContent = t.resetWeights;
     document.getElementById("t-reset-all").textContent = t.resetAll;
 
+    document.getElementById("t-custom-act-title").textContent = t.customActTitle;
+    document.getElementById("t-custom-name-en").textContent = t.customNameEn;
+    document.getElementById("t-custom-name-zh").textContent = t.customNameZh;
+    document.getElementById("t-custom-duration").textContent = t.customDuration;
+    document.getElementById("t-custom-category").textContent = t.customCategory;
+    document.getElementById("t-custom-loc").textContent = t.customLoc;
+    document.getElementById("t-custom-emoji").textContent = t.customEmoji;
+    document.getElementById("t-custom-steps").textContent = t.customSteps;
+    document.getElementById("t-save-custom-btn").textContent = t.saveCustomBtn;
+    document.getElementById("t-add-act-btn").textContent = t.addActBtn;
+
+    document.getElementById("t-reflection-title").textContent = t.reflectionTitle;
+    document.getElementById("t-reflection-sub").textContent = t.reflectionSub;
+    document.getElementById("t-save-log-btn").textContent = t.saveLogBtn;
+
     document.querySelectorAll("[data-t]").forEach(function(el) {
       var key = el.getAttribute("data-t");
       if (t[key]) el.textContent = t[key];
@@ -1608,7 +2220,6 @@
     var phase = (hour >= 6 && hour < 12) ? "morning" :
                 (hour >= 12 && hour < 17.5) ? "afternoon" :
                 (hour >= 17.5 && hour < 21.5) ? "evening" : "night";
-
     var h = Math.floor(hour);
     var m = Math.floor((hour - h) * 60);
     var hourStr = (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
@@ -1621,6 +2232,7 @@
     }
     renderHistory();
     renderStats();
+    evaluateScheduleGap();
     updateAtmosphereAndCelestial();
     updateSoundscapePill();
   }
@@ -1649,15 +2261,20 @@
     updateAtmosphereAndCelestial();
   }
 
+  // --- Initializer ---
   function init() {
     generateStars();
     loadPersistedState();
 
+    // Filters
     document.querySelectorAll(".chip-group[data-filter]").forEach(function(group) {
       var filterKey = group.getAttribute("data-filter");
       group.querySelectorAll(".chip-btn").forEach(function(btn) {
         btn.addEventListener("click", function() {
-          group.querySelectorAll(".chip-btn").forEach(function(b) { b.classList.remove("active"); });
+          group.querySelectorAll(".chip-btn").forEach(function(b) {
+            b.classList.remove("active");
+            b.classList.remove("auto-selected");
+          });
           btn.classList.add("active");
           var val = btn.getAttribute("data-val");
           state.filters[filterKey] = filterKey === "time" ? Number(val) : val;
@@ -1687,7 +2304,7 @@
       applyLanguage();
     });
 
-    // Catalog Modal
+    // Modals Navigation
     document.getElementById("catalog-btn").addEventListener("click", function() {
       document.getElementById("catalog-modal").classList.add("open");
       renderCatalog("");
@@ -1702,7 +2319,6 @@
       renderCatalog(e.target.value);
     });
 
-    // Settings Modal
     document.getElementById("settings-btn").addEventListener("click", function() {
       document.getElementById("settings-modal").classList.add("open");
       syncSettingsUI();
@@ -1714,7 +2330,158 @@
       if (e.target === this) this.classList.remove("open");
     });
 
-    // Theme System Selection
+    document.getElementById("schedule-btn").addEventListener("click", function() {
+      document.getElementById("schedule-modal").classList.add("open");
+      renderTimetableList();
+    });
+    document.getElementById("edit-schedule-quick-btn").addEventListener("click", function() {
+      document.getElementById("schedule-modal").classList.add("open");
+      renderTimetableList();
+    });
+    document.getElementById("close-schedule-btn").addEventListener("click", function() {
+      document.getElementById("schedule-modal").classList.remove("open");
+    });
+    document.getElementById("schedule-modal").addEventListener("click", function(e) {
+      if (e.target === this) this.classList.remove("open");
+    });
+
+    document.getElementById("schedule-sync-toggle").addEventListener("click", function() {
+      state.scheduleAutoSync = !state.scheduleAutoSync;
+      persistData();
+      applyLanguage();
+    });
+
+    document.getElementById("add-class-btn").addEventListener("click", function() {
+      var name = document.getElementById("inp-class-name").value.trim();
+      var room = document.getElementById("inp-class-room").value.trim() || "Campus";
+      var start = document.getElementById("inp-class-start").value;
+      var end = document.getElementById("inp-class-end").value;
+      if (!name) { alert("Please enter course name"); return; }
+      state.timetable.push({ id: "c_" + Date.now(), name: name, room: room, start: start, end: end });
+      persistData();
+      document.getElementById("inp-class-name").value = "";
+      renderTimetableList();
+      evaluateScheduleGap();
+    });
+
+    document.getElementById("reset-default-classes-btn").addEventListener("click", function() {
+      state.timetable = DEFAULT_TIMETABLE.slice();
+      persistData();
+      renderTimetableList();
+      evaluateScheduleGap();
+    });
+
+    // Backup & Restore
+    document.getElementById("backup-btn").addEventListener("click", function() {
+      document.getElementById("backup-modal").classList.add("open");
+    });
+    document.getElementById("close-backup-btn").addEventListener("click", function() {
+      document.getElementById("backup-modal").classList.remove("open");
+    });
+    document.getElementById("backup-modal").addEventListener("click", function(e) {
+      if (e.target === this) this.classList.remove("open");
+    });
+    document.getElementById("download-backup-btn").addEventListener("click", downloadBackupFile);
+    document.getElementById("trigger-restore-btn").addEventListener("click", function() {
+      document.getElementById("backup-file-input").click();
+    });
+    document.getElementById("backup-file-input").addEventListener("change", function(e) {
+      if (e.target.files && e.target.files[0]) {
+        restoreFromBackupFile(e.target.files[0]);
+      }
+    });
+
+    // Custom Activity
+    document.getElementById("open-custom-act-btn").addEventListener("click", function() {
+      document.getElementById("custom-act-modal").classList.add("open");
+    });
+    document.getElementById("close-custom-modal-btn").addEventListener("click", function() {
+      document.getElementById("custom-act-modal").classList.remove("open");
+    });
+    document.getElementById("custom-act-modal").addEventListener("click", function(e) {
+      if (e.target === this) this.classList.remove("open");
+    });
+    document.getElementById("save-custom-act-btn").addEventListener("click", function() {
+      var en = document.getElementById("inp-act-en").value.trim();
+      var zh = document.getElementById("inp-act-zh").value.trim() || en;
+      var mins = Number(document.getElementById("inp-act-mins").value);
+      var cat = document.getElementById("inp-act-cat").value;
+      var loc = document.getElementById("inp-act-loc").value;
+      var icon = document.getElementById("inp-act-icon").value.trim() || "🌟";
+      var steps = document.getElementById("inp-act-steps").value.trim();
+
+      if (!en) { alert("Please enter activity name"); return; }
+      var newAct = {
+        id: "CUSTOM_" + Date.now(),
+        name_en: en,
+        name_zh: zh,
+        minutes: mins,
+        category: cat,
+        location_type: loc,
+        energy: "low",
+        icon: icon,
+        steps_en: steps,
+        steps_zh: steps
+      };
+      state.customActivities.push(newAct);
+      persistData();
+      document.getElementById("custom-act-modal").classList.remove("open");
+      document.getElementById("inp-act-en").value = "";
+      document.getElementById("inp-act-zh").value = "";
+      document.getElementById("inp-act-steps").value = "";
+      renderCatalog("");
+      alert(state.lang === "zh" ? "自訂活動已儲存至活動庫！" : "Custom activity created successfully!");
+    });
+
+    // Reflection Modal
+    document.querySelectorAll("#star-rating-box span").forEach(function(s) {
+      s.addEventListener("click", function() {
+        var starVal = Number(this.getAttribute("data-star"));
+        if (state.pendingReflection) state.pendingReflection.rating = starVal;
+        document.querySelectorAll("#star-rating-box span").forEach(function(st, idx) {
+          st.textContent = (idx < starVal) ? "⭐" : "☆";
+        });
+      });
+    });
+    document.querySelectorAll("#tag-feelings .chip-btn").forEach(function(b) {
+      b.addEventListener("click", function() {
+        document.querySelectorAll("#tag-feelings .chip-btn").forEach(function(btn) { btn.classList.remove("active"); });
+        b.classList.add("active");
+        if (state.pendingReflection) state.pendingReflection.feeling = b.getAttribute("data-feeling");
+      });
+    });
+    document.getElementById("save-reflection-btn").addEventListener("click", function() {
+      if (!state.pendingReflection) return;
+      var act = state.pendingReflection.activity;
+      var rating = state.pendingReflection.rating || 5;
+      var feeling = state.pendingReflection.feeling || "Energized";
+
+      var now = new Date();
+      var timeStr = (now.getHours() < 10 ? "0" + now.getHours() : now.getHours()) + ":" +
+                    (now.getMinutes() < 10 ? "0" + now.getMinutes() : now.getMinutes());
+
+      state.history.unshift({
+        name_en: act.name_en,
+        name_zh: act.name_zh,
+        icon: act.icon,
+        minutes: act.minutes,
+        timestamp: timeStr,
+        rating: rating,
+        feeling: feeling
+      });
+
+      state.stats.totalMinutes += act.minutes;
+      state.stats.completedCount++;
+      state.stats.categories[act.category] = (state.stats.categories[act.category] || 0) + 1;
+
+      persistData();
+      renderStats();
+      renderHistory();
+      document.getElementById("reflection-modal").classList.remove("open");
+      state.pendingReflection = null;
+    });
+
+    // Theme Switches (Zero-Flash Implementation)
     document.querySelectorAll("#theme-system-chips .chip-btn").forEach(function(btn) {
       btn.addEventListener("click", function() {
         state.themeSystem = btn.getAttribute("data-system-val");
@@ -1724,7 +2491,6 @@
       });
     });
 
-    // Dynamic Time Selection
     document.querySelectorAll("#dynamic-time-chips .chip-btn").forEach(function(btn) {
       btn.addEventListener("click", function() {
         state.dynamicTime = btn.getAttribute("data-time-val");
@@ -1734,7 +2500,6 @@
       });
     });
 
-    // Static Theme Selection
     document.querySelectorAll("#static-theme-chips .chip-btn").forEach(function(btn) {
       btn.addEventListener("click", function() {
         state.staticTheme = btn.getAttribute("data-static-val");
@@ -1744,7 +2509,7 @@
       });
     });
 
-    // Soundscapes
+    // Sound
     document.querySelectorAll("#sound-chip-group .chip-btn").forEach(function(btn) {
       btn.addEventListener("click", function() {
         document.querySelectorAll("#sound-chip-group .chip-btn").forEach(function(b) { b.classList.remove("active"); });
@@ -1753,7 +2518,6 @@
         startSoundscape(state.soundMode);
       });
     });
-
     document.getElementById("quick-sound-btn").addEventListener("click", function() {
       if (soundNodes) {
         stopSoundscape(1.2);
@@ -1763,6 +2527,7 @@
       }
     });
 
+    // Reset Data
     document.getElementById("reset-weights-btn").addEventListener("click", function() {
       state.weights = {};
       persistData();
@@ -1779,15 +2544,24 @@
       }
     });
 
+    // Real-Time Interval Clock
     setInterval(function() {
       if (state.themeSystem === "dynamic" && state.dynamicTime === "live") {
         updateAtmosphereAndCelestial();
+        evaluateScheduleGap();
         applyLanguage();
       }
     }, 20000);
 
     syncSettingsUI();
     applyLanguage();
+
+    // Release reload lock so subsequent user switches animate smoothly
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        document.documentElement.classList.remove("is-reloading");
+      });
+    });
   }
 
   init();
