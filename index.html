@@ -3,215 +3,1145 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>What can I do between classes?</title>
+<title>What can I do between classes? · AI Campus Companion</title>
 <style>
-  :root { --ink:#16343b; --muted:#526b70; --sea:#087e8b; --coral:#e76f51; --line:#cbded9; --paper:#fffdf8; --wash:#edf7f3; }
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: "Segoe UI", "Microsoft JhengHei", Arial, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.5; }
-  main { max-width: 640px; margin: 0 auto; padding: 16px; }
-  header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-  h1 { font-size: 1.5rem; margin: 8px 0; }
-  .note { font-size: .85rem; color: var(--muted); margin: 0 0 16px; }
-  fieldset { border: 1px solid var(--line); border-radius: 10px; margin: 0 0 12px; padding: 8px 12px; }
-  legend { font-weight: 700; padding: 0 4px; }
-  label { display: inline-flex; align-items: center; gap: 4px; margin: 4px 14px 4px 0; }
-  button { font: inherit; border-radius: 8px; border: 1px solid var(--sea); background: #fff; color: var(--sea); padding: 8px 14px; cursor: pointer; }
-  button.primary { background: var(--sea); color: #fff; font-weight: 700; }
-  .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 16px; }
-  #result { border: 2px solid var(--sea); border-radius: 10px; padding: 12px; min-height: 3em; background: var(--wash); }
-  #result.none { border-color: var(--coral); background: #fdf0ec; }
-  #result b { font-size: 1.15rem; }
-  h2 { font-size: 1.1rem; margin: 20px 0 6px; }
-  ol { padding-left: 1.4em; margin: 0; }
-  li { margin: 2px 0; }
-  .empty { color: var(--muted); }
+  :root {
+    --bg-page: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-subtle: #f1f5f9;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --primary: #0d9488;
+    --primary-hover: #0f766e;
+    --primary-light: #ccfbf1;
+    --primary-glow: rgba(13, 148, 136, 0.2);
+    --accent: #f59e0b;
+    --coral: #f43f5e;
+    --indigo: #6366f1;
+    --border: #e2e8f0;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+  }
+
+  [data-theme="dark"] {
+    --bg-page: #090d16;
+    --bg-card: #131b2e;
+    --bg-subtle: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --primary: #14b8a6;
+    --primary-hover: #2dd4bf;
+    --primary-light: rgba(20, 184, 166, 0.18);
+    --primary-glow: rgba(20, 184, 166, 0.35);
+    --border: #26334d;
+    --shadow-md: 0 4px 14px rgba(0,0,0,0.35);
+    --shadow-lg: 0 12px 28px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif;
+    background: var(--bg-page);
+    color: var(--text-main);
+    line-height: 1.5;
+    padding-bottom: 60px;
+  }
+
+  .container { max-width: 840px; margin: 0 auto; padding: 20px 16px; }
+
+  /* Header Bar */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .brand-group { display: flex; align-items: center; gap: 12px; }
+  .brand-icon {
+    font-size: 2rem;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-light);
+    border-radius: var(--radius-md);
+  }
+
+  h1 { font-size: 1.45rem; font-weight: 800; margin: 0; letter-spacing: -0.02em; }
+  .subtitle { font-size: 0.85rem; color: var(--text-muted); margin: 2px 0 0; }
+
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+
+  button {
+    font: inherit;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-main);
+    padding: 8px 14px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    user-select: none;
+  }
+  button:hover { border-color: var(--primary); }
+  button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+  button.primary {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 4px 12px var(--primary-glow);
+  }
+  button.primary:hover { background: var(--primary-hover); }
+
+  button.subtle { background: transparent; border-color: transparent; color: var(--text-muted); }
+  button.subtle:hover { background: var(--bg-subtle); color: var(--text-main); }
+
+  /* Hero & AI Context Banner */
+  .ai-context-bar {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .context-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .context-pill.highlight { background: var(--primary-light); color: var(--primary); }
+
+  /* Filter Panel */
+  .panel-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 20px;
+  }
+
+  .filter-section { margin-bottom: 18px; }
+  .filter-section:last-child { margin-bottom: 0; }
+  .filter-label {
+    display: block;
+    font-size: 0.825rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip-btn {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-subtle);
+    color: var(--text-main);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .chip-btn:hover { border-color: var(--primary); }
+  .chip-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px var(--primary-glow);
+  }
+
+  .action-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border);
+  }
+  .action-row button.large {
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: var(--radius-md);
+    flex-grow: 1;
+  }
+
+  /* Result Card Section */
+  .result-container { margin-bottom: 24px; }
+  .result-card {
+    background: var(--bg-card);
+    border: 2px solid var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .result-card.empty-state {
+    border: 1px dashed var(--border);
+    box-shadow: none;
+    text-align: center;
+    padding: 36px 20px;
+    color: var(--text-muted);
+  }
+  .result-card.none-found {
+    border-color: var(--coral);
+    background: rgba(244, 63, 94, 0.04);
+    text-align: center;
+    padding: 30px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .card-badges { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+  }
+  .badge.category { background: var(--primary-light); color: var(--primary); }
+  .badge.energy-low { background: #dcfce7; color: #15803d; }
+  .badge.energy-med { background: #fef3c7; color: #b45309; }
+
+  .activity-title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .activity-emoji { font-size: 2.2rem; line-height: 1; }
+  .activity-title { font-size: 1.4rem; font-weight: 800; margin: 0; }
+
+  .activity-steps {
+    background: var(--bg-subtle);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    font-size: 0.925rem;
+    margin-bottom: 16px;
+    border-left: 4px solid var(--primary);
+  }
+  .activity-steps b { color: var(--text-main); }
+
+  /* AI Explanation Box */
+  .ai-reasoning {
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    color: var(--indigo);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  [data-theme="dark"] .ai-reasoning { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
+
+  .card-footer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .interactive-feedback { display: flex; gap: 6px; align-items: center; }
+
+  /* Break Countdown Timer */
+  .timer-banner {
+    display: none;
+    margin-top: 18px;
+    padding: 16px;
+    background: var(--bg-subtle);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .timer-banner.active { display: block; animation: fadeIn 0.25s ease; }
+  .timer-display { font-size: 2.4rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primary); }
+  .timer-controls { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+
+  /* Section Titles & History / Catalog */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 28px 0 14px;
+  }
+  .section-header h2 { font-size: 1.15rem; font-weight: 700; margin: 0; }
+
+  .history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .history-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+  }
+  .history-item .left { display: flex; align-items: center; gap: 8px; }
+  .history-item .time-tag { color: var(--text-muted); font-size: 0.75rem; }
+
+  /* Modal / Catalog Drawer */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal-window {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 720px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .modal-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-head h3 { margin: 0; font-size: 1.2rem; }
+  .modal-body { padding: 20px; overflow-y: auto; }
+  .search-input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-subtle);
+    color: var(--text-main);
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+  }
+  .search-input:focus { outline: 2px solid var(--primary); }
+
+  .catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .catalog-card {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .catalog-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
 </style>
 </head>
 <body>
-<main>
+<div class="container">
+  <!-- Top Navigation -->
   <header>
-    <h1 id="t-title">What can I do between classes?</h1>
-    <button type="button" id="lang">中文</button>
+    <div class="brand-group">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <h1 id="t-title">What can I do between classes?</h1>
+        <p class="subtitle" id="t-subtitle">AI-assisted campus break optimizer · Intro to AI Project</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button type="button" id="theme-toggle" aria-label="Toggle theme">🌙</button>
+      <button type="button" id="catalog-btn">📚 <span id="t-browse">Catalog</span></button>
+      <button type="button" id="lang-btn">中文</button>
+    </div>
   </header>
-  <p class="note" id="t-note">Fictional teaching activities; not an official university announcement.</p>
 
-  <fieldset>
-    <legend id="t-where">Location</legend>
-    <label><input type="radio" name="where" value="all" checked> <span data-t="all">All</span></label>
-    <label><input type="radio" name="where" value="indoor"> <span data-t="indoor">Indoor</span></label>
-    <label><input type="radio" name="where" value="outdoor"> <span data-t="outdoor">Outdoor</span></label>
-  </fieldset>
-
-  <fieldset>
-    <legend id="t-time">Available time</legend>
-    <label><input type="radio" name="time" value="15"> <span data-t="m15">15 minutes</span></label>
-    <label><input type="radio" name="time" value="30" checked> <span data-t="m30">30 minutes</span></label>
-    <label><input type="radio" name="time" value="60"> <span data-t="m60">60 minutes</span></label>
-  </fieldset>
-
-  <fieldset>
-    <legend id="t-energy">Energy</legend>
-    <label><input type="radio" name="energy" value="all" checked> <span data-t="all">All</span></label>
-    <label><input type="radio" name="energy" value="low"> <span data-t="low">Low</span></label>
-    <label><input type="radio" name="energy" value="medium"> <span data-t="medium">Medium</span></label>
-  </fieldset>
-
-  <div class="row">
-    <button type="button" class="primary" id="pick">Pick for me</button>
-    <button type="button" id="reset">Reset filters</button>
+  <!-- Real-time AI Context Banner -->
+  <div class="ai-context-bar">
+    <div class="context-pill highlight" id="ai-time-pill">
+      🕒 <span id="t-time-context">Time: Evaluating...</span>
+    </div>
+    <div class="context-pill" id="ai-engine-pill">
+      🤖 <span id="t-engine-name">Utility Decision Engine v1.0</span>
+    </div>
+    <div class="context-pill" id="ai-lib-pill">
+      ⚡ <span id="t-catalog-count">20 Activities Ready</span>
+    </div>
   </div>
 
-  <div id="result" aria-live="polite"><span class="empty" id="t-hint">Choose your filters, then press "Pick for me".</span></div>
+  <!-- Filter & Recommendation Controls -->
+  <div class="panel-card">
+    <!-- Break Duration -->
+    <div class="filter-section">
+      <span class="filter-label" id="t-lbl-time">Available Break Time</span>
+      <div class="chip-group" data-filter="time">
+        <button type="button" class="chip-btn" data-val="10">10 min</button>
+        <button type="button" class="chip-btn active" data-val="15">15 min</button>
+        <button type="button" class="chip-btn" data-val="30">30 min</button>
+        <button type="button" class="chip-btn" data-val="60">60 min</button>
+      </div>
+    </div>
 
-  <h2 id="t-history">Last 5 picks (newest first)</h2>
-  <ol id="history"></ol>
-  <p class="empty" id="no-history">No picks yet.</p>
-  <div class="row"><button type="button" id="clear">Clear history</button></div>
-</main>
+    <!-- Location Preference -->
+    <div class="filter-section">
+      <span class="filter-label" id="t-lbl-location">Location</span>
+      <div class="chip-group" data-filter="location">
+        <button type="button" class="chip-btn active" data-val="all" data-t="all">All</button>
+        <button type="button" class="chip-btn" data-val="indoor" data-t="indoor">Indoor</button>
+        <button type="button" class="chip-btn" data-val="outdoor" data-t="outdoor">Outdoor</button>
+      </div>
+    </div>
+
+    <!-- Energy Level -->
+    <div class="filter-section">
+      <span class="filter-label" id="t-lbl-energy">Energy Level</span>
+      <div class="chip-group" data-filter="energy">
+        <button type="button" class="chip-btn active" data-val="all" data-t="all">All</button>
+        <button type="button" class="chip-btn" data-val="low" data-t="low">Low (Chill)</button>
+        <button type="button" class="chip-btn" data-val="medium" data-t="medium">Medium</button>
+      </div>
+    </div>
+
+    <!-- AI Goal Mode -->
+    <div class="filter-section">
+      <span class="filter-label" id="t-lbl-goal">Goal Mode (AI Context Weight)</span>
+      <div class="chip-group" data-filter="goal">
+        <button type="button" class="chip-btn active" data-val="any" data-t="goalAny">Auto / Balanced</button>
+        <button type="button" class="chip-btn" data-val="wellness" data-t="goalWellness">Mental Reset 🌿</button>
+        <button type="button" class="chip-btn" data-val="productivity" data-t="goalProd">Study & Focus 💻</button>
+        <button type="button" class="chip-btn" data-val="movement" data-t="goalMovement">Physical Refresh 🏃</button>
+        <button type="button" class="chip-btn" data-val="creative" data-t="goalCreative">Creative / Social 🎨</button>
+      </div>
+    </div>
+
+    <!-- Recommendation Actions -->
+    <div class="action-row">
+      <button type="button" class="primary large" id="ai-pick-btn">
+        ✨ <span id="t-ai-pick">AI Smart Recommend</span>
+      </button>
+      <button type="button" id="random-btn">
+        🎲 <span id="t-random-pick">Surprise Me</span>
+      </button>
+      <button type="button" class="subtle" id="reset-btn">
+        🔄 <span id="t-reset">Reset</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Primary Recommendation Card -->
+  <div class="result-container">
+    <div id="result-box" class="result-card empty-state">
+      <p id="t-hint-empty">Select your break conditions above, then click <b>AI Smart Recommend</b>.</p>
+    </div>
+  </div>
+
+  <!-- Break History & Favorites Section -->
+  <div class="section-header">
+    <h2 id="t-history-title">Recent Activity Log (Saved)</h2>
+    <button type="button" class="subtle" id="clear-history-btn">🗑️ <span id="t-clear">Clear Log</span></button>
+  </div>
+  <ul class="history-list" id="history-items">
+    <li class="history-item" style="color:var(--text-muted); justify-content:center;" id="no-history-msg">
+      No activities picked yet.
+    </li>
+  </ul>
+
+  <!-- Footer Disclaimer -->
+  <footer>
+    <p id="t-footer-note">Fictional teaching activities for Introduction to Artificial Intelligence midterm demonstration. All preferences persisted locally.</p>
+  </footer>
+</div>
+
+<!-- Catalog Modal / Drawer -->
+<div class="modal-backdrop" id="catalog-modal">
+  <div class="modal-window">
+    <div class="modal-head">
+      <h3 id="t-modal-title">Activity Catalog (20 Items)</h3>
+      <button type="button" class="subtle" id="close-modal-btn">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="text" class="search-input" id="catalog-search" placeholder="Search activities by name or keyword...">
+      <div class="catalog-grid" id="catalog-container"></div>
+    </div>
+  </div>
+</div>
 
 <script>
-(function () {
-  // The same 12 fictional activities as activities.json
+(function() {
+  // 20 Enriched Activities with Full Metadata and AI Heuristics
   var ACTIVITIES = [
-    { id: "A01", name_zh: "整理書包", name_en: "Organize your bag", location_type: "indoor", minutes: 10, energy: "low" },
-    { id: "A02", name_zh: "畫一張小卡", name_en: "Draw a small card", location_type: "indoor", minutes: 15, energy: "low" },
-    { id: "A03", name_zh: "寫三句讀書筆記", name_en: "Write three study notes", location_type: "indoor", minutes: 10, energy: "low" },
-    { id: "A04", name_zh: "安靜讀兩頁書", name_en: "Read two pages quietly", location_type: "indoor", minutes: 15, energy: "low" },
-    { id: "A05", name_zh: "排好明日待辦", name_en: "Plan tomorrow’s tasks", location_type: "indoor", minutes: 20, energy: "low" },
-    { id: "A06", name_zh: "整理本機練習檔", name_en: "Organize practice files", location_type: "indoor", minutes: 30, energy: "medium" },
-    { id: "A07", name_zh: "在合適位置慢走", name_en: "Take a gentle walk in a suitable area", location_type: "outdoor", minutes: 15, energy: "low" },
-    { id: "A08", name_zh: "觀察天空並畫草圖", name_en: "Observe the sky and sketch", location_type: "outdoor", minutes: 20, energy: "low" },
-    { id: "A09", name_zh: "在合適位置快走", name_en: "Take a brisk walk in a suitable area", location_type: "outdoor", minutes: 30, energy: "medium" },
-    { id: "A10", name_zh: "規劃小組練習", name_en: "Plan a group exercise", location_type: "indoor", minutes: 45, energy: "medium" },
-    { id: "A11", name_zh: "記錄自然色彩", name_en: "Record colors in nature", location_type: "outdoor", minutes: 45, energy: "low" },
-    { id: "A12", name_zh: "構思下一次社團活動", name_en: "Brainstorm a future club activity", location_type: "indoor", minutes: 60, energy: "medium" }
+    { id: "A01", name_zh: "整理書包與桌面", name_en: "Organize your bag & desk", category: "productivity", location_type: "indoor", minutes: 10, energy: "low", icon: "🎒", best_time: "morning", steps_zh: "清空不需要的紙屑收據、把文具與筆記本分層歸位、擦拭桌面恢復清爽。", steps_en: "Discard receipts/wrappers, sort pens and notebooks, and wipe your desk clean." },
+    { id: "A02", name_zh: "畫一張靈感小卡", name_en: "Draw a small inspiration card", category: "creative", location_type: "indoor", minutes: 15, energy: "low", icon: "🎨", best_time: "afternoon", steps_zh: "拿出一張便條紙或小卡，隨筆塗鴉剛才上課聽到的關鍵詞或心情插畫。", steps_en: "Take a note card and doodle a lecture concept, motivational quote, or mood sketch." },
+    { id: "A03", name_zh: "寫三句重點讀書筆記", name_en: "Write three key study notes", category: "productivity", location_type: "indoor", minutes: 10, energy: "low", icon: "✍️", best_time: "any", steps_zh: "回顧上一堂課，用自己的話總結三個核心知識點，加深長期記憶。", steps_en: "Summarize the 3 most crucial takeaways from the last class in your own words." },
+    { id: "A04", name_zh: "安靜讀兩頁課外書", name_en: "Read two pages quietly", category: "wellness", location_type: "indoor", minutes: 15, energy: "low", icon: "📖", best_time: "afternoon", steps_zh: "暫時放下手機螢幕，享受幾分鐘純粹的文字閱讀時光。", steps_en: "Put away phone notifications and immerse yourself in 2 pages of a favorite book." },
+    { id: "A05", name_zh: "排好明日待辦與行事曆", name_en: "Plan tomorrow’s tasks & calendar", category: "productivity", location_type: "indoor", minutes: 20, energy: "low", icon: "📋", best_time: "evening", steps_zh: "列出明天的作業期限與上課教室，標記最重要的三件優先事項。", steps_en: "Review upcoming assignment deadlines and classrooms; flag top 3 priorities." },
+    { id: "A06", name_zh: "整理本機練習檔與下載區", name_en: "Organize practice files & downloads", category: "productivity", location_type: "indoor", minutes: 30, energy: "medium", icon: "💻", best_time: "afternoon", steps_zh: "將桌面與 Downloads 資料夾的教材檔案分類歸入專案資料夾。", steps_en: "Sort downloaded course slides and code exercises into dedicated project directories." },
+    { id: "A07", name_zh: "在校園合適走廊或中庭慢走", name_en: "Take a gentle walk in courtyard", category: "movement", location_type: "outdoor", minutes: 15, energy: "low", icon: "🚶", best_time: "morning", steps_zh: "暫離座位走到走廊或花園中庭，維持輕鬆步伐放鬆久坐的雙腿。", steps_en: "Step outside to the courtyard or hall, stretch your legs at a comfortable walking pace." },
+    { id: "A08", name_zh: "觀察天空雲彩並畫速寫", name_en: "Observe the sky and sketch", category: "creative", location_type: "outdoor", minutes: 20, energy: "low", icon: "☁️", best_time: "afternoon", steps_zh: "走到戶外抬頭觀察雲朵光影與微風，用速寫本記錄下此時的天氣氛圍。", steps_en: "Look up at the cloud formations and lighting, jotting down quick shapes and impressions." },
+    { id: "A09", name_zh: "合適校園步道快走提神", name_en: "Take a brisk walk across campus", category: "movement", location_type: "outdoor", minutes: 30, energy: "medium", icon: "🏃", best_time: "afternoon", steps_zh: "繞行學院大樓或操場外圍快走，加速血液循環掃除下午課間的睡意。", steps_en: "Brisk walk around the building or athletic field to boost heart rate and banish drowsiness." },
+    { id: "A10", name_zh: "規劃小組期末專案大綱", name_en: "Plan a group exercise outline", category: "productivity", location_type: "indoor", minutes: 45, energy: "medium", icon: "👥", best_time: "afternoon", steps_zh: "整理組內分工進度，擬定下次討論議題與待確認事項清單。", steps_en: "Map out milestones for group coursework and outline agenda items for the next meeting." },
+    { id: "A11", name_zh: "探索並記錄校園自然色彩", name_en: "Record colors in campus nature", category: "creative", location_type: "outdoor", minutes: 45, energy: "low", icon: "🌿", best_time: "afternoon", steps_zh: "在校園草坪或林蔭步道尋找 3 種植物或花朵，拍下或記錄自然的色彩漸層。", steps_en: "Stroll near campus greenery, spotting 3 distinct botanical colors or leaf textures." },
+    { id: "A12", name_zh: "構思下一次社團活動主題", name_en: "Brainstorm a future club activity", category: "creative", location_type: "indoor", minutes: 60, energy: "medium", icon: "💡", best_time: "evening", steps_zh: "用便利貼進行腦力激盪，擬出社團迎新、聚會或工作坊的亮點提案。", steps_en: "Mind-map creative ideas, interactive icebreakers, and themes for upcoming club events." },
+    { id: "A13", name_zh: "課桌椅肩頸深層伸展", name_en: "Desk shoulder & neck stretch", category: "movement", location_type: "indoor", minutes: 10, energy: "low", icon: "🧘", best_time: "any", steps_zh: "雙手抱頭向下緩慢拉伸頸後肌群，左右側彎拉伸斜方肌，各維持15秒鐘。", steps_en: "Gently tilt head side-to-side, roll shoulders backward, and stretch tight neck muscles." },
+    { id: "A14", name_zh: "4-7-8 腹式呼吸減壓調息", name_en: "4-7-8 Mindful breathing reset", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "🌬️", best_time: "any", steps_zh: "用鼻子吸氣4秒、屏息7秒、用嘴緩慢呼氣8秒，連續進行4個循環穩定自律神經。", steps_en: "Inhale 4s, hold breath 7s, exhale slowly for 8s. Repeat 4 cycles to lower stress hormones." },
+    { id: "A15", name_zh: "補水與遠眺綠色護眼", name_en: "Hydration & eye rest break", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "💧", best_time: "any", steps_zh: "喝滿一杯溫水，走到窗邊注視6公尺外的遠景綠樹，讓睫狀肌徹底放鬆。", steps_en: "Drink a full glass of water, then gaze at distance trees beyond 20 feet to relieve eye strain." },
+    { id: "A16", name_zh: "教學大樓爬樓梯微運動提神", name_en: "Stair climb energy recharge", category: "movement", location_type: "indoor", minutes: 15, energy: "medium", icon: "🪜", best_time: "afternoon", steps_zh: "不搭電梯改爬2至3層樓梯，維持穩定呼吸，迅速喚醒下肢肌肉與大腦思緒。", steps_en: "Skip the elevator and climb 2-3 flights of stairs at steady pace to boost circulation." },
+    { id: "A17", name_zh: "尋找校園未曾去過的秘密角落", name_en: "Explore a campus hidden corner", category: "creative", location_type: "outdoor", minutes: 25, energy: "medium", icon: "🗺️", best_time: "afternoon", steps_zh: "走平常沒走過的學院步道或圖書館背側小徑，發現校園新視角與安靜據點。", steps_en: "Take an unfamiliar pathway behind another department building to discover peaceful spots." },
+    { id: "A18", name_zh: "閃卡抽考上課核心要點", name_en: "Quick lecture flashcard drill", category: "productivity", location_type: "indoor", minutes: 15, energy: "medium", icon: "⚡", best_time: "morning", steps_zh: "打開筆記或閃卡，進行 10 個核心概念的主動回憶（Active Recall）。", steps_en: "Run through 10 digital flashcards to test recall on key terminology from lectures." },
+    { id: "A19", name_zh: "戴耳機享受沉浸放鬆音樂", name_en: "Lo-Fi / ambient music chillout", category: "wellness", location_type: "indoor", minutes: 15, energy: "low", icon: "🎵", best_time: "afternoon", steps_zh: "戴上降噪耳機，閉上雙眼聆聽三首無人聲 Lo-Fi 或大自然白噪音放鬆大腦。", steps_en: "Put on headphones and close eyes for 3 ambient or Lo-Fi tracks to reset sensory overload." },
+    { id: "A20", name_zh: "傳訊息給同學互相關心加油", name_en: "Send an encouraging text to a friend", category: "wellness", location_type: "indoor", minutes: 5, energy: "low", icon: "💬", best_time: "any", steps_zh: "發一則溫暖的訊息給同系好友或室友，問問對方今天課堂順利與否。", steps_en: "Drop a cheerful greeting or funny meme to a classmate or friend to stay connected." }
   ];
 
   var TEXT = {
     en: {
-      title: "What can I do between classes?", lang: "中文",
-      note: "Fictional teaching activities; not an official university announcement.",
-      where: "Location", time: "Available time", energy: "Energy",
-      all: "All", indoor: "Indoor", outdoor: "Outdoor", m15: "15 minutes", m30: "30 minutes", m60: "60 minutes",
-      low: "Low", medium: "Medium",
-      pick: "Pick for me", reset: "Reset filters", clear: "Clear history",
-      hint: "Choose your filters, then press \"Pick for me\".",
-      none: "No matching activities.", history: "Last 5 picks (newest first)", noHistory: "No picks yet.",
-      min: "min"
+      title: "What can I do between classes?",
+      subtitle: "AI-assisted campus break optimizer · Intro to AI Project",
+      browse: "Catalog",
+      engineName: "Utility Decision Engine v1.0",
+      lblTime: "Available Break Time",
+      lblLocation: "Location Preference",
+      lblEnergy: "Energy Level",
+      lblGoal: "Goal Mode (AI Context Weight)",
+      all: "All", indoor: "Indoor", outdoor: "Outdoor",
+      low: "Low (Chill)", medium: "Medium",
+      goalAny: "Auto / Balanced", goalWellness: "Mental Reset 🌿", goalProd: "Study & Focus 💻", goalMovement: "Physical Refresh 🏃", goalCreative: "Creative & Social 🎨",
+      aiPick: "AI Smart Recommend",
+      randomPick: "Surprise Me",
+      reset: "Reset",
+      hintEmpty: "Select your break conditions above, then click <b>AI Smart Recommend</b>.",
+      noneFound: "No matching activities found for these strict filters. Try increasing available time or selecting 'All'!",
+      historyTitle: "Recent Activity Log (Saved)",
+      clear: "Clear Log",
+      noHistory: "No activities picked yet.",
+      stepsLabel: "Action Guide:",
+      startTimer: "Start Break Timer",
+      pauseTimer: "Pause",
+      resumeTimer: "Resume",
+      stopTimer: "Reset Timer",
+      timerDone: "Break Complete! Time to head to your next class.",
+      reasonWhy: "AI Reasoning:",
+      matchRate: "Match Score",
+      catalogTitle: "Activity Catalog (20 Items)",
+      searchPlaceholder: "Search activities by name or keyword...",
+      footerNote: "Fictional teaching activities for Introduction to Artificial Intelligence midterm demonstration. All preferences persisted locally.",
+      upvoteTip: "Boost in AI ranking",
+      downvoteTip: "Reduce in AI ranking",
+      morning: "Morning Focus", afternoon: "Afternoon Boost", evening: "Evening Wind-down"
     },
     zh: {
-      title: "課間我想做什麼？", lang: "English",
-      note: "虛構教學活動，不是學校正式公告。",
-      where: "地點", time: "可用時間", energy: "體力",
-      all: "全部", indoor: "室內", outdoor: "室外", m15: "15 分鐘", m30: "30 分鐘", m60: "60 分鐘",
-      low: "低", medium: "中",
-      pick: "幫我選", reset: "重設條件", clear: "清除紀錄",
-      hint: "選好條件，再按「幫我選」。",
-      none: "沒有符合條件的活動。", history: "最近 5 次（最新在上）", noHistory: "還沒有紀錄。",
-      min: "分鐘"
+      title: "課間我想做什麼？",
+      subtitle: "AI 智慧課間決策優化器 · 人工智慧導論期中專案",
+      browse: "活動庫",
+      engineName: "多屬性效用推薦引擎 v1.0",
+      lblTime: "下堂課前可用時間",
+      lblLocation: "活動地點偏好",
+      lblEnergy: "目前體力狀況",
+      lblGoal: "AI 偏好目標導向",
+      all: "全部", indoor: "室內", outdoor: "室外",
+      low: "低體力（放空休閒）", medium: "中等（活動精神）",
+      goalAny: "自動平衡推薦", goalWellness: "心靈放鬆 🌿", goalProd: "學習專注 💻", goalMovement: "身體舒活 🏃", goalCreative: "創意社交 🎨",
+      aiPick: "AI 智慧推薦",
+      randomPick: "隨機挑選",
+      reset: "重設條件",
+      hintEmpty: "請在上方設定你的課間狀況，再按 <b>AI 智慧推薦</b>。",
+      noneFound: "目前條件下沒有符合的活動，試試放寬可用時間或選擇「全部」！",
+      historyTitle: "最近活動紀錄（本機儲存）",
+      clear: "清除紀錄",
+      noHistory: "目前尚無挑選紀錄。",
+      stepsLabel: "行動引導：",
+      startTimer: "啟動課間倒數計時",
+      pauseTimer: "暫停",
+      resumeTimer: "繼續",
+      stopTimer: "重設計時",
+      timerDone: "課間時間到囉！收拾好物品準備前往下一堂課吧！",
+      reasonWhy: "AI 決策理由：",
+      matchRate: "契合度評分",
+      catalogTitle: "活動清單庫（共 20 項活動）",
+      searchPlaceholder: "輸入關鍵字或活動名稱搜尋...",
+      footerNote: "本專案為人工智慧導論期中實作範例。所有活動與偏好紀錄均保存在本機瀏覽器。",
+      upvoteTip: "提高 AI 推薦權重",
+      downvoteTip: "降低 AI 推薦權重",
+      morning: "早晨專注期", afternoon: "午後提神期", evening: "黃昏放鬆期"
     }
   };
 
-  var lang = "en";
-  var history = [];      // successful picks only, newest first, max 5; not saved after reload
-  var last = null;       // last result: an activity, "none", or null
-
-  function $(id) { return document.getElementById(id); }
-  function value(name) { return document.querySelector('input[name="' + name + '"]:checked').value; }
-  function setValue(name, v) { document.querySelector('input[name="' + name + '"][value="' + v + '"]').checked = true; }
-
-  function describe(a) {
-    var t = TEXT[lang];
-    var name = lang === "zh" ? a.name_zh : a.name_en;
-    return a.id + " · " + name + " · " + a.minutes + " " + t.min + " · " + t[a.location_type] + " · " + t[a.energy];
-  }
-
-  function showResult() {
-    var box = $("result");
-    var t = TEXT[lang];
-    box.className = "";
-    box.textContent = "";
-    if (last === null) {
-      var s = document.createElement("span");
-      s.className = "empty";
-      s.textContent = t.hint;
-      box.appendChild(s);
-    } else if (last === "none") {
-      box.className = "none";
-      box.textContent = t.none;
-    } else {
-      var b = document.createElement("b");
-      b.textContent = describe(last);
-      box.appendChild(b);
+  // State Management
+  var state = {
+    lang: "en",
+    filters: {
+      time: 15,
+      location: "all",
+      energy: "all",
+      goal: "any"
+    },
+    currentRecommendation: null,
+    history: [],
+    weights: {}, // Learns from upvotes/downvotes
+    timer: {
+      interval: null,
+      remaining: 0,
+      total: 0,
+      running: false
     }
+  };
+
+  // Sound Synth via Web Audio API (No external assets required)
+  function playChime() {
+    try {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3); // A5
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.2);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 1.2);
+    } catch(e) {}
   }
 
-  function showHistory() {
-    var list = $("history");
-    list.textContent = "";
-    history.forEach(function (a) {
+  // Load Saved Data from LocalStorage
+  function loadPersistedState() {
+    try {
+      var savedHist = localStorage.getItem("picker_history");
+      if (savedHist) state.history = JSON.parse(savedHist);
+      var savedWeights = localStorage.getItem("picker_weights");
+      if (savedWeights) state.weights = JSON.parse(savedWeights);
+      var savedTheme = localStorage.getItem("picker_theme");
+      if (savedTheme) applyTheme(savedTheme);
+      else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyTheme("dark");
+      }
+    } catch(e) {}
+  }
+
+  function persistData() {
+    try {
+      localStorage.setItem("picker_history", JSON.stringify(state.history.slice(0, 8)));
+      localStorage.setItem("picker_weights", JSON.stringify(state.weights));
+    } catch(e) {}
+  }
+
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      document.getElementById("theme-toggle").textContent = "☀️";
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      document.getElementById("theme-toggle").textContent = "🌙";
+    }
+    localStorage.setItem("picker_theme", theme);
+  }
+
+  // ==========================================
+  // Artificial Intelligence Recommendation Engine
+  // Multi-Attribute Utility Theory (MAUT) & Contextual Ranking
+  // ==========================================
+  function evaluateUtility(act) {
+    var f = state.filters;
+    var score = 100;
+    var reasons = [];
+
+    // 1. Hard Filter Checks
+    if (f.location !== "all" && act.location_type !== f.location) return { score: -1 };
+    if (act.minutes > f.time) return { score: -1 };
+    if (f.energy !== "all" && act.energy !== f.energy) return { score: -1 };
+
+    // 2. Duration Fit Factor: Maximize productive use of the break without rushing
+    var timeDiff = f.time - act.minutes;
+    if (timeDiff === 0) {
+      score += 25;
+      reasons.push(state.lang === "zh" ? "完美利用 " + f.time + " 分鐘" : "Exact match for your " + f.time + "m break");
+    } else if (timeDiff <= 5) {
+      score += 15;
+      reasons.push(state.lang === "zh" ? "時間充裕（預留緩衝回教室）" : "Optimal duration with class transition buffer");
+    } else {
+      score -= (timeDiff * 0.8);
+    }
+
+    // 3. Circadian / Time of Day Alignment
+    var hour = new Date().getHours();
+    var currentSlot = (hour >= 6 && hour < 12) ? "morning" : (hour >= 12 && hour < 17) ? "afternoon" : "evening";
+    if (act.best_time === currentSlot || act.best_time === "any") {
+      score += 20;
+      var slotLabel = TEXT[state.lang][currentSlot];
+      reasons.push(state.lang === "zh" ? "符合當前" + slotLabel + "生理節奏" : "Fits current " + slotLabel + " circadian rhythm");
+    }
+
+    // 4. Goal Mode Utility Weighting
+    if (f.goal !== "any") {
+      if (act.category === f.goal) {
+        score += 35;
+        reasons.push(state.lang === "zh" ? "符合你設定的目標偏好" : "Strong alignment with selected goal preference");
+      } else {
+        score -= 20;
+      }
+    }
+
+    // 5. Anti-Fatigue / Novelty Penalty (Discourage immediately repeating the same pick)
+    if (state.history.length > 0 && state.history[0].id === act.id) {
+      score -= 40;
+    }
+
+    // 6. Learned Reinforcement Weights (Bandit Feedback)
+    var userMod = state.weights[act.id] || 0;
+    if (userMod !== 0) {
+      score += userMod * 15;
+      if (userMod > 0) reasons.push(state.lang === "zh" ? "已學習你的正面喜好" : "Learned from your positive ratings");
+    }
+
+    return {
+      score: Math.max(10, Math.min(99, Math.round(score))),
+      reasons: reasons.slice(0, 3)
+    };
+  }
+
+  function pickActivity(mode) {
+    var candidates = [];
+    ACTIVITIES.forEach(function(a) {
+      var u = evaluateUtility(a);
+      if (u.score > 0) {
+        candidates.push({ activity: a, utility: u });
+      }
+    });
+
+    if (candidates.length === 0) {
+      state.currentRecommendation = null;
+      renderResult(null, "none");
+      return;
+    }
+
+    var chosen = null;
+    if (mode === "smart") {
+      // Epsilon-Greedy: 85% Exploit (Highest Utility), 15% Explore
+      var isExploration = Math.random() < 0.15;
+      if (!isExploration) {
+        candidates.sort(function(a, b) { return b.utility.score - a.utility.score; });
+        chosen = candidates[0];
+      } else {
+        // Weighted random from top 3 candidates
+        var topPool = candidates.sort(function(a, b) { return b.utility.score - a.utility.score; }).slice(0, 3);
+        chosen = topPool[Math.floor(Math.random() * topPool.length)];
+      }
+    } else {
+      // Random / Surprise Me mode: Uniform sample without immediate repeat
+      var filtered = candidates.filter(function(c) {
+        return state.history.length === 0 || c.activity.id !== state.history[0].id;
+      });
+      chosen = filtered.length > 0 ? filtered[Math.floor(Math.random() * filtered.length)] : candidates[0];
+    }
+
+    state.currentRecommendation = chosen;
+
+    // Log to history
+    state.history.unshift({
+      id: chosen.activity.id,
+      name_en: chosen.activity.name_en,
+      name_zh: chosen.activity.name_zh,
+      minutes: chosen.activity.minutes,
+      icon: chosen.activity.icon,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+    if (state.history.length > 10) state.history.pop();
+    persistData();
+
+    renderResult(chosen, "picked");
+    renderHistory();
+  }
+
+  // ==========================================
+  // UI Rendering & Event Handling
+  // ==========================================
+  function renderResult(item, status) {
+    var box = document.getElementById("result-box");
+    var t = TEXT[state.lang];
+
+    // Reset any running timer
+    stopTimer();
+
+    if (status === "none") {
+      box.className = "result-card none-found";
+      box.innerHTML = '<div style="font-size:2rem;margin-bottom:8px;">🔍</div>' +
+                      '<h3>' + t.noneFound + '</h3>';
+      return;
+    }
+
+    if (!item) {
+      box.className = "result-card empty-state";
+      box.innerHTML = '<p>' + t.hintEmpty + '</p>';
+      return;
+    }
+
+    var act = item.activity;
+    var util = item.utility;
+    var name = state.lang === "zh" ? act.name_zh : act.name_en;
+    var steps = state.lang === "zh" ? act.steps_zh : act.steps_en;
+    var energyLabel = act.energy === "low" ? t.low : t.medium;
+    var energyClass = act.energy === "low" ? "energy-low" : "energy-med";
+
+    var reasonsHtml = "";
+    if (util && util.reasons && util.reasons.length > 0) {
+      reasonsHtml = '<div class="ai-reasoning">' +
+        '<span>💡</span>' +
+        '<div><b>' + t.reasonWhy + '</b> ' + util.reasons.join(' • ') + '</div>' +
+      '</div>';
+    }
+
+    box.className = "result-card";
+    box.innerHTML =
+      '<div class="card-top">' +
+        '<div class="card-badges">' +
+          '<span class="badge category">🏷️ ' + act.category.toUpperCase() + '</span>' +
+          '<span class="badge ' + energyClass + '">⚡ ' + energyLabel + '</span>' +
+          '<span class="badge">⏱️ ' + act.minutes + ' min</span>' +
+          '<span class="badge">📍 ' + t[act.location_type] + '</span>' +
+        '</div>' +
+        '<div class="context-pill highlight">' +
+          '🎯 ' + t.matchRate + ': ' + (util ? util.score : 90) + '%' +
+        '</div>' +
+      '</div>' +
+      '<div class="activity-title-row">' +
+        '<span class="activity-emoji">' + act.icon + '</span>' +
+        '<h2 class="activity-title">' + name + '</h2>' +
+      '</div>' +
+      '<div class="activity-steps">' +
+        '<b>' + t.stepsLabel + '</b> ' + steps +
+      '</div>' +
+      reasonsHtml +
+      '<div class="card-footer-actions">' +
+        '<button type="button" class="primary" id="start-timer-btn">⏱️ ' + t.startTimer + ' (' + act.minutes + 'm)</button>' +
+        '<div class="interactive-feedback">' +
+          '<button type="button" class="subtle" id="upvote-btn" title="' + t.upvoteTip + '">👍</button>' +
+          '<button type="button" class="subtle" id="downvote-btn" title="' + t.downvoteTip + '">👎</button>' +
+          '<button type="button" class="subtle" id="reroll-btn">🔀</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="timer-banner" id="timer-banner">' +
+        '<div class="timer-display" id="timer-display">00:00</div>' +
+        '<div class="timer-controls">' +
+          '<button type="button" id="timer-pause-btn">' + t.pauseTimer + '</button>' +
+          '<button type="button" class="subtle" id="timer-stop-btn">' + t.stopTimer + '</button>' +
+        '</div>' +
+      '</div>';
+
+    // Hook up dynamically created elements
+    document.getElementById("start-timer-btn").addEventListener("click", function() {
+      startTimer(act.minutes * 60);
+    });
+    document.getElementById("upvote-btn").addEventListener("click", function() {
+      state.weights[act.id] = (state.weights[act.id] || 0) + 1;
+      persistData();
+      this.style.color = "var(--primary)";
+      this.textContent = "👍 +1";
+    });
+    document.getElementById("downvote-btn").addEventListener("click", function() {
+      state.weights[act.id] = (state.weights[act.id] || 0) - 1;
+      persistData();
+      this.style.color = "var(--coral)";
+      this.textContent = "👎 -1";
+    });
+    document.getElementById("reroll-btn").addEventListener("click", function() {
+      pickActivity("smart");
+    });
+    document.getElementById("timer-pause-btn").addEventListener("click", toggleTimerPause);
+    document.getElementById("timer-stop-btn").addEventListener("click", stopTimer);
+  }
+
+  // ==========================================
+  // Timer Management
+  // ==========================================
+  function startTimer(seconds) {
+    var banner = document.getElementById("timer-banner");
+    if (!banner) return;
+    banner.classList.add("active");
+    clearInterval(state.timer.interval);
+    state.timer.remaining = seconds;
+    state.timer.total = seconds;
+    state.timer.running = true;
+    updateTimerDisplay();
+
+    state.timer.interval = setInterval(function() {
+      if (!state.timer.running) return;
+      state.timer.remaining--;
+      updateTimerDisplay();
+      if (state.timer.remaining <= 0) {
+        clearInterval(state.timer.interval);
+        playChime();
+        alert(TEXT[state.lang].timerDone);
+        stopTimer();
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    var d = document.getElementById("timer-display");
+    if (!d) return;
+    var m = Math.floor(state.timer.remaining / 60);
+    var s = state.timer.remaining % 60;
+    d.textContent = (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+  }
+
+  function toggleTimerPause() {
+    state.timer.running = !state.timer.running;
+    var btn = document.getElementById("timer-pause-btn");
+    if (btn) btn.textContent = state.timer.running ? TEXT[state.lang].pauseTimer : TEXT[state.lang].resumeTimer;
+  }
+
+  function stopTimer() {
+    clearInterval(state.timer.interval);
+    state.timer.running = false;
+    var banner = document.getElementById("timer-banner");
+    if (banner) banner.classList.remove("active");
+  }
+
+  // ==========================================
+  // History Rendering
+  // ==========================================
+  function renderHistory() {
+    var list = document.getElementById("history-items");
+    list.innerHTML = "";
+    if (state.history.length === 0) {
+      list.innerHTML = '<li class="history-item" style="color:var(--text-muted); justify-content:center;">' + TEXT[state.lang].noHistory + '</li>';
+      return;
+    }
+    state.history.forEach(function(item) {
       var li = document.createElement("li");
-      li.textContent = describe(a);
+      li.className = "history-item";
+      var name = state.lang === "zh" ? item.name_zh : item.name_en;
+      li.innerHTML =
+        '<div class="left">' +
+          '<span>' + item.icon + '</span>' +
+          '<b>' + name + '</b>' +
+          '<span class="badge">' + item.minutes + ' min</span>' +
+        '</div>' +
+        '<span class="time-tag">' + item.timestamp + '</span>';
       list.appendChild(li);
     });
-    $("no-history").hidden = history.length > 0;
   }
 
-  function applyLanguage() {
-    var t = TEXT[lang];
-    document.documentElement.lang = lang === "zh" ? "zh-Hant-TW" : "en";
-    document.title = t.title;
-    $("t-title").textContent = t.title;
-    $("lang").textContent = t.lang;
-    $("t-note").textContent = t.note;
-    $("t-where").textContent = t.where;
-    $("t-time").textContent = t.time;
-    $("t-energy").textContent = t.energy;
-    $("pick").textContent = t.pick;
-    $("reset").textContent = t.reset;
-    $("clear").textContent = t.clear;
-    $("t-history").textContent = t.history;
-    $("no-history").textContent = t.noHistory;
-    document.querySelectorAll("[data-t]").forEach(function (el) { el.textContent = t[el.getAttribute("data-t")]; });
-    showResult();
-    showHistory();
-  }
+  // ==========================================
+  // Catalog Modal
+  // ==========================================
+  function renderCatalog(filterText) {
+    var container = document.getElementById("catalog-container");
+    container.innerHTML = "";
+    var query = (filterText || "").toLowerCase().trim();
 
-  $("pick").addEventListener("click", function () {
-    var where = value("where"), time = Number(value("time")), energy = value("energy");
-    var matches = ACTIVITIES.filter(function (a) {
-      return (where === "all" || a.location_type === where) && a.minutes <= time && (energy === "all" || a.energy === energy);
+    var matches = ACTIVITIES.filter(function(a) {
+      if (!query) return true;
+      var name = (a.name_en + " " + a.name_zh + " " + a.category).toLowerCase();
+      return name.indexOf(query) !== -1;
     });
-    if (matches.length === 0) {
-      last = "none";              // filters stay as they are; history unchanged
+
+    matches.forEach(function(act) {
+      var card = document.createElement("div");
+      card.className = "catalog-card";
+      var name = state.lang === "zh" ? act.name_zh : act.name_en;
+      card.innerHTML =
+        '<div style="font-size:1.4rem; margin-bottom:4px;">' + act.icon + '</div>' +
+        '<b>' + name + '</b>' +
+        '<div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">' +
+          act.minutes + ' min · ' + act.category + ' · ' + act.location_type +
+        '</div>';
+      card.addEventListener("click", function() {
+        document.getElementById("catalog-modal").classList.remove("open");
+        var util = evaluateUtility(act);
+        renderResult({ activity: act, utility: util.score > 0 ? util : { score: 90, reasons: [] } }, "picked");
+      });
+      container.appendChild(card);
+    });
+  }
+
+  // ==========================================
+  // Language & UI Update
+  // ==========================================
+  function applyLanguage() {
+    var t = TEXT[state.lang];
+    document.documentElement.lang = state.lang === "zh" ? "zh-Hant-TW" : "en";
+    document.title = t.title;
+    document.getElementById("t-title").textContent = t.title;
+    document.getElementById("t-subtitle").textContent = t.subtitle;
+    document.getElementById("t-browse").textContent = t.browse;
+    document.getElementById("lang-btn").textContent = state.lang === "zh" ? "English" : "繁體中文";
+    document.getElementById("t-engine-name").textContent = t.engineName;
+    document.getElementById("t-lbl-time").textContent = t.lblTime;
+    document.getElementById("t-lbl-location").textContent = t.lblLocation;
+    document.getElementById("t-lbl-energy").textContent = t.lblEnergy;
+    document.getElementById("t-lbl-goal").textContent = t.lblGoal;
+    document.getElementById("t-ai-pick").textContent = t.aiPick;
+    document.getElementById("t-random-pick").textContent = t.randomPick;
+    document.getElementById("t-reset").textContent = t.reset;
+    document.getElementById("t-history-title").textContent = t.historyTitle;
+    document.getElementById("t-clear").textContent = t.clear;
+    document.getElementById("t-modal-title").textContent = t.catalogTitle;
+    document.getElementById("catalog-search").placeholder = t.searchPlaceholder;
+    document.getElementById("t-footer-note").textContent = t.footerNote;
+
+    // Update dynamic data-t tags
+    document.querySelectorAll("[data-t]").forEach(function(el) {
+      var key = el.getAttribute("data-t");
+      if (t[key]) el.textContent = t[key];
+    });
+
+    // Time Context Pill
+    var hour = new Date().getHours();
+    var slotName = (hour >= 6 && hour < 12) ? t.morning : (hour >= 12 && hour < 17) ? t.afternoon : t.evening;
+    document.getElementById("t-time-context").textContent = (hour < 10 ? "0" + hour : hour) + ":00 · " + slotName;
+
+    // Re-render
+    if (state.currentRecommendation) {
+      renderResult(state.currentRecommendation, "picked");
     } else {
-      last = matches[Math.floor(Math.random() * matches.length)];
-      history.unshift(last);
-      if (history.length > 5) history.length = 5;
+      renderResult(null, "empty");
     }
-    showResult();
-    showHistory();
-  });
+    renderHistory();
+    renderCatalog(document.getElementById("catalog-search").value);
+  }
 
-  $("reset").addEventListener("click", function () {
-    setValue("where", "all");
-    setValue("time", "30");
-    setValue("energy", "all");
-    last = null;
-    showResult();                 // history is kept
-  });
+  // ==========================================
+  // Initialization & Event Binding
+  // ==========================================
+  function init() {
+    loadPersistedState();
 
-  $("clear").addEventListener("click", function () {
-    history = [];
-    showHistory();
-  });
+    // Chip Filter Event Listeners
+    document.querySelectorAll(".chip-group").forEach(function(group) {
+      var filterKey = group.getAttribute("data-filter");
+      group.querySelectorAll(".chip-btn").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          group.querySelectorAll(".chip-btn").forEach(function(b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          var val = btn.getAttribute("data-val");
+          state.filters[filterKey] = filterKey === "time" ? Number(val) : val;
+        });
+      });
+    });
 
-  $("lang").addEventListener("click", function () {
-    lang = lang === "en" ? "zh" : "en";
+    // Action buttons
+    document.getElementById("ai-pick-btn").addEventListener("click", function() { pickActivity("smart"); });
+    document.getElementById("random-btn").addEventListener("click", function() { pickActivity("random"); });
+    document.getElementById("reset-btn").addEventListener("click", function() {
+      // Reset chips to defaults
+      document.querySelector('[data-filter="time"] [data-val="15"]').click();
+      document.querySelector('[data-filter="location"] [data-val="all"]').click();
+      document.querySelector('[data-filter="energy"] [data-val="all"]').click();
+      document.querySelector('[data-filter="goal"] [data-val="any"]').click();
+      state.currentRecommendation = null;
+      renderResult(null, "empty");
+    });
+
+    document.getElementById("clear-history-btn").addEventListener("click", function() {
+      state.history = [];
+      persistData();
+      renderHistory();
+    });
+
+    // Language toggle
+    document.getElementById("lang-btn").addEventListener("click", function() {
+      state.lang = state.lang === "en" ? "zh" : "en";
+      applyLanguage();
+    });
+
+    // Theme toggle
+    document.getElementById("theme-toggle").addEventListener("click", function() {
+      var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      applyTheme(isDark ? "light" : "dark");
+    });
+
+    // Catalog modal toggle
+    document.getElementById("catalog-btn").addEventListener("click", function() {
+      document.getElementById("catalog-modal").classList.add("open");
+      renderCatalog("");
+    });
+    document.getElementById("close-modal-btn").addEventListener("click", function() {
+      document.getElementById("catalog-modal").classList.remove("open");
+    });
+    document.getElementById("catalog-modal").addEventListener("click", function(e) {
+      if (e.target === this) this.classList.remove("open");
+    });
+    document.getElementById("catalog-search").addEventListener("input", function(e) {
+      renderCatalog(e.target.value);
+    });
+
+    // Initial language & render
     applyLanguage();
-  });
+  }
 
-  applyLanguage();
+  init();
 })();
 </script>
 </body>
