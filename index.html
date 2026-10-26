@@ -628,6 +628,135 @@
   .timer-display { font-size: 2.6rem; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--primary); }
   .timer-controls { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
 
+  /* Timer Mode Selector (Class-Bell / Activity / Full Break) */
+  .timer-mode-tabs {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .timer-mode-tab {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
+    white-space: nowrap;
+  }
+  .timer-mode-tab:hover { color: var(--text-main); }
+  .timer-mode-tab.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+  .timer-caption {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-top: 10px;
+  }
+  .timer-caption .cap-sub {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  /* Small inline info (i) tooltip — hover on desktop, tap on touch */
+  .info-tip { position: relative; display: inline-flex; }
+  .info-tip-btn {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-subtle);
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 800;
+    font-style: italic;
+    font-family: Georgia, serif;
+    line-height: 1;
+    cursor: help;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+  .info-tip-btn:hover { color: var(--primary); border-color: var(--primary); }
+  .info-tip-body {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    width: max-content;
+    max-width: 260px;
+    background: var(--bg-subtle);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 8px);
+    box-shadow: var(--shadow-md, 0 8px 24px rgba(0,0,0,0.16));
+    padding: 9px 11px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.45;
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s;
+    z-index: 60;
+  }
+  .info-tip-btn:hover + .info-tip-body,
+  .info-tip-btn:focus + .info-tip-body,
+  .info-tip.open .info-tip-body {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Favorite category stat — emoji + full label without overflow */
+  .stat-val.fav-stat {
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.25;
+    word-break: break-word;
+    hyphens: auto;
+  }
+  .stat-val.fav-stat .fav-emoji { font-size: 1.5rem; display: block; margin-bottom: 2px; }
+
+  /* Sound texture status line in Settings */
+  .sound-status-line {
+    margin-top: 9px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sound-status-line.playing { color: var(--primary); }
+  .sound-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: currentColor; flex: 0 0 auto; opacity: 0.7;
+  }
+
   /* History & Timeline */
   .section-header {
     display: flex;
@@ -934,7 +1063,7 @@
         <button type="button" class="chip-btn" data-val="wellness" data-t="goalWellness">Mental Reset 🌿</button>
         <button type="button" class="chip-btn" data-val="productivity" data-t="goalProd">Study & Focus 💻</button>
         <button type="button" class="chip-btn" data-val="movement" data-t="goalMovement">Physical Refresh 🏃</button>
-        <button type="button" class="chip-btn" data-val="creative" data-t="goalCreative">Creative / Social 🎨</button>
+        <button type="button" class="chip-btn" data-val="creative" data-t="goalCreative">Creative & Social 🎨</button>
       </div>
     </div>
 
@@ -1077,7 +1206,7 @@
             <option value="wellness">Mental Reset 🌿</option>
             <option value="productivity">Study & Focus 💻</option>
             <option value="movement">Physical Refresh 🏃</option>
-            <option value="creative">Creative / Social 🎨</option>
+            <option value="creative">Creative & Social 🎨</option>
           </select>
         </div>
       </div>
@@ -1180,12 +1309,15 @@
       <!-- Ambient Soundscape -->
       <div class="settings-row" id="soundscape-settings-row">
         <div class="settings-title" id="t-sound-title">Ambient Campus Soundscape</div>
-        <div class="settings-desc" id="t-sound-desc">Synthesized audio via Web Audio API with smooth fade-in and fade-out.</div>
+        <div class="settings-desc" id="t-sound-desc">Pick your sound texture here. Use the audio button on the main screen to start or stop it.</div>
         <div class="chip-group" id="sound-chip-group">
-          <button type="button" class="chip-btn active" data-sound-val="none">Mute</button>
           <button type="button" class="chip-btn" data-sound-val="rain">🌧️ Gentle Rain</button>
           <button type="button" class="chip-btn" data-sound-val="lofi">🧘 Lo-Fi Binaural Hum</button>
           <button type="button" class="chip-btn" data-sound-val="white">💨 Focus White Noise</button>
+        </div>
+        <div class="sound-status-line" id="sound-status-line">
+          <span class="sound-dot"></span>
+          <span id="sound-status-text">Currently off — press the audio button to play.</span>
         </div>
       </div>
 
@@ -1242,7 +1374,11 @@
     { id: "A17", name_zh: "快速擦拭手機與眼鏡鏡片", name_en: "Clean eyeglasses and phone screen", category: "productivity", location_type: "indoor", minutes: 10, energy: "low", icon: "👓", best_time: "morning", steps_zh: "用超細纖維布搭配螢幕清潔劑擦拭鏡片與手機表面，保持清爽透亮。", steps_en: "Use a microfiber cloth to wipe your glasses and smartphone display thoroughly." },
     { id: "A18", name_zh: "給自己留一句鼓勵小紙條", name_en: "Leave yourself an encouraging note", category: "creative", location_type: "indoor", minutes: 10, energy: "low", icon: "💌", best_time: "evening", steps_zh: "在筆記本封面內側寫下一句肯定的話：「你今天已經做得很棒了」。", steps_en: "Write a kind affirmation inside your notebook cover to boost self-compassion." },
     { id: "A19", name_zh: "整理相簿刪除不需要的課堂截圖", name_en: "Prune junk photo captures", category: "productivity", location_type: "indoor", minutes: 15, energy: "low", icon: "📱", best_time: "evening", steps_zh: "打開手機相簿，清理已經用完的黑板截圖或重複的投影片照片。", steps_en: "Delete blurry classroom board photos and redundant screenshot clutter." },
-    { id: "A20", name_zh: "專注練習呼吸法 4-7-8", name_en: "Practice 4-7-8 breathing reset", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "🌬️", best_time: "afternoon", steps_zh: "吸氣 4 秒、屏氣 7 秒、吐氣 8 秒，連續 4 個循環，迅速平撫焦慮。", steps_en: "Inhale for 4s, hold for 7s, exhale for 8s. Repeat 4 cycles to lower stress hormones." }
+    { id: "A20", name_zh: "專注練習呼吸法 4-7-8", name_en: "Practice 4-7-8 breathing reset", category: "wellness", location_type: "indoor", minutes: 10, energy: "low", icon: "🌬️", best_time: "afternoon", steps_zh: "吸氣 4 秒、屏氣 7 秒、吐氣 8 秒，連續 4 個循環，迅速平撫焦慮。", steps_en: "Inhale for 4s, hold for 7s, exhale for 8s. Repeat 4 cycles to lower stress hormones." },
+    { id: "A21", name_zh: "圖書館深度專注衝刺", name_en: "Library deep-focus sprint", category: "productivity", location_type: "indoor", minutes: 30, energy: "medium", icon: "📚", best_time: "afternoon", steps_zh: "找一個安靜角落，關閉手機通知，用番茄鐘專注一項最困難的任務，中途不切換。", steps_en: "Find a quiet corner, silence notifications, and run one focused Pomodoro on your hardest task without switching." },
+    { id: "A22", name_zh: "繞校園一圈健走充電", name_en: "Full campus perimeter walk", category: "movement", location_type: "outdoor", minutes: 30, energy: "medium", icon: "🗺️", best_time: "afternoon", steps_zh: "規劃一條繞過主要大樓與操場的路線，維持穩定步伐，讓大腦隨步伐重新整理。", steps_en: "Plot a route around the main buildings and athletic field at a steady pace, letting your thoughts reorganize as you walk." },
+    { id: "A23", name_zh: "完整午餐與遠離螢幕充能", name_en: "Full lunch & screen-free recharge", category: "wellness", location_type: "outdoor", minutes: 60, energy: "low", icon: "🍱", best_time: "afternoon", steps_zh: "找個戶外座位慢慢吃完一餐，收起手機，飯後散步十分鐘，徹底恢復下午專注力。", steps_en: "Sit outdoors and eat slowly without your phone, then take a 10-minute post-meal walk to restore afternoon focus." },
+    { id: "A24", name_zh: "期末專題小組工作坊", name_en: "Group project working session", category: "productivity", location_type: "indoor", minutes: 60, energy: "medium", icon: "👥", best_time: "evening", steps_zh: "約組員一起完成一段實作，先對齊分工與進度，再各自埋頭完成分配到的部分。", steps_en: "Gather your group for a working block: align on the division of work and deadlines first, then each tackle your assigned piece." }
   ];
 
   // Default Campus Timetable
@@ -1270,7 +1406,7 @@
       low: "Low (Chill)", medium: "Medium",
       goalAny: "Auto / Balanced", goalWellness: "Mental Reset 🌿",
       goalProd: "Study & Focus 💻", goalMovement: "Physical Refresh 🏃",
-      goalCreative: "Creative / Social 🎨",
+      goalCreative: "Creative & Social 🎨",
       aiPick: "Recommend Activity", randomPick: "Surprise Me", reset: "Reset",
       emptyState: "Select your break conditions above, then click <b>Recommend Activity</b>.",
       historyTitle: "Recent Activity Log (Saved)", clear: "Clear Log", noHistory: "No activities logged yet.",
@@ -1289,7 +1425,17 @@
       staticDesc: "Classic clean appearance without celestial animations.",
       themeSystem: "System OS", themeLight: "Light", themeDark: "Dark",
       soundTitle: "Ambient Campus Soundscape",
-      soundDesc: "Synthesized audio via Web Audio API with smooth fade-in and fade-out.",
+      soundDesc: "Pick your sound texture here. Use the audio button on the main screen to start or stop it.",
+      soundOff: "Currently off — press the audio button to play.",
+      soundOnNow: "Playing: ",
+      timerModeClass: "Until Next Class",
+      timerModeActivity: "Activity Only",
+      timerModeBreak: "Full Break",
+      tipClass: "Synced to your timetable, counting down to the second so you're never late to class.",
+      tipActivity: "Just long enough to finish this activity.",
+      tipBreak: "The full window you picked in the time filter.",
+      capUntil: "Until",
+      capEndsAt: "starts",
       dataTitle: "Saved Preferences & Data",
       dataDesc: "Reset learned recommendation weights or clear your completed activity statistics.",
       resetWeights: "Reset AI Weights", resetAll: "Reset All Stats",
@@ -1350,7 +1496,17 @@
       staticDesc: "經典俐落外觀，無天體軌跡與光影旋轉。",
       themeSystem: "跟隨系統", themeLight: "純淨淺色", themeDark: "沉浸深色",
       soundTitle: "校園環境白噪音",
-      soundDesc: "透過瀏覽器 Web Audio API 純本機合成，具備平滑漸入漸出。",
+      soundDesc: "在這裡選擇你喜歡的聲音質地。要開始或停止播放，請按主畫面的音訊按鈕。",
+      soundOff: "目前關閉——按下主畫面的音訊按鈕即可播放。",
+      soundOnNow: "播放中：",
+      timerModeClass: "距離下堂課",
+      timerModeActivity: "只計活動",
+      timerModeBreak: "完整休息",
+      tipClass: "自動對齊你的課表，精準倒數到秒，讓你永遠不會遲到。",
+      tipActivity: "剛好足夠完成這個活動的時間。",
+      tipBreak: "你在時間篩選中選擇的完整空檔。",
+      capUntil: "距離",
+      capEndsAt: "開始",
       dataTitle: "資料與偏好管理",
       dataDesc: "重置 AI 推薦權重或清除所有完成次數與統計。",
       resetWeights: "重置 AI 權重", resetAll: "清除所有統計紀錄",
@@ -1381,6 +1537,7 @@
   var state = {
     lang: "en",
     filters: { time: 15, location: "all", energy: "all", goal: "any" },
+    timeFilterManual: false,
     themeSystem: "dynamic",
     dynamicTime: "live",
     staticTheme: "system",
@@ -1393,7 +1550,7 @@
     history: [],
     weights: {},
     stats: { totalMinutes: 0, completedCount: 0, categories: {} },
-    timer: { duration: 0, remaining: 0, interval: null }
+    timer: { duration: 0, remaining: 0, interval: null, mode: null, targetTs: 0, label: null }
   };
 
   var soundNodes = null;
@@ -1401,6 +1558,55 @@
 
   function getAllActivities() {
     return CORE_ACTIVITIES.concat(state.customActivities);
+  }
+
+  // --- Shared display helpers (used by result card, catalog, history, stats) ---
+  var CATEGORY_META = {
+    wellness:    { en: "Mental Reset",     zh: "身心重置", icon: "🌿" },
+    productivity:{ en: "Study & Focus",    zh: "專注學習", icon: "💻" },
+    movement:    { en: "Physical Refresh", zh: "身體活動", icon: "🏃" },
+    creative:    { en: "Creative & Social",zh: "靈感社交", icon: "🎨" }
+  };
+
+  function categoryDisplay(cat) {
+    var meta = CATEGORY_META[cat];
+    if (!meta) return cat;
+    return state.lang === "zh" ? meta.zh : meta.en;
+  }
+  function categoryIcon(cat) {
+    var meta = CATEGORY_META[cat];
+    return meta ? meta.icon : "🌟";
+  }
+  // Map raw enums -> localized, Title-Cased UI strings. Never render raw data.
+  function locationDisplay(loc) {
+    if (loc === "indoor") return state.lang === "zh" ? "室內" : "Indoor";
+    if (loc === "outdoor") return state.lang === "zh" ? "室外" : "Outdoor";
+    return loc;
+  }
+  function energyDisplay(e) {
+    if (e === "low") return state.lang === "zh" ? "低負擔 (放鬆)" : "Low (Chill)";
+    if (e === "medium") return state.lang === "zh" ? "中等活動" : "Medium";
+    if (e === "high") return state.lang === "zh" ? "高強度" : "High";
+    return e;
+  }
+  // "10 Min" — capitalized unit, consistent everywhere.
+  function minutesBadge(mins) {
+    return mins + (state.lang === "zh" ? " 分鐘" : " Min");
+  }
+
+  // Find the next upcoming class today (after right now). Returns null if none left today.
+  function computeNextClass() {
+    if (!state.timetable || state.timetable.length === 0) return null;
+    var now = new Date();
+    var nowMin = (now.getHours() * 60) + now.getMinutes();
+    var sorted = state.timetable.slice().sort(function(a, b) {
+      return parseTimeToMinutes(a.start) - parseTimeToMinutes(b.start);
+    });
+    for (var i = 0; i < sorted.length; i++) {
+      var startMin = parseTimeToMinutes(sorted[i].start);
+      if (startMin > nowMin) return sorted[i];
+    }
+    return null;
   }
 
   // --- Safe Theme Updating (Zero White Flash & Seamless Transitions) ---
@@ -1600,6 +1806,36 @@
       pill.classList.remove("active");
       label.textContent = "Soundscape: Off";
     }
+    syncSoundUI();
+  }
+
+  // Keep the Settings sound chips + status line truthful at all times.
+  function syncSoundUI() {
+    var zh = state.lang === "zh";
+    var chips = document.querySelectorAll("#sound-chip-group .chip-btn");
+    var statusWrap = document.getElementById("sound-status-line");
+    var statusText = document.getElementById("sound-status-text");
+    if (!chips.length) return;
+
+    var playing = !!soundNodes;
+    chips.forEach(function(b) {
+      // Highlight the active texture ONLY while audio is actually playing.
+      var isCurrent = playing && b.getAttribute("data-sound-val") === state.soundMode;
+      b.classList.toggle("active", isCurrent);
+    });
+
+    if (statusWrap && statusText) {
+      if (playing) {
+        var names = { rain: (zh ? "溫柔雨聲" : "Gentle Rain"), lofi: (zh ? "Lo-Fi 雙耳節拍" : "Lo-Fi Binaural Hum"), white: (zh ? "專注白噪音" : "Focus White Noise") };
+        statusWrap.classList.add("playing");
+        statusText.textContent = (zh ? "播放中：" : "Playing: ") + (names[state.soundMode] || (zh ? "播放中" : "Playing")) +
+          (zh ? "（主畫面音訊按鈕可隨時停止）" : " — use the main audio button to stop.");
+      } else {
+        statusWrap.classList.remove("playing");
+        statusText.textContent = zh ? "目前關閉——按下主畫面的音訊按鈕即可播放。"
+                                    : "Currently off — press the audio button to play.";
+      }
+    }
   }
 
   // --- Real-Time Timetable & Break Gap Engine ---
@@ -1675,14 +1911,22 @@
         else if (gapToNext < 48) closest = 30;
         else closest = 60;
 
-        state.filters.time = closest;
-        document.querySelectorAll('[data-filter="time"] .chip-btn').forEach(function(b) {
-          var val = Number(b.getAttribute("data-val"));
-          b.classList.toggle("active", val === closest);
-          b.classList.toggle("auto-selected", val === closest);
-        });
-        gapIndicator.style.display = "inline";
-        gapIndicator.textContent = (state.lang === "zh" ? "自動對齊 " : "Auto: ") + closest + "m";
+        // Only auto-SET the filter if the user hasn't picked a time by hand this
+        // session. Otherwise we'd be fighting their explicit choice every 20s.
+        if (!state.timeFilterManual) {
+          state.filters.time = closest;
+          document.querySelectorAll('[data-filter="time"] .chip-btn').forEach(function(b) {
+            var val = Number(b.getAttribute("data-val"));
+            b.classList.toggle("active", val === closest);
+            b.classList.toggle("auto-selected", val === closest);
+          });
+          gapIndicator.style.display = "inline";
+          gapIndicator.textContent = (state.lang === "zh" ? "自動對齊 " : "Auto: ") + closest + "m";
+        } else {
+          // Show the suggestion without overriding the manual choice.
+          gapIndicator.style.display = "inline";
+          gapIndicator.textContent = (state.lang === "zh" ? "建議 " : "Suggested: ") + closest + "m";
+        }
       } else {
         gapIndicator.style.display = "none";
       }
@@ -1822,24 +2066,26 @@
       return '<span>• ' + r + '</span>';
     }).join(" ");
 
-    var categoryLabels = {
-      wellness: { en: "Mental Reset", zh: "身心重置" },
-      productivity: { en: "Study & Focus", zh: "專注學習" },
-      movement: { en: "Physical Refresh", zh: "身體活動" },
-      creative: { en: "Creative & Social", zh: "靈感社交" }
-    };
-    var catName = categoryLabels[act.category] ? (state.lang === "zh" ? categoryLabels[act.category].zh : categoryLabels[act.category].en) : act.category;
+    var catName = categoryDisplay(act.category);
+    var locName = locationDisplay(act.location_type);
+
+    // Decide which timer mode is available / default
+    var nextClass = computeNextClass();
+    var hasClassMode = !!nextClass;
+    // Default to "class" when a next class exists today, else fall back to the activity length.
+    var defaultMode = hasClassMode ? "class" : "activity";
 
     box.className = "result-card";
     box.innerHTML =
       '<div class="result-header">' +
         '<div style="display:flex; gap:8px; flex-wrap:wrap;">' +
-          '<span class="badge">⏱️ ' + act.minutes + ' min</span>' +
+          '<span class="badge">⏱️ ' + minutesBadge(act.minutes) + '</span>' +
           '<span class="badge">🏷️ ' + catName + '</span>' +
-          '<span class="badge">📍 ' + act.location_type + '</span>' +
+          '<span class="badge">📍 ' + locName + '</span>' +
+          (act.energy ? '<span class="badge">⚡ ' + energyDisplay(act.energy) + '</span>' : '') +
         '</div>' +
         '<div class="badge" style="background:var(--primary-light); color:var(--primary); font-weight:800;">' +
-          '⚡ ' + util.score + '% Utility' +
+          '📊 ' + util.score + '% ' + (state.lang === "zh" ? "實用度" : "Utility") +
         '</div>' +
       '</div>' +
       '<div class="activity-title-row">' +
@@ -1863,13 +2109,47 @@
           '<button type="button" id="complete-break-btn">🎉 ' + (state.lang === "zh" ? "完成休息" : "Mark Done") + '</button>' +
         '</div>' +
       '</div>' +
+      // --- Timer mode selector: the user always knows WHAT is being timed ---
+      '<div class="timer-mode-tabs" id="timer-mode-tabs">' +
+        (hasClassMode ?
+          '<button type="button" class="timer-mode-tab" data-timer-mode="class">' +
+            (state.lang === "zh" ? "⏰ 距離下堂課" : "⏰ Until Next Class") + '</button>' : '') +
+        '<button type="button" class="timer-mode-tab" data-timer-mode="activity">' +
+          (state.lang === "zh" ? "🎯 只計活動" : "🎯 Activity Only") + '</button>' +
+        '<button type="button" class="timer-mode-tab" data-timer-mode="break">' +
+          (state.lang === "zh" ? "☕ 完整休息" : "☕ Full Break") + '</button>' +
+      '</div>' +
+      // --- Timer banner: big digits + a caption naming exactly what it counts down to ---
       '<div class="timer-banner" id="timer-box">' +
         '<div class="timer-display" id="timer-display">00:00</div>' +
+        '<div class="timer-caption" id="timer-caption"></div>' +
         '<div class="timer-controls">' +
-          '<button type="button" class="subtle" id="pause-timer-btn">⏸️ Pause</button>' +
-          '<button type="button" class="subtle" id="stop-timer-btn" style="color:var(--coral);">⏹️ Stop</button>' +
+          '<button type="button" class="subtle" id="pause-timer-btn">⏸️ ' + (state.lang === "zh" ? "暫停" : "Pause") + '</button>' +
+          '<button type="button" class="subtle" id="stop-timer-btn" style="color:var(--coral);">⏹️ ' + (state.lang === "zh" ? "停止" : "Stop") + '</button>' +
         '</div>' +
       '</div>';
+
+    // Remember which mode should be pre-selected for this card
+    state.timer.mode = defaultMode;
+
+    var tabs = box.querySelectorAll(".timer-mode-tab");
+    tabs.forEach(function(tab) {
+      if (tab.getAttribute("data-timer-mode") === defaultMode) tab.classList.add("active");
+      tab.addEventListener("click", function() {
+        tabs.forEach(function(t2) { t2.classList.remove("active"); });
+        tab.classList.add("active");
+        state.timer.mode = tab.getAttribute("data-timer-mode");
+        // If a timer is already running, restart it in the newly chosen mode immediately.
+        if (document.getElementById("timer-box").classList.contains("active")) {
+          startTimerForMode(state.timer.mode, act);
+        } else {
+          updateTimerCaption(state.timer.mode, act); // preview caption before starting
+        }
+      });
+    });
+
+    // Show what this timer will do, before the user even presses Start.
+    updateTimerCaption(state.timer.mode, act);
 
     document.getElementById("like-btn").addEventListener("click", function() {
       state.weights[act.id] = (state.weights[act.id] || 0) + 12;
@@ -1884,7 +2164,8 @@
     });
 
     document.getElementById("start-timer-btn").addEventListener("click", function() {
-      startBreakTimer(act.minutes * 60);
+      // Start whichever mode is currently selected — not blindly the activity length.
+      startTimerForMode(state.timer.mode, act);
     });
 
     document.getElementById("complete-break-btn").addEventListener("click", function() {
@@ -1893,24 +2174,112 @@
   }
 
   // --- Timer Engine ---
-  function startBreakTimer(seconds) {
+  // Work out the duration (in whole seconds) for the chosen mode.
+  function computeTimerSeconds(mode, act) {
+    if (mode === "class") {
+      var nc = computeNextClass();
+      if (nc) {
+        var now = new Date();
+        var startParts = nc.start.split(":");
+        var target = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+                               parseInt(startParts[0], 10), parseInt(startParts[1], 10), 0, 0);
+        var diff = Math.round((target.getTime() - now.getTime()) / 1000);
+        return Math.max(0, diff); // count down to the second, even if started "late"
+      }
+      return act.minutes * 60; // no class left today -> fall back to the activity
+    }
+    if (mode === "break") {
+      return (state.filters.time || 15) * 60;
+    }
+    return act.minutes * 60; // "activity"
+  }
+
+  // Build the human-readable caption so the timer is never a mystery number.
+  function updateTimerCaption(mode, act) {
+    var cap = document.getElementById("timer-caption");
+    if (!cap) return;
+    var zh = state.lang === "zh";
+    var main = "", sub = "", tip = "";
+
+    if (mode === "class") {
+      var nc = computeNextClass();
+      if (nc) {
+        main = (zh ? "⏰ 距離「" : "⏰ Until \"") + nc.name + (zh ? "」" : "\"");
+        sub = (nc.room ? nc.room + " · " : "") + (zh ? nc.start + " 開始" : "starts " + nc.start);
+        tip = zh ? "自動對齊你的課表，精準倒數到秒，讓你永遠不會遲到。"
+                 : "Synced to your timetable, counting down to the second so you're never late to class.";
+      } else {
+        main = zh ? "⏰ 今日已無課程" : "⏰ No classes left today";
+        sub = zh ? "改用活動時間倒數" : "Falling back to the activity length";
+        tip = zh ? "今天課表已排完，因此改為只計這個活動的時間。"
+                 : "Your timetable is finished for today, so this counts just the activity length.";
+      }
+    } else if (mode === "activity") {
+      main = (zh ? "🎯 活動：" : "🎯 Activity: ") + (zh ? act.name_zh : act.name_en);
+      sub = (zh ? "剛好足夠完成這個活動 · " : "Just long enough to finish this activity · ") + minutesBadge(act.minutes);
+      tip = zh ? "剛好足夠完成這個活動的時間。" : "Just long enough to finish this activity.";
+    } else {
+      main = (zh ? "☕ 完整休息空檔：" : "☕ Full break window: ") + minutesBadge(state.filters.time || 15);
+      sub = zh ? "你在時間篩選中選擇的完整空檔" : "The full window you picked in the time filter";
+      tip = zh ? "你在時間篩選中選擇的完整空檔。" : "The full window you picked in the time filter.";
+    }
+
+    cap.innerHTML =
+      '<span>' + main + '<span class="cap-sub">' + sub + '</span></span>' +
+      '<span class="info-tip">' +
+        '<button type="button" class="info-tip-btn" aria-label="What is this timer?">i</button>' +
+        '<span class="info-tip-body">' + tip + '</span>' +
+      '</span>';
+
+    // Tap-to-toggle for touch devices (hover handles desktop).
+    var tipBtn = cap.querySelector(".info-tip-btn");
+    if (tipBtn) {
+      tipBtn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        tipBtn.parentNode.classList.toggle("open");
+      });
+    }
+  }
+
+  // Start the countdown for a specific mode.
+  function startTimerForMode(mode, act) {
+    var seconds = computeTimerSeconds(mode, act);
+    if (mode === "class" && computeNextClass() === null) mode = "activity"; // resolved fallback
+    startBreakTimer(seconds, mode, act);
+  }
+
+  function startBreakTimer(seconds, mode, act) {
     if (state.timer.interval) clearInterval(state.timer.interval);
+
+    mode = mode || "activity";
+    state.timer.mode = mode;
+    state.timer.act = act || (state.currentRecommendation ? state.currentRecommendation.activity : null);
     state.timer.duration = seconds;
     state.timer.remaining = seconds;
 
+    // For "class" mode, lock onto the real wall-clock target so the countdown
+    // always reflects the true time left until the bell — even if started late
+    // or if the device clock ticks unevenly. Recomputed every tick below.
+    if (mode === "class") {
+      var nc = computeNextClass();
+      if (nc) {
+        var parts = nc.start.split(":");
+        var now = new Date();
+        state.timer.targetTs = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+                                        parseInt(parts[0], 10), parseInt(parts[1], 10), 0, 0).getTime();
+      } else {
+        state.timer.targetTs = 0;
+      }
+    } else {
+      state.timer.targetTs = 0;
+    }
+
     var box = document.getElementById("timer-box");
     box.classList.add("active");
+    updateTimerCaption(mode, state.timer.act);
     updateTimerDisplay();
 
-    state.timer.interval = setInterval(function() {
-      state.timer.remaining--;
-      updateTimerDisplay();
-      if (state.timer.remaining <= 0) {
-        clearInterval(state.timer.interval);
-        state.timer.interval = null;
-        if (state.currentRecommendation) openReflectionModal(state.currentRecommendation.activity);
-      }
-    }, 1000);
+    state.timer.interval = setInterval(tickTimer, 1000);
 
     var pauseBtn = document.getElementById("pause-timer-btn");
     var stopBtn = document.getElementById("stop-timer-btn");
@@ -1918,18 +2287,10 @@
       if (state.timer.interval) {
         clearInterval(state.timer.interval);
         state.timer.interval = null;
-        pauseBtn.textContent = "▶️ Resume";
+        pauseBtn.textContent = "▶️ " + (state.lang === "zh" ? "繼續" : "Resume");
       } else {
-        state.timer.interval = setInterval(function() {
-          state.timer.remaining--;
-          updateTimerDisplay();
-          if (state.timer.remaining <= 0) {
-            clearInterval(state.timer.interval);
-            state.timer.interval = null;
-            if (state.currentRecommendation) openReflectionModal(state.currentRecommendation.activity);
-          }
-        }, 1000);
-        pauseBtn.textContent = "⏸️ Pause";
+        state.timer.interval = setInterval(tickTimer, 1000);
+        pauseBtn.textContent = "⏸️ " + (state.lang === "zh" ? "暫停" : "Pause");
       }
     };
     stopBtn.onclick = function() {
@@ -1937,6 +2298,22 @@
       state.timer.interval = null;
       box.classList.remove("active");
     };
+  }
+
+  // Single tick routine shared by start + resume.
+  function tickTimer() {
+    if (state.timer.mode === "class" && state.timer.targetTs) {
+      // Derive straight from the clock so it can never drift or restart "late".
+      state.timer.remaining = Math.max(0, Math.round((state.timer.targetTs - Date.now()) / 1000));
+    } else {
+      state.timer.remaining--;
+    }
+    updateTimerDisplay();
+    if (state.timer.remaining <= 0) {
+      clearInterval(state.timer.interval);
+      state.timer.interval = null;
+      if (state.currentRecommendation) openReflectionModal(state.currentRecommendation.activity);
+    }
   }
 
   function updateTimerDisplay() {
@@ -1979,7 +2356,7 @@
         '<div style="font-size:1.5rem; margin-bottom:4px;">' + act.icon + '</div>' +
         '<b>' + name + '</b>' + (isCustom ? '<span class="custom-tag">Custom</span>' : '') +
         '<div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">' +
-          act.minutes + ' min · ' + act.category + ' · ' + act.location_type +
+          minutesBadge(act.minutes) + ' · ' + categoryDisplay(act.category) + ' · ' + locationDisplay(act.location_type) +
         '</div>';
       card.addEventListener("click", function() {
         document.getElementById("catalog-modal").classList.remove("open");
@@ -2007,7 +2384,7 @@
         '<div class="left">' +
           '<span>' + item.icon + '</span>' +
           '<b>' + name + '</b>' +
-          '<span class="badge">' + item.minutes + ' min</span>' +
+          '<span class="badge">' + minutesBadge(item.minutes) + '</span>' +
           '<span style="font-size:0.75rem; color:var(--text-muted);">' + ratingStars + ' (' + (item.feeling || "Recharged") + ')</span>' +
         '</div>' +
         '<span class="time-tag">' + item.timestamp + '</span>';
@@ -2018,15 +2395,38 @@
   function renderStats() {
     document.getElementById("stat-minutes").textContent = state.stats.totalMinutes;
     document.getElementById("stat-count").textContent = state.stats.completedCount;
-    var favCat = "🌿";
+
+    var favEl = document.getElementById("stat-favorite");
+    favEl.classList.add("fav-stat");
+
+    var favCat = null;
     var max = 0;
     for (var cat in state.stats.categories) {
       if (state.stats.categories[cat] > max) {
         max = state.stats.categories[cat];
-        favCat = cat === "wellness" ? "🌿" : (cat === "productivity" ? "💻" : (cat === "movement" ? "🏃" : "🎨"));
+        favCat = cat;
       }
     }
-    document.getElementById("stat-favorite").textContent = favCat;
+
+    if (!favCat) {
+      // No data yet — show a friendly default rather than a bare emoji.
+      favEl.innerHTML = '<span class="fav-emoji">🌿</span>' +
+        (state.lang === "zh" ? "身心重置" : "Mental Reset");
+      return;
+    }
+
+    // Emoji + full localized category name (not just the emoji).
+    favEl.innerHTML = '<span class="fav-emoji">' + categoryIcon(favCat) + '</span>' +
+      escapeHtml(categoryDisplay(favCat));
+  }
+
+  // Minimal HTML escaping for any user/data-derived text placed via innerHTML.
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 
   // --- Persistence & 1-Click Backup / Restore ---
@@ -2258,6 +2658,9 @@
       b.classList.toggle("active", b.getAttribute("data-static-val") === state.staticTheme);
     });
 
+    // Make sure the sound chips + status line reflect the TRUE audio state.
+    syncSoundUI();
+
     updateAtmosphereAndCelestial();
   }
 
@@ -2278,6 +2681,8 @@
           btn.classList.add("active");
           var val = btn.getAttribute("data-val");
           state.filters[filterKey] = filterKey === "time" ? Number(val) : val;
+          // A hand-picked time wins over Auto-Sync for the rest of the session.
+          if (filterKey === "time") state.timeFilterManual = true;
         });
       });
     });
@@ -2289,6 +2694,8 @@
       document.querySelector('[data-filter="location"] [data-val="all"]').click();
       document.querySelector('[data-filter="energy"] [data-val="all"]').click();
       document.querySelector('[data-filter="goal"] [data-val="any"]').click();
+      // Reset hands control back to Auto-Sync.
+      state.timeFilterManual = false;
       state.currentRecommendation = null;
       renderResult(null, "empty");
     });
@@ -2509,22 +2916,26 @@
       });
     });
 
-    // Sound
+    // Sound — Settings is a pure texture selector (no Mute chip).
     document.querySelectorAll("#sound-chip-group .chip-btn").forEach(function(btn) {
       btn.addEventListener("click", function() {
         document.querySelectorAll("#sound-chip-group .chip-btn").forEach(function(b) { b.classList.remove("active"); });
         btn.classList.add("active");
         state.soundMode = btn.getAttribute("data-sound-val");
+        // Choosing a texture here starts it, so the HUD pill and chip stay in sync.
         startSoundscape(state.soundMode);
+        syncSoundUI();
       });
     });
     document.getElementById("quick-sound-btn").addEventListener("click", function() {
       if (soundNodes) {
         stopSoundscape(1.2);
       } else {
-        state.soundMode = state.soundMode === "none" ? "rain" : state.soundMode;
+        // Default texture for a first-time press, since "none" is no longer selectable.
+        state.soundMode = (!state.soundMode || state.soundMode === "none") ? "rain" : state.soundMode;
         startSoundscape(state.soundMode);
       }
+      syncSoundUI();
     });
 
     // Reset Data

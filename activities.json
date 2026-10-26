@@ -258,5 +258,57 @@
     "best_time": "any",
     "steps_zh": "發一則溫暖的訊息給同系好友或室友，問問對方今天課堂順利與否。",
     "steps_en": "Drop a cheerful greeting or funny meme to a classmate or friend to stay connected."
+  },
+  {
+    "id": "A21",
+    "name_zh": "圖書館深度專注衝刺",
+    "name_en": "Library deep-focus sprint",
+    "category": "productivity",
+    "location_type": "indoor",
+    "minutes": 30,
+    "energy": "medium",
+    "icon": "📚",
+    "best_time": "afternoon",
+    "steps_zh": "找一個安靜角落，關閉手機通知，用番茄鐘專注一項最困難的任務，中途不切換。",
+    "steps_en": "Find a quiet corner, silence notifications, and run one focused Pomodoro on your hardest task without switching."
+  },
+  {
+    "id": "A22",
+    "name_zh": "繞校園一圈健走充電",
+    "name_en": "Full campus perimeter walk",
+    "category": "movement",
+    "location_type": "outdoor",
+    "minutes": 30,
+    "energy": "medium",
+    "icon": "🗺️",
+    "best_time": "afternoon",
+    "steps_zh": "規劃一條繞過主要大樓與操場的路線，維持穩定步伐，讓大腦隨步伐重新整理。",
+    "steps_en": "Plot a route around the main buildings and athletic field at a steady pace, letting your thoughts reorganize as you walk."
+  },
+  {
+    "id": "A23",
+    "name_zh": "完整午餐與遠離螢幕充能",
+    "name_en": "Full lunch & screen-free recharge",
+    "category": "wellness",
+    "location_type": "outdoor",
+    "minutes": 60,
+    "energy": "low",
+    "icon": "🍱",
+    "best_time": "afternoon",
+    "steps_zh": "找個戶外座位慢慢吃完一餐，收起手機，飯後散步十分鐘，徹底恢復下午專注力。",
+    "steps_en": "Sit outdoors and eat slowly without your phone, then take a 10-minute post-meal walk to restore afternoon focus."
+  },
+  {
+    "id": "A24",
+    "name_zh": "期末專題小組工作坊",
+    "name_en": "Group project working session",
+    "category": "productivity",
+    "location_type": "indoor",
+    "minutes": 60,
+    "energy": "medium",
+    "icon": "👥",
+    "best_time": "evening",
+    "steps_zh": "約組員一起完成一段實作，先對齊分工與進度，再各自埋頭完成分配到的部分。",
+    "steps_en": "Gather your group for a working block: align on the division of work and deadlines first, then each tackle your assigned piece."
   }
 ]
