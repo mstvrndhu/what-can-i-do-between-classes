@@ -1550,7 +1550,7 @@
     history: [],
     weights: {},
     stats: { totalMinutes: 0, completedCount: 0, categories: {} },
-    timer: { duration: 0, remaining: 0, interval: null, mode: null, targetTs: 0, label: null }
+    timer: { duration: 0, remaining: 0, interval: null, mode: null, targetTs: 0, label: null, running: false, paused: false }
   };
 
   var soundNodes = null;
@@ -2052,6 +2052,8 @@
   function renderResult(rec, viewMode) {
     var box = document.getElementById("result-box");
     if (!rec || viewMode === "empty") {
+      // Card is being cleared — stop any countdown so it can't tick invisibly.
+      if (state.timer.running) stopBreakTimer();
       box.className = "result-card empty-state";
       box.innerHTML = '<p id="t-hint-empty">' + TEXT[state.lang].emptyState + '</p>';
       return;
@@ -2129,12 +2131,17 @@
         '</div>' +
       '</div>';
 
-    // Remember which mode should be pre-selected for this card
-    state.timer.mode = defaultMode;
+    // Remember which mode should be pre-selected for this card.
+    // BUT never clobber the mode of a timer that's actually running — this
+    // function re-runs every 20s (via applyLanguage) and must not silently
+    // switch an in-progress countdown back to the default mode.
+    if (!state.timer.running) {
+      state.timer.mode = defaultMode;
+    }
 
     var tabs = box.querySelectorAll(".timer-mode-tab");
     tabs.forEach(function(tab) {
-      if (tab.getAttribute("data-timer-mode") === defaultMode) tab.classList.add("active");
+      if (!state.timer.running && tab.getAttribute("data-timer-mode") === defaultMode) tab.classList.add("active");
       tab.addEventListener("click", function() {
         tabs.forEach(function(t2) { t2.classList.remove("active"); });
         tab.classList.add("active");
@@ -2171,9 +2178,75 @@
     document.getElementById("complete-break-btn").addEventListener("click", function() {
       openReflectionModal(act);
     });
+
+    // This card was just rebuilt from scratch, which wipes the timer's visible
+    // state and orphans its Pause/Stop handlers. Re-apply them if a countdown
+    // is still in progress, so the 20s live re-render can't make it vanish.
+    restoreTimerUI();
   }
 
   // --- Timer Engine ---
+  // Attach handlers to the Pause/Stop buttons. Re-runnable: renderResult rebuilds
+  // these elements from scratch, so the handlers must be re-attached after any
+  // re-render or the buttons go dead.
+  function attachTimerControls() {
+    var pauseBtn = document.getElementById("pause-timer-btn");
+    var stopBtn = document.getElementById("stop-timer-btn");
+    if (!pauseBtn || !stopBtn) return;
+
+    pauseBtn.textContent = state.timer.interval
+      ? "⏸️ " + (state.lang === "zh" ? "暫停" : "Pause")
+      : "▶️ " + (state.lang === "zh" ? "繼續" : "Resume");
+
+    pauseBtn.onclick = function() {
+      if (state.timer.interval) {
+        clearInterval(state.timer.interval);
+        state.timer.interval = null;
+        state.timer.paused = true;
+        pauseBtn.textContent = "▶️ " + (state.lang === "zh" ? "繼續" : "Resume");
+      } else {
+        state.timer.interval = setInterval(tickTimer, 1000);
+        state.timer.paused = false;
+        pauseBtn.textContent = "⏸️ " + (state.lang === "zh" ? "暫停" : "Pause");
+      }
+    };
+    stopBtn.onclick = function() {
+      stopBreakTimer();
+    };
+  }
+
+  function stopBreakTimer() {
+    if (state.timer.interval) clearInterval(state.timer.interval);
+    state.timer.interval = null;
+    state.timer.running = false;
+    state.timer.paused = false;
+    var box = document.getElementById("timer-box");
+    if (box) box.classList.remove("active");
+  }
+
+  // Re-apply a running timer's state to freshly-built DOM. Called at the end of
+  // renderResult so the 20s live interval (which re-renders the card) can no
+  // longer make the timer vanish mid-countdown.
+  function restoreTimerUI() {
+    if (!state.timer.running) return;
+    var box = document.getElementById("timer-box");
+    if (!box) return;
+
+    box.classList.add("active");
+
+    // Re-highlight the mode tab that's actually running (renderResult resets it).
+    var tabs = box.parentNode ? box.parentNode.querySelectorAll(".timer-mode-tab") : [];
+    tabs.forEach(function(t) {
+      t.classList.toggle("active", t.getAttribute("data-timer-mode") === state.timer.mode);
+    });
+
+    // Restore the caption naming what this countdown is for.
+    if (state.timer.act) updateTimerCaption(state.timer.mode, state.timer.act);
+
+    updateTimerDisplay();
+    attachTimerControls();
+  }
+
   // Work out the duration (in whole seconds) for the chosen mode.
   function computeTimerSeconds(mode, act) {
     if (mode === "class") {
@@ -2276,28 +2349,13 @@
 
     var box = document.getElementById("timer-box");
     box.classList.add("active");
+    state.timer.running = true;
+    state.timer.paused = false;
     updateTimerCaption(mode, state.timer.act);
     updateTimerDisplay();
 
     state.timer.interval = setInterval(tickTimer, 1000);
-
-    var pauseBtn = document.getElementById("pause-timer-btn");
-    var stopBtn = document.getElementById("stop-timer-btn");
-    pauseBtn.onclick = function() {
-      if (state.timer.interval) {
-        clearInterval(state.timer.interval);
-        state.timer.interval = null;
-        pauseBtn.textContent = "▶️ " + (state.lang === "zh" ? "繼續" : "Resume");
-      } else {
-        state.timer.interval = setInterval(tickTimer, 1000);
-        pauseBtn.textContent = "⏸️ " + (state.lang === "zh" ? "暫停" : "Pause");
-      }
-    };
-    stopBtn.onclick = function() {
-      clearInterval(state.timer.interval);
-      state.timer.interval = null;
-      box.classList.remove("active");
-    };
+    attachTimerControls();
   }
 
   // Single tick routine shared by start + resume.
@@ -2312,6 +2370,8 @@
     if (state.timer.remaining <= 0) {
       clearInterval(state.timer.interval);
       state.timer.interval = null;
+      state.timer.running = false;
+      state.timer.paused = false;
       if (state.currentRecommendation) openReflectionModal(state.currentRecommendation.activity);
     }
   }
